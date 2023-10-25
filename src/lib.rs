@@ -1,5 +1,5 @@
-mod orbit;
-mod transformations;
+pub mod orbit;
+pub mod transformations;
 
 #[cfg(test)]
 mod tests {
