@@ -1,4 +1,5 @@
 pub mod orbit;
+pub mod orbital_elements;
 pub mod transformations;
 
 #[cfg(test)]
