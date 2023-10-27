@@ -5,8 +5,30 @@ pub mod transformations;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ndarray::array;
+    use ndarray::{array, Array1};
     use std::f64::consts::PI;
+
+    #[test]
+    fn earth_eccentricity() {
+        let solar_mass: f64 = 1.98847 * 10_f64.powf(30.);
+        let earth_mass: f64 = 5.972 * 10_f64.powf(24.);
+        let mu: f64 = orbit::calculate_mu(solar_mass, earth_mass);
+        let earth_periapsis = array![147.10 * 10_f64.powf(9.), 0., 0.];
+        let earth_orbital_velocity_at_periapsis = array![0., 30290., 0.];
+        assert!(
+            orbit::calculate_eccentricity(
+                earth_periapsis.clone(),
+                earth_orbital_velocity_at_periapsis.clone(),
+                mu
+            ) - 0.0167
+                < 0.0005
+        );
+        assert!(
+            orbit::calculate_eccentricity(earth_periapsis, earth_orbital_velocity_at_periapsis, mu)
+                - 0.0167
+                > -0.0005
+        );
+    }
 
     #[test]
     fn simple_mean_anomaly() {
