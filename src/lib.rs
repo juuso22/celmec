@@ -33,8 +33,8 @@ mod tests {
     #[test]
     fn simple_mean_anomaly() {
         assert_eq!(
-            array![PI, PI / 2.],
-            orbit::calculate_mean_anomaly(array![1., 0.5], 2., 0.)
+            array![-4., -5.],
+            orbit::calculate_mean_anomaly(array![1., 0.5], 2., 3.)
         );
     }
 

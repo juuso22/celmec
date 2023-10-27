@@ -27,7 +27,7 @@ pub fn calculate_true_anomaly_from_series(
     rotation_time: f64,
     periapsis_time: f64,
 ) -> Array1<f64> {
-    let mean_anomaly = calculate_mean_anomaly(t, rotation_time, periapsis_time);
+    let mean_anomaly = calculate_mean_anomaly(t, 2. * PI / rotation_time, periapsis_time);
     mean_anomaly.clone()
         + (2. * eccentricity - eccentricity.powf(3.) / 4.)
             * mean_anomaly.clone().mapv_into(|v| v.sin())
