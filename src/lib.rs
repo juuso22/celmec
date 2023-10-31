@@ -6,7 +6,45 @@ pub mod transformations;
 mod tests {
     use super::*;
     use ndarray::{array, Array1};
+    use std::collections::HashMap;
     use std::f64::consts::PI;
+
+    #[test]
+    fn non_converging_iterations() {
+        fn square(init_v: Array1<f64>, t: Array1<f64>, params: HashMap<&str, f64>) -> Array1<f64> {
+            init_v.mapv_into(|v| v.powf(2.)) + t
+        }
+        assert_eq!(
+            orbit::math::solve_equation_iteratively(
+                &square,
+                array![2.],
+                array![0.],
+                HashMap::new(),
+                0.1,
+                4
+            ),
+            array![65536.]
+        )
+    }
+
+    #[test]
+    fn converging_iterations() {
+        fn square(init_v: Array1<f64>, t: Array1<f64>, params: HashMap<&str, f64>) -> Array1<f64> {
+            -init_v.mapv_into(|v| v.powf(2.)) + t + 1.
+        }
+        let tolerance: f64 = 0.00000001;
+        assert!(
+            orbit::math::solve_equation_iteratively(
+                &square,
+                array![0.1],
+                array![0.],
+                HashMap::new(),
+                tolerance,
+                99
+            )[0] - 1.
+                < tolerance
+        )
+    }
 
     #[test]
     fn earth_eccentricity() {
