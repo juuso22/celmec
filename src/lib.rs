@@ -3,15 +3,14 @@ pub mod orbital_elements;
 pub mod transformations;
 
 #[cfg(test)]
-mod tests {
+mod math_tests {
     use super::*;
     use ndarray::{array, Array1};
     use std::collections::HashMap;
-    use std::f64::consts::PI;
 
     #[test]
     fn non_converging_iterations() {
-        fn square(init_v: Array1<f64>, t: Array1<f64>, params: HashMap<&str, f64>) -> Array1<f64> {
+        fn square(init_v: Array1<f64>, t: Array1<f64>, _params: HashMap<&str, f64>) -> Array1<f64> {
             init_v.mapv_into(|v| v.powf(2.)) + t
         }
         assert_eq!(
@@ -29,7 +28,7 @@ mod tests {
 
     #[test]
     fn converging_iterations() {
-        fn square(init_v: Array1<f64>, t: Array1<f64>, params: HashMap<&str, f64>) -> Array1<f64> {
+        fn square(init_v: Array1<f64>, t: Array1<f64>, _params: HashMap<&str, f64>) -> Array1<f64> {
             -init_v.mapv_into(|v| v.powf(2.)) + t + 1.
         }
         let tolerance: f64 = 0.00000001;
@@ -45,6 +44,13 @@ mod tests {
                 < tolerance
         )
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use ndarray::{array, Array1};
+    use std::f64::consts::PI;
 
     #[test]
     fn earth_eccentricity() {
