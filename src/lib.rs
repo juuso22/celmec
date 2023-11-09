@@ -15,8 +15,15 @@ mod math_tests {
             init_v.mapv_into(|v| v.powf(2.)) + t
         }
         assert_eq!(
-            solve_equation_iteratively(&square, array![2.], array![0.], HashMap::new(), 0.1, 4),
-            array![65536.]
+            solve_equation_iteratively(
+                &square,
+                array![2., 3.],
+                array![0., 0.],
+                HashMap::new(),
+                0.1,
+                4
+            ),
+            array![65536., 43046721.]
         )
     }
 
