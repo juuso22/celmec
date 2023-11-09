@@ -6,6 +6,7 @@ pub mod transformations;
 mod math_tests {
     use super::*;
     use ndarray::{array, Array1};
+    use orbit::math::*;
     use std::collections::HashMap;
 
     #[test]
@@ -14,14 +15,7 @@ mod math_tests {
             init_v.mapv_into(|v| v.powf(2.)) + t
         }
         assert_eq!(
-            orbit::math::solve_equation_iteratively(
-                &square,
-                array![2.],
-                array![0.],
-                HashMap::new(),
-                0.1,
-                4
-            ),
+            solve_equation_iteratively(&square, array![2.], array![0.], HashMap::new(), 0.1, 4),
             array![65536.]
         )
     }
@@ -33,7 +27,7 @@ mod math_tests {
         }
         let tolerance: f64 = 0.00000001;
         assert!(
-            orbit::math::solve_equation_iteratively(
+            solve_equation_iteratively(
                 &square,
                 array![0.1],
                 array![0.],
@@ -44,6 +38,18 @@ mod math_tests {
                 < tolerance
         )
     }
+
+    #[test]
+    fn cross_and_dot_product_combine_to_almost_zero() {
+        let a: Array1<f64> = array![2., -1.2, 1.];
+        let b: Array1<f64> = array![-5., 0.00023, -3.];
+        assert!((cross_product(a.clone(), b) * a).sum() < 1.0e-10)
+    }
+
+    #[test]
+    fn eculidean_norm_of_three_and_four_is_five() {
+        assert_eq!(euclidean_norm(array![3., 4., 0.]), 5.)
+    }
 }
 
 #[cfg(test)]
@@ -51,6 +57,16 @@ mod tests {
     use super::*;
     use ndarray::{array, Array1};
     use std::f64::consts::PI;
+
+    #[test]
+    fn k_dot_e_is_almost_zero() {
+        let r0: Array1<f64> = array![1., 3.2, 0.4];
+        let v0: Array1<f64> = array![-4., 0.002, 2.2];
+        let mu: f64 = 5.123;
+        let e: Array1<f64> = orbit::calculate_e(r0.clone(), v0.clone(), mu);
+        let k: Array1<f64> = orbit::math::cross_product(r0, v0);
+        assert!((e * k).sum() < 1.0e-10)
+    }
 
     #[test]
     fn earth_eccentricity() {
