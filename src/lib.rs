@@ -70,9 +70,9 @@ mod tests {
         let r0: Array1<f64> = array![1., 3.2, 0.4];
         let v0: Array1<f64> = array![-4., 0.002, 2.2];
         let mu: f64 = 5.123;
-        let e: Array1<f64> = orbit::calculate_e(r0.clone(), v0.clone(), mu);
+        let ee: Array1<f64> = orbit::calculate_ee(r0.clone(), v0.clone(), mu);
         let k: Array1<f64> = orbit::math::cross_product(r0, v0);
-        assert!((e * k).sum() < 1.0e-10)
+        assert!((ee * k).sum() < 1.0e-10)
     }
 
     #[test]
