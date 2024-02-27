@@ -121,13 +121,13 @@ mod tests {
     #[test]
     fn polar_angle_for_zero_inclination() {
         let inclination: f64 = 0.;
-        let argument_of_periapsis: f64 = 0.;
+        let omega: f64 = 0.;
         assert_eq!(
             array![PI / 2., PI / 2., PI / 2.],
             transformations::polar_angle_from_keplerian_elements(
                 array![1., 2., 3.],
                 inclination,
-                argument_of_periapsis
+                omega
             )
         );
     }
@@ -135,20 +135,20 @@ mod tests {
     #[test]
     fn azimuthal_angle_for_zero_inclination() {
         let inclination: f64 = 0.;
-        let argument_of_periapsis: f64 = 0.;
+        let omega: f64 = 0.;
         let longitude_of_the_ascending_node: f64 = 0.;
         let f: Array1<f64> = array![0., PI / 2., PI, 3. / 2. * PI];
         let polar_angle: Array1<f64> = transformations::polar_angle_from_keplerian_elements(
             f.clone(),
             inclination,
-            argument_of_periapsis,
+            omega,
         );
         assert_eq!(
             f.clone(),
             transformations::azimuthal_angle_from_keplerian_elements_and_polar_angle(
                 f,
                 polar_angle,
-                argument_of_periapsis,
+                omega,
                 longitude_of_the_ascending_node,
             )
         );
@@ -157,14 +157,14 @@ mod tests {
     #[test]
     fn polar_angle_for_pi_per_two_inclination() {
         let inclination: f64 = PI / 2.;
-        let argument_of_periapsis: f64 = 0.;
+        let omega: f64 = 0.;
         let f = orbit::calculate_f_from_series(Array1::linspace(0., 1., 10), 0., 1., 0.);
         let f_sin = f.clone().mapv_into(|v| v.sin());
         let polar_angle_opposite = PI / 2.
             - transformations::polar_angle_from_keplerian_elements(
                 f.clone(),
                 inclination,
-                argument_of_periapsis,
+                omega,
             );
         let polar_angle_opposite_sin = polar_angle_opposite.clone().mapv_into(|v| v.sin());
         assert!((f_sin - polar_angle_opposite_sin)
@@ -179,37 +179,37 @@ mod tests {
 
     #[test]
     fn azimuthal_angle_for_pi_longitude_of_ascending_node() {
-        let argument_of_periapsis: f64 = 0.;
+        let omega: f64 = 0.;
         let inclination: f64 = PI / 4.;
         let f: Array1<f64> =
             orbit::calculate_f_from_series(Array1::linspace(0., 1., 10), 0., 1., 0.);
         let polar_angle: Array1<f64> = transformations::polar_angle_from_keplerian_elements(
             f.clone(),
             inclination,
-            argument_of_periapsis,
+            omega,
         );
         let azimuthal_angle_zero_loan: Array1<f64> =
             transformations::azimuthal_angle_from_keplerian_elements_and_polar_angle(
                 f.clone(),
                 polar_angle.clone(),
-                argument_of_periapsis,
+                omega,
                 0.,
             );
         let azimuthal_angle_pi_loan: Array1<f64> =
             transformations::azimuthal_angle_from_keplerian_elements_and_polar_angle(
                 f.clone(),
                 polar_angle.clone(),
-                argument_of_periapsis,
+                omega,
                 PI,
             );
         assert_eq!(azimuthal_angle_zero_loan + PI, azimuthal_angle_pi_loan);
     }
 
     #[test]
-    fn azimuthal_angle_for_pi_argument_of_periapsis() {
+    fn azimuthal_angle_for_pi_omega() {
         let longitude_of_ascending_node: f64 = 0.;
         let inclination: f64 = PI / 4.;
-        let argument_of_periapsis: f64 = 0.;
+        let omega: f64 = 0.;
         let half_ticks: usize = 5;
         let ticks: usize = 2 * half_ticks;
         let f: Array1<f64> =
@@ -217,7 +217,7 @@ mod tests {
         let polar_angle: Array1<f64> = transformations::polar_angle_from_keplerian_elements(
             f.clone(),
             inclination,
-            argument_of_periapsis,
+            omega,
         );
         let azimuthal_angle_zero_aop: Array1<f64> =
             transformations::azimuthal_angle_from_keplerian_elements_and_polar_angle(
