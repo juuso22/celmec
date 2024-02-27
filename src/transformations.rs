@@ -2,12 +2,12 @@ use ndarray::Array1;
 use std::f64::consts::PI;
 
 pub fn polar_angle_from_keplerian_elements(
-    true_anomaly: Array1<f64>,
+    f: Array1<f64>,
     inclination: f64,
     argument_of_periapsis: f64,
 ) -> Array1<f64> {
     PI / 2.
-        - ((true_anomaly + argument_of_periapsis).mapv_into(|f| f.sin()) * inclination.sin())
+        - ((f + argument_of_periapsis).mapv_into(|f| f.sin()) * inclination.sin())
             .mapv_into(|f| f.asin())
 }
 
@@ -25,12 +25,12 @@ fn azimuthal_angle_refinment(
 }
 
 pub fn azimuthal_angle_from_keplerian_elements_and_polar_angle(
-    true_anomaly: Array1<f64>,
+    f: Array1<f64>,
     polar_angle: Array1<f64>,
     argument_of_periapsis: f64,
     longitude_of_the_ascending_node: f64,
 ) -> Array1<f64> {
-    let angle_from_ascending_node = true_anomaly.clone() + argument_of_periapsis;
+    let angle_from_ascending_node = f.clone() + argument_of_periapsis;
     let mut polar_angle_iterator = polar_angle.iter();
     let raw_azimuthal_angle: Array1<f64> = angle_from_ascending_node
         .mapv_into(|f| f.cos() / ((PI / 2.) - polar_angle_iterator.next().unwrap()).cos())
