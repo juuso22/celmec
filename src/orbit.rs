@@ -10,19 +10,19 @@ pub fn calculate_mu(m1: f64, m2: f64) -> f64 {
     gravitational_constant * (m1 + m2)
 }
 
-pub fn calculate_ee(position: Array1<f64>, velocity: Array1<f64>, mu: f64) -> Array1<f64> {
+pub fn calculate_ee(rr: Array1<f64>, velocity: Array1<f64>, mu: f64) -> Array1<f64> {
     let angular_momentum_per_unit_mass: Array1<f64> =
-        cross_product(position.clone(), velocity.clone());
+        cross_product(rr.clone(), velocity.clone());
     -cross_product(angular_momentum_per_unit_mass, velocity) / mu
-        - position.clone() / euclidean_norm(position)
+        - rr.clone() / euclidean_norm(rr)
 }
 
-pub fn calculate_e(position: Array1<f64>, velocity: Array1<f64>, mu: f64) -> f64 {
-    euclidean_norm(calculate_ee(position, velocity, mu))
+pub fn calculate_e(rr: Array1<f64>, velocity: Array1<f64>, mu: f64) -> f64 {
+    euclidean_norm(calculate_ee(rr, velocity, mu))
 }
 
-pub fn calculate_h(position: Array1<f64>, velocity: Array1<f64>, mu: f64) -> f64 {
-    0.5 * euclidean_norm(velocity).powf(2.) - mu / euclidean_norm(position)
+pub fn calculate_h(rr: Array1<f64>, velocity: Array1<f64>, mu: f64) -> f64 {
+    0.5 * euclidean_norm(velocity).powf(2.) - mu / euclidean_norm(rr)
 }
 
 pub fn calculate_a(mu: f64, h: f64, e: f64) -> f64 {
@@ -57,15 +57,15 @@ pub fn calculate_mean_anomaly_from_eccentric_anomaly(
 }
 
 pub fn calculate_initial_f_from_initial_conditions(
-    position: Array1<f64>,
+    rr: Array1<f64>,
     ee: Array1<f64>,
     e: f64,
 ) -> f64 {
-    let r_len: f64 = euclidean_norm(position.clone());
+    let r: f64 = euclidean_norm(rr.clone());
     let initial_f_cos: f64 =
-        (position.clone() * ee.clone()).sum() / r_len / e;
+        (rr.clone() * ee.clone()).sum() / r / e;
     // The following check implies sin of the true anomaly is negative, hence the angle is in the range (-PI, 0)
-    if euclidean_norm(cross_product(position, ee)) < 0. {
+    if euclidean_norm(cross_product(rr, ee)) < 0. {
         return -initial_f_cos.acos();
     }
     initial_f_cos.acos()
