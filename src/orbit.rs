@@ -37,8 +37,8 @@ pub fn calculate_n(mu: f64, a: f64) -> f64 {
     mu.sqrt() * a.powf(-3. / 2.)
 }
 
-pub fn calculate_mean_anomaly(t: Array1<f64>, n: f64, periapsis_time: f64) -> Array1<f64> {
-    n * (t - periapsis_time)
+pub fn calculate_mean_anomaly(t: Array1<f64>, n: f64, tau: f64) -> Array1<f64> {
+    n * (t - tau)
 }
 
 pub fn calculate_mean_anomaly_from_eccentric_anomaly(
@@ -95,7 +95,7 @@ pub fn calculate_eccentric_anomaly_from_f(
     }
 }
 
-pub fn calculate_periapsis_time(t: f64, mean_anomaly: f64, n: f64) -> f64 {
+pub fn calculate_tau(t: f64, mean_anomaly: f64, n: f64) -> f64 {
     t - mean_anomaly / n
 }
 
@@ -105,7 +105,7 @@ fn kepler_eq_iterative_step(
     parameters: HashMap<&str, f64>,
 ) -> Array1<f64> {
     parameters["e"] * eccentric_anomaly.mapv_into(|v| v.sin())
-        + parameters["n"] * (time - parameters["periapsis_time"])
+        + parameters["n"] * (time - parameters["tau"])
 }
 
 fn hyperbolic_kepler_eq_iterative_step(
@@ -113,7 +113,7 @@ fn hyperbolic_kepler_eq_iterative_step(
     time: Array1<f64>,
     parameters: HashMap<&str, f64>,
 ) -> Array1<f64> {
-    let mean_anomaly: Array1<f64> = parameters["n"] * (time - parameters["periapsis_time"]);
+    let mean_anomaly: Array1<f64> = parameters["n"] * (time - parameters["tau"]);
     let f: Array1<f64> = parameters["e"]
         * hyperbolic_anomaly.clone().mapv_into(|v| v.sinh())
         - hyperbolic_anomaly.clone()
@@ -122,7 +122,7 @@ fn hyperbolic_kepler_eq_iterative_step(
         parameters["e"] * hyperbolic_anomaly.clone().mapv_into(|v| v.cosh()) - 1.;
     hyperbolic_anomaly - f / df_dh
     //    parameters["e"] * eccentric_anomaly.mapv_into(|v| v.sinh())
-    //        + parameters["n"] * (time - parameters["periapsis_time"])
+    //        + parameters["n"] * (time - parameters["tau"])
 }
 
 fn barker_eq_iterative_step(
@@ -130,7 +130,7 @@ fn barker_eq_iterative_step(
     time: Array1<f64>,
     parameters: HashMap<&str, f64>,
 ) -> Array1<f64> {
-    2. * parameters["n"] * (time - parameters["periapsis_time"])
+    2. * parameters["n"] * (time - parameters["tau"])
         - eccentric_anomaly.mapv_into(|v| v.powf(3.)) / 3.
 }
 
@@ -141,12 +141,12 @@ pub fn calculate_eccentric_anomaly_from_kepler_equation(
     max_iterations: usize,
     n: f64,
     e: f64,
-    periapsis_time: f64,
+    tau: f64,
 ) -> Array1<f64> {
     let parameters: HashMap<&str, f64> = HashMap::from([
         ("n", n),
         ("e", e),
-        ("periapsis_time", periapsis_time),
+        ("tau", tau),
     ]);
     if e > 1. {
         solve_equation_iteratively(
@@ -168,7 +168,7 @@ pub fn calculate_eccentric_anomaly_from_kepler_equation(
         )
     } else if (e < 1.) && (e >= 0.) {
         //        let initial_value: Array1<f64> = t.clone().mapv_into(|v| {
-        //            e * (n * v - periapsis_time).sin() / (1. - e * (n * (v - periapsis_time)).cos())
+        //            e * (n * v - tau).sin() / (1. - e * (n * (v - tau)).cos())
         //        });
         solve_equation_iteratively(
             &kepler_eq_iterative_step,
@@ -187,9 +187,9 @@ pub fn calculate_f_from_series(
     t: Array1<f64>,
     e: f64,
     rotation_time: f64,
-    periapsis_time: f64,
+    tau: f64,
 ) -> Array1<f64> {
-    let mean_anomaly = calculate_mean_anomaly(t, 2. * PI / rotation_time, periapsis_time);
+    let mean_anomaly = calculate_mean_anomaly(t, 2. * PI / rotation_time, tau);
     mean_anomaly.clone()
         + (2. * e - e.powf(3.) / 4.)
             * mean_anomaly.clone().mapv_into(|v| v.sin())
