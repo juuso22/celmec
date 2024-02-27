@@ -115,10 +115,10 @@ mod tests {
 
     #[test]
     fn radius_from_true_anomaly_with_zero_eccentricity() {
-        let semimajor_axis: f64 = 1.;
+        let a: f64 = 1.;
         assert_eq!(
-            array![semimajor_axis],
-            orbit::calculate_radius_from_true_anomaly(array![3.], 0., semimajor_axis)
+            array![a],
+            orbit::calculate_radius_from_true_anomaly(array![3.], 0., a)
         );
     }
 

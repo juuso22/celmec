@@ -223,8 +223,8 @@ pub fn calculate_true_anomaly_from_eccentric_anomaly(
 pub fn calculate_radius_from_true_anomaly(
     true_anomaly: Array1<f64>,
     eccentricity: f64,
-    semimajor_axis: f64,
+    a: f64,
 ) -> Array1<f64> {
-    semimajor_axis * (1. - eccentricity.powf(2.)).abs()
+    a * (1. - eccentricity.powf(2.)).abs()
         / (1. + eccentricity * true_anomaly.mapv_into(|v| v.cos()))
 }
