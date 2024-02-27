@@ -10,19 +10,19 @@ pub fn calculate_mu(m1: f64, m2: f64) -> f64 {
     gravitational_constant * (m1 + m2)
 }
 
-pub fn calculate_ee(rr: Array1<f64>, velocity: Array1<f64>, mu: f64) -> Array1<f64> {
+pub fn calculate_ee(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> Array1<f64> {
     let angular_momentum_per_unit_mass: Array1<f64> =
-        cross_product(rr.clone(), velocity.clone());
-    -cross_product(angular_momentum_per_unit_mass, velocity) / mu
+        cross_product(rr.clone(), vv.clone());
+    -cross_product(angular_momentum_per_unit_mass, vv) / mu
         - rr.clone() / euclidean_norm(rr)
 }
 
-pub fn calculate_e(rr: Array1<f64>, velocity: Array1<f64>, mu: f64) -> f64 {
-    euclidean_norm(calculate_ee(rr, velocity, mu))
+pub fn calculate_e(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> f64 {
+    euclidean_norm(calculate_ee(rr, vv, mu))
 }
 
-pub fn calculate_h(rr: Array1<f64>, velocity: Array1<f64>, mu: f64) -> f64 {
-    0.5 * euclidean_norm(velocity).powf(2.) - mu / euclidean_norm(rr)
+pub fn calculate_h(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> f64 {
+    0.5 * euclidean_norm(vv).powf(2.) - mu / euclidean_norm(rr)
 }
 
 pub fn calculate_a(mu: f64, h: f64, e: f64) -> f64 {
