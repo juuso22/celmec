@@ -35,7 +35,7 @@ Note in the above, that when same letter is usually used for a scalar and a vect
 
 1. Make open source and publish as crate
 2. Parallellize 2-body problem
-3. Configurable number of Fourier series terms and iterative Kepler equation solving for true anomaly
+3. Configurable number of Fourier series terms
 4. First order perturbations
 5. Gauss's orbit determination method
 
