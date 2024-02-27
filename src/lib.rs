@@ -91,8 +91,7 @@ mod tests {
                 < 0.0005
         );
         assert!(
-            orbit::calculate_e(earth_periapsis, earth_orbital_velocity_at_periapsis, mu)
-                - 0.0167
+            orbit::calculate_e(earth_periapsis, earth_orbital_velocity_at_periapsis, mu) - 0.0167
                 > -0.0005
         );
     }
@@ -116,10 +115,7 @@ mod tests {
     #[test]
     fn radius_from_f_with_zero_e() {
         let a: f64 = 1.;
-        assert_eq!(
-            array![a],
-            orbit::calculate_radius_from_f(array![3.], 0., a)
-        );
+        assert_eq!(array![a], orbit::calculate_radius_from_f(array![3.], 0., a));
     }
 
     #[test]
@@ -162,8 +158,7 @@ mod tests {
     fn polar_angle_for_pi_per_two_inclination() {
         let inclination: f64 = PI / 2.;
         let argument_of_periapsis: f64 = 0.;
-        let f =
-            orbit::calculate_f_from_series(Array1::linspace(0., 1., 10), 0., 1., 0.);
+        let f = orbit::calculate_f_from_series(Array1::linspace(0., 1., 10), 0., 1., 0.);
         let f_sin = f.clone().mapv_into(|v| v.sin());
         let polar_angle_opposite = PI / 2.
             - transformations::polar_angle_from_keplerian_elements(
@@ -177,11 +172,9 @@ mod tests {
             .fold(true, |a, b| a && *b));
         let f_cos = f.clone().mapv_into(|v| v.cos());
         let polar_angle_opposite_cos = polar_angle_opposite.clone().mapv_into(|v| v.cos());
-        assert!(
-            (f_cos.mapv_into(|v| v.abs()) - polar_angle_opposite_cos)
-                .mapv_into_any(|v| v < 0.00000001 && v > -0.00000001)
-                .fold(true, |a, b| a && *b)
-        );
+        assert!((f_cos.mapv_into(|v| v.abs()) - polar_angle_opposite_cos)
+            .mapv_into_any(|v| v < 0.00000001 && v > -0.00000001)
+            .fold(true, |a, b| a && *b));
     }
 
     #[test]
