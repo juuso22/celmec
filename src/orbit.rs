@@ -56,32 +56,32 @@ pub fn calculate_mean_anomaly_from_eccentric_anomaly(
     }
 }
 
-pub fn calculate_initial_true_anomaly_from_initial_conditions(
+pub fn calculate_initial_f_from_initial_conditions(
     position: Array1<f64>,
     ee: Array1<f64>,
     e: f64,
 ) -> f64 {
     let r_len: f64 = euclidean_norm(position.clone());
-    let initial_true_anomaly_cos: f64 =
+    let initial_f_cos: f64 =
         (position.clone() * ee.clone()).sum() / r_len / e;
     // The following check implies sin of the true anomaly is negative, hence the angle is in the range (-PI, 0)
     if euclidean_norm(cross_product(position, ee)) < 0. {
-        return -initial_true_anomaly_cos.acos();
+        return -initial_f_cos.acos();
     }
-    initial_true_anomaly_cos.acos()
+    initial_f_cos.acos()
 }
 
-pub fn calculate_eccentric_anomaly_from_true_anomaly(
-    true_anomaly: Array1<f64>,
+pub fn calculate_eccentric_anomaly_from_f(
+    f: Array1<f64>,
     e: f64,
 ) -> Array1<f64> {
     if e > 1. {
-        let true_anomaly_cos: Array1<f64> = true_anomaly.mapv_into(|v| v.cos());
+        let f_cos: Array1<f64> = f.mapv_into(|v| v.cos());
         let hyperbolic_anomaly_cosh: Array1<f64> =
-            (true_anomaly_cos.clone() + e) / (1. + true_anomaly_cos * e);
+            (f_cos.clone() + e) / (1. + f_cos * e);
         hyperbolic_anomaly_cosh.mapv_into(|v| v.acosh())
     } else if (e >= 0.) && (e < 1.) {
-        let eccentric_anomaly_cos: Array1<(f64, f64)> = true_anomaly.mapv_into_any(|v| {
+        let eccentric_anomaly_cos: Array1<(f64, f64)> = f.mapv_into_any(|v| {
             (
                 v.sin().signum(),
                 (v.cos() + e) / (1. + e * v.cos()),
@@ -89,7 +89,7 @@ pub fn calculate_eccentric_anomaly_from_true_anomaly(
         });
         eccentric_anomaly_cos.mapv_into_any(|v| v.0 * v.1.acos())
     } else if e == 1. {
-        (true_anomaly / 2.).mapv_into(|v| v.tan())
+        (f / 2.).mapv_into(|v| v.tan())
     } else {
         panic!("Eccentricity cannot be negative!")
     }
@@ -183,7 +183,7 @@ pub fn calculate_eccentric_anomaly_from_kepler_equation(
     }
 }
 
-pub fn calculate_true_anomaly_from_series(
+pub fn calculate_f_from_series(
     t: Array1<f64>,
     e: f64,
     rotation_time: f64,
@@ -197,7 +197,7 @@ pub fn calculate_true_anomaly_from_series(
         + (13. * e.powf(3.) / 12.) * (3. * mean_anomaly.clone()).mapv_into(|v| v.sin())
 }
 
-pub fn calculate_true_anomaly_from_eccentric_anomaly(
+pub fn calculate_f_from_eccentric_anomaly(
     eccentric_anomaly: Array1<f64>,
     e: f64,
 ) -> Array1<f64> {
@@ -207,13 +207,13 @@ pub fn calculate_true_anomaly_from_eccentric_anomaly(
         .mapv_into(|v| v.atan())
             * 2.
     } else if (e < 1.) && (e >= 0.) {
-        let true_anomaly_cos: Array1<(f64, f64)> = eccentric_anomaly.mapv_into_any(|v| {
+        let f_cos: Array1<(f64, f64)> = eccentric_anomaly.mapv_into_any(|v| {
             (
                 v.sin().signum(),
                 (v.cos() - e) / (1. - e * v.cos()),
             )
         });
-        true_anomaly_cos.mapv_into_any(|v| v.0 * v.1.acos())
+        f_cos.mapv_into_any(|v| v.0 * v.1.acos())
     } else if e == 1. {
         eccentric_anomaly.mapv_into(|v| v.atan()) / 2.
     } else {
@@ -221,11 +221,11 @@ pub fn calculate_true_anomaly_from_eccentric_anomaly(
     }
 }
 
-pub fn calculate_radius_from_true_anomaly(
-    true_anomaly: Array1<f64>,
+pub fn calculate_radius_from_f(
+    f: Array1<f64>,
     e: f64,
     a: f64,
 ) -> Array1<f64> {
     a * (1. - e.powf(2.)).abs()
-        / (1. + e * true_anomaly.mapv_into(|v| v.cos()))
+        / (1. + e * f.mapv_into(|v| v.cos()))
 }

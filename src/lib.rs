@@ -106,19 +106,19 @@ mod tests {
     }
 
     #[test]
-    fn simple_true_anomaly_from_series() {
+    fn simple_f_from_series() {
         assert_eq!(
             array![PI, PI / 2. + 1.75 - 13. / 12.],
-            orbit::calculate_true_anomaly_from_series(array![1., 0.5], 1., 2., 0.)
+            orbit::calculate_f_from_series(array![1., 0.5], 1., 2., 0.)
         );
     }
 
     #[test]
-    fn radius_from_true_anomaly_with_zero_e() {
+    fn radius_from_f_with_zero_e() {
         let a: f64 = 1.;
         assert_eq!(
             array![a],
-            orbit::calculate_radius_from_true_anomaly(array![3.], 0., a)
+            orbit::calculate_radius_from_f(array![3.], 0., a)
         );
     }
 
@@ -141,16 +141,16 @@ mod tests {
         let inclination: f64 = 0.;
         let argument_of_periapsis: f64 = 0.;
         let longitude_of_the_ascending_node: f64 = 0.;
-        let true_anomaly: Array1<f64> = array![0., PI / 2., PI, 3. / 2. * PI];
+        let f: Array1<f64> = array![0., PI / 2., PI, 3. / 2. * PI];
         let polar_angle: Array1<f64> = transformations::polar_angle_from_keplerian_elements(
-            true_anomaly.clone(),
+            f.clone(),
             inclination,
             argument_of_periapsis,
         );
         assert_eq!(
-            true_anomaly.clone(),
+            f.clone(),
             transformations::azimuthal_angle_from_keplerian_elements_and_polar_angle(
-                true_anomaly,
+                f,
                 polar_angle,
                 argument_of_periapsis,
                 longitude_of_the_ascending_node,
@@ -162,23 +162,23 @@ mod tests {
     fn polar_angle_for_pi_per_two_inclination() {
         let inclination: f64 = PI / 2.;
         let argument_of_periapsis: f64 = 0.;
-        let true_anomaly =
-            orbit::calculate_true_anomaly_from_series(Array1::linspace(0., 1., 10), 0., 1., 0.);
-        let true_anomaly_sin = true_anomaly.clone().mapv_into(|v| v.sin());
+        let f =
+            orbit::calculate_f_from_series(Array1::linspace(0., 1., 10), 0., 1., 0.);
+        let f_sin = f.clone().mapv_into(|v| v.sin());
         let polar_angle_opposite = PI / 2.
             - transformations::polar_angle_from_keplerian_elements(
-                true_anomaly.clone(),
+                f.clone(),
                 inclination,
                 argument_of_periapsis,
             );
         let polar_angle_opposite_sin = polar_angle_opposite.clone().mapv_into(|v| v.sin());
-        assert!((true_anomaly_sin - polar_angle_opposite_sin)
+        assert!((f_sin - polar_angle_opposite_sin)
             .mapv_into_any(|v| v < 0.00000001 && v > -0.00000001)
             .fold(true, |a, b| a && *b));
-        let true_anomaly_cos = true_anomaly.clone().mapv_into(|v| v.cos());
+        let f_cos = f.clone().mapv_into(|v| v.cos());
         let polar_angle_opposite_cos = polar_angle_opposite.clone().mapv_into(|v| v.cos());
         assert!(
-            (true_anomaly_cos.mapv_into(|v| v.abs()) - polar_angle_opposite_cos)
+            (f_cos.mapv_into(|v| v.abs()) - polar_angle_opposite_cos)
                 .mapv_into_any(|v| v < 0.00000001 && v > -0.00000001)
                 .fold(true, |a, b| a && *b)
         );
@@ -188,23 +188,23 @@ mod tests {
     fn azimuthal_angle_for_pi_longitude_of_ascending_node() {
         let argument_of_periapsis: f64 = 0.;
         let inclination: f64 = PI / 4.;
-        let true_anomaly: Array1<f64> =
-            orbit::calculate_true_anomaly_from_series(Array1::linspace(0., 1., 10), 0., 1., 0.);
+        let f: Array1<f64> =
+            orbit::calculate_f_from_series(Array1::linspace(0., 1., 10), 0., 1., 0.);
         let polar_angle: Array1<f64> = transformations::polar_angle_from_keplerian_elements(
-            true_anomaly.clone(),
+            f.clone(),
             inclination,
             argument_of_periapsis,
         );
         let azimuthal_angle_zero_loan: Array1<f64> =
             transformations::azimuthal_angle_from_keplerian_elements_and_polar_angle(
-                true_anomaly.clone(),
+                f.clone(),
                 polar_angle.clone(),
                 argument_of_periapsis,
                 0.,
             );
         let azimuthal_angle_pi_loan: Array1<f64> =
             transformations::azimuthal_angle_from_keplerian_elements_and_polar_angle(
-                true_anomaly.clone(),
+                f.clone(),
                 polar_angle.clone(),
                 argument_of_periapsis,
                 PI,
@@ -219,23 +219,23 @@ mod tests {
         let argument_of_periapsis: f64 = 0.;
         let half_ticks: usize = 5;
         let ticks: usize = 2 * half_ticks;
-        let true_anomaly: Array1<f64> =
-            orbit::calculate_true_anomaly_from_series(Array1::linspace(0., 1., ticks), 0., 1., 0.);
+        let f: Array1<f64> =
+            orbit::calculate_f_from_series(Array1::linspace(0., 1., ticks), 0., 1., 0.);
         let polar_angle: Array1<f64> = transformations::polar_angle_from_keplerian_elements(
-            true_anomaly.clone(),
+            f.clone(),
             inclination,
             argument_of_periapsis,
         );
         let azimuthal_angle_zero_aop: Array1<f64> =
             transformations::azimuthal_angle_from_keplerian_elements_and_polar_angle(
-                true_anomaly.clone(),
+                f.clone(),
                 polar_angle.clone(),
                 0.,
                 longitude_of_ascending_node,
             );
         let azimuthal_angle_pi_aop: Array1<f64> =
             transformations::azimuthal_angle_from_keplerian_elements_and_polar_angle(
-                true_anomaly.clone(),
+                f.clone(),
                 polar_angle.clone(),
                 PI,
                 longitude_of_ascending_node,
