@@ -1,0 +1,6 @@
+[book]
+authors = ["Juuso Terävä"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Celmec"

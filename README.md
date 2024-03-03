@@ -7,35 +7,26 @@ Currently it contains the functionality to solve the time evolution of a two-bod
 1. The masses of the bodies id known and the initial position and velocity of the other body relative to the "reference frame body" are known.
 2. The orbital (Keplerian) elements of the other body are known.
 
-The code attempts to use the following abbreviations:
+## Usage pre-requisites
 
-```
-a - semi-major axis
-ee - vector pointing towards the perihelion
-e - eccentricity (euclidean norm of ee)
-f - true anomaly
-h - energy integral (freely translated from Finnish 'energiaintegraali' used in Johdatus Taivaanmekaniikkaan by Karttunen, 2020)
-kk - angular momentum vector
-k - angular momentum scalar (euclidean norm of kk)
-m - mass
-n - average angular velocity
-rr - position vector
-r - distance (euclidean norm of rr)
-vv - velocity vector
-v - velocity (euclidean norm of vv)
-t - time
-iota - inclination
-tau - perihelion time
-omega - argument of periapsis
-```
+Having rust installed.
 
-Note in the above, that when same letter is usually used for a scalar and a vector, the letter is doubled for the vector in the code.
+## Documentation
+
+To access the documentation, do the following:
+
+1. Install `mdbook`. (`cargo install mdbook`, I think)
+2. Navigate to `docs/celmec`
+3. `mdbook serve --open`
+4. In your browser, go to `localhost:3000`
 
 ## TODO
 
-1. Make open source and publish as crate
-2. Parallellize 2-body problem
-3. Configurable number of Fourier series terms
+(Not necessarily in the order they're going to be done)
+
+1. Parallellize 2-body problem
+2. Configurable number of Fourier series terms
+3. Publish as crate
 4. First order perturbations
 5. Gauss's orbit determination method
 
