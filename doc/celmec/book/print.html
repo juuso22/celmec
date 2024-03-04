@@ -191,6 +191,7 @@
 <div style="break-before: page; page-break-before: always;"></div><h1 id="quickstart"><a class="header" href="#quickstart">Quickstart</a></h1>
 <p>As a quickstart example, we'll use celmec calculate the idealized 2-body problem orbit of <a href="https://en.wikipedia.org/wiki/Halley%27s_Comet">Halley's comet</a> from its Keplerian elements as given by Wikipedia.</p>
 <p>We'll first walkthrough the creation of a program that does the calculation, but for the impatient, the final result is available at the end of this page.</p>
+<h2 id="walking-through-the-example"><a class="header" href="#walking-through-the-example">Walking through the example</a></h2>
 <p>First init a new rust project called <code>halleys-comet</code>:</p>
 <pre><code>cargo init halleys-comet
 </code></pre>
@@ -199,7 +200,7 @@
 ndarray = &quot;0.15.6&quot; #Or choose your preferred version
 </code></pre>
 <p>Then we can start editing the project's <code>src/main.rs</code>. First, remove the default content and import the following from <code>ndarray</code> </p>
-<pre><code>use ndarray::Array1
+<pre><code>use ndarray::{Array, Array1}
 </code></pre>
 <p>Then import the following from celmec:</p>
 <pre><code>use celmec::orbital_elements
@@ -225,17 +226,115 @@ omega - argument of periapsis
 <p>Next, we need some mote imports from celmec to actually calculate something using the orbital elements:</p>
 <pre><code>use celmec::{orbit, orbital_elements};
 </code></pre>
-<p>The <code>orbit</code> module has functions to calculate properties of the orbit and/or time evolution of various quantities. We'll first calculate the time evolution of true anomaly (denoted <code>f</code>) from the Keplerian elemnts. We'll cheat a little and choose the time interval for which calculate from <code>tau</code> to <code>tau</code> + the time of one rotation of the comet around the sun to see a nice full ellipsis. The time of the rotation we look up again from Wikipedia:</p>
-<pre><code>    let rotation_time = 2379801600.; #This is seconds
-    let time: Array1&lt;f64&gt; = Array::linspace(halleys_keplerian_elements.tau, halleys_keplerian_elements.tau + rotation_time, 200);
-    let true_anomaly: Array1&lt;f64&gt; = orbit::calculate_f_from_series(
+<p>The <code>orbit</code> module has functions to calculate properties of the orbit and/or time evolution of various quantities. We'll first calculate the time evolution of true anomaly (denoted <code>f</code>) from the Keplerian elemnts. We'll cheat a little and choose the time interval for which calculate from <code>tau</code> to <code>tau</code> + the time of one rotation of the comet around the sun to see a nice full ellipsis. The time of the rotation we look up again from Wikipedia and convert it to seconds:</p>
+<pre><code>    let ticks = 200;
+    let rotation_time = 2379801600.;
+    let time: Array1&lt;f64&gt; = Array::linspace(halleys_keplerian_elements.tau, halleys_keplerian_elements.tau + rotation_time, ticks);
+    let f: Array1&lt;f64&gt; = orbit::calculate_f_from_series(
         time.clone(),
         halleys_keplerian_elements.e,
         rotation_time,
         halleys_keplerian_elements.tau,
     );
 </code></pre>
-<p>TODO: explain &quot;series&quot; and write the rest.</p>
+<p>Here series refers to the Fourier series. The array <code>f</code> represents the true anomaly at each point of time we are calculating for.</p>
+<p>From true anomaly and the Keplerian elemnts, polar coordinates (with Sun at the origin) be calculated over our chosen time interval <code>time</code>. First we need to add another import, though:</p>
+<pre><code>use celmec::{orbit, orbital_elements, transformations};
+</code></pre>
+<p>Then we can calculate:</p>
+<pre><code>    let radius = orbit::calculate_radius_from_f(
+        f.clone(),
+        halleys_keplerian_elements.e,
+        halleys_keplerian_elements.a,
+    );
+    let polar_angle = transformations::polar_angle_from_keplerian_elements(
+        f.clone(),
+        halleys_keplerian_elements.iota,
+        halleys_keplerian_elements.omega,
+    );
+</code></pre>
+<p>Let's write the polar coordinates and time into a file. First some imports:</p>
+<pre><code>use std::fs::File;
+use std::io::Write;
+</code></pre>
+<p>The the actual writing:</p>
+<pre><code>    let mut coordinate_file = File::create(&quot;halleys_polar_coordinates.csv&quot;).unwrap();
+    write!(coordinate_file, &quot;t,radius,polar_angle\n&quot;).unwrap();
+    for i in 0..=(ticks - 1) {
+        write!(
+            coordinate_file,
+            &quot;{},{},{}\n&quot;,
+            time[i], radius[i], polar_angle[i]
+        )
+        .unwrap();
+    }
+</code></pre>
+<h2 id="final-rust-code"><a class="header" href="#final-rust-code">Final rust code</a></h2>
+<p><code>Cargo.toml</code>:</p>
+<pre><code>[package]
+name = &quot;halleys-comet&quot;
+version = &quot;0.1.0&quot;
+edition = &quot;2021&quot;
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ndarray = &quot;0.15.6&quot;
+celmec = { git = &quot;https://github.com/juuso22/celmec.git&quot; }
+</code></pre>
+<p><code>src/main.rs</code>:</p>
+<pre><code>use celmec::{orbit, orbital_elements, transformations};
+use ndarray::{Array, Array1};
+use std::fs::File;
+use std::io::Write;
+
+fn main() {
+    let halleys_keplerian_elements = orbital_elements::KeplerianElements {
+        e: 0.96658,
+        longitude_of_the_ascending_node: 1.03665,
+        tau: 0.,
+        a: 2.65342e12,
+        iota: 2.82673,
+        omega: 1.95564,
+    };
+
+    let ticks = 200;
+    let rotation_time: f64 = 2379801600.;
+    let time: Array1&lt;f64&gt; = Array::linspace(
+        halleys_keplerian_elements.tau,
+        halleys_keplerian_elements.tau + rotation_time,
+        ticks,
+    );
+    let f: Array1&lt;f64&gt; = orbit::calculate_f_from_series(
+        time.clone(),
+        halleys_keplerian_elements.e,
+        rotation_time,
+        halleys_keplerian_elements.tau,
+    );
+
+    let radius = orbit::calculate_radius_from_f(
+        f.clone(),
+        halleys_keplerian_elements.e,
+        halleys_keplerian_elements.a,
+    );
+    let polar_angle = transformations::polar_angle_from_keplerian_elements(
+        f.clone(),
+        halleys_keplerian_elements.iota,
+        halleys_keplerian_elements.omega,
+    );
+
+    let mut coordinate_file = File::create(&quot;halleys_polar_coordinates.csv&quot;).unwrap();
+    write!(coordinate_file, &quot;t,radius,polar_angle\n&quot;).unwrap();
+    for i in 0..=(ticks - 1) {
+        write!(
+            coordinate_file,
+            &quot;{},{},{}\n&quot;,
+            time[i], radius[i], polar_angle[i]
+        )
+        .unwrap();
+    }
+}
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="underlying-physics"><a class="header" href="#underlying-physics">Underlying Physics</a></h1>
 <p>This chapter describes the physics used in celmec.</p>
 <p>Currently almost everything comes from &quot;Johdatus Taivaanmekaniikkaan&quot; from Karttunen (2020) unless explicitly otherwise cited.</p>
