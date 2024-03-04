@@ -3,11 +3,11 @@ use std::f64::consts::PI;
 
 pub fn polar_angle_from_keplerian_elements(
     f: Array1<f64>,
-    inclination: f64,
+    iota: f64,
     omega: f64,
 ) -> Array1<f64> {
     PI / 2.
-        - ((f + omega).mapv_into(|f| f.sin()) * inclination.sin())
+        - ((f + omega).mapv_into(|f| f.sin()) * iota.sin())
             .mapv_into(|f| f.asin())
 }
 

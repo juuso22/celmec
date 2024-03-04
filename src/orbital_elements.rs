@@ -3,6 +3,6 @@ pub struct KeplerianElements {
     pub longitude_of_the_ascending_node: f64,
     pub tau: f64,
     pub a: f64,
-    pub inclination: f64,
+    pub iota: f64,
     pub omega: f64,
 }
