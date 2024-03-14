@@ -134,7 +134,7 @@ fn barker_eq_iterative_step(
         - eccentric_anomaly.mapv_into(|v| v.powf(3.)) / 3.
 }
 
-pub fn calculate_eccentric_anomaly_from_kepler_equation(
+pub fn calculate_eccentric_anomaly_iteratively(
     t: Array1<f64>,
     initial_value: Array1<f64>,
     tolerance: f64,
