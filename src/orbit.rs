@@ -5,30 +5,94 @@ use std::f64::consts::PI;
 
 pub mod math;
 
+/// Gravitational constant in SI units
+pub const G: f64 = 6.67430e-11;
+
+/// Calculates μ (mu) from two masses m1 and m2.
+///
+/// μ = (m1 + m2) * [`G`],
+///
+/// where
+///
+/// G = gravitational constant
+///
+/// μ can be used to calculate the gravitational force between the 2 masses if the distance r between them is known:
+///
+/// ```
+/// let m1 = 10;
+/// let m2 = 20;
+/// let r = 100;
+/// let force = calculate_mu(m1, m2) / r.powf(2.);
+/// ```
 pub fn calculate_mu(m1: f64, m2: f64) -> f64 {
-    let gravitational_constant: f64 = 6.67430 * (10_f64).powf(-11.);
-    gravitational_constant * (m1 + m2)
+    G * (m1 + m2)
 }
 
+/// Calculates vector **e** between 2 bodies.
+///
+/// This is the constant vector whose length gives the [eccentricity e](`calculate_e`) of an orbit for the 2-body problem.
+///
+/// **e** = - (**r** x **v**) / μ - **r** / r,
+///
+/// where
+///
+/// **r** = position of the 2 bodies relative to each other at some point in time,
+///
+/// **v** = velocity of the 2 bodies relative to each other at the same point of time as **r**
+///
+/// μ = see [μ](`calculate_mu`)
+///
+/// r = |**r**|
+///
+/// Inputs are a position **r** (`rr`) and the velocity **v** (`vv`) of the 2 bodies with respect to each other at any one point of time as well as their [μ](`calculate_mu`).
 pub fn calculate_ee(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> Array1<f64> {
     let angular_momentum_per_unit_mass: Array1<f64> = cross_product(rr.clone(), vv.clone());
     -cross_product(angular_momentum_per_unit_mass, vv) / mu - rr.clone() / euclidean_norm(rr)
 }
 
+/// Calculates eccentricity of an orbit for 2 bodies.
+///
+/// Calculates eccentricity e from its definition as the length of the vector **e** (`ee`).
+///
+/// Inputs are a position **r** (`rr`) and the velocity **v** (`vv`) of the 2 bodies with respect to each other at any one point of time as well as their [μ](`calculate_mu`).
 pub fn calculate_e(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> f64 {
     euclidean_norm(calculate_ee(rr, vv, mu))
 }
 
+/// Calculates the Lagrangian h of a 2-body system.
+///
+/// For a Newtonian 2-body system the Lagrangian is the difference between the kinetic and the potential energy of the system:
+///
+/// h = 0.5 * |**v**|<sup>2</sup> - μ / |**r**|,
+///
+/// **r** = position of the 2 bodies relative to each other at some point in time,
+///
+/// **v** = velocity of the 2 bodies relative to each other at the same point of time as **r**
+///
+/// μ = see [μ](`calculate_mu`)
+///
+/// Inputs are a position **r** (`rr`) and the velocity **v** (`vv`) of the 2 bodies with respect to each other at any one point of time as well as their [μ](`calculate_mu`).
 pub fn calculate_h(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> f64 {
     0.5 * euclidean_norm(vv).powf(2.) - mu / euclidean_norm(rr)
 }
 
-pub fn calculate_a(mu: f64, h: f64, e: f64) -> f64 {
-    let mut sign: f64 = -1.;
-    if e > 1. {
-        sign = 1.;
+/// Calculates the semi-major axis a of a 2-body system
+///
+/// a = μ / (2 * h), if h >= 0 and -μ / (2 * h) otherwise,
+///
+/// where
+///
+/// μ = see [μ](`calculate_mu`)
+///
+/// h = Lagrangian of the system ie. the difference between its kinetic and potential energy.
+///
+/// Inputs are [μ](`calculate_mu`) and Lagrangian [h](`calculate_h`) of the system.
+pub fn calculate_a(mu: f64, h: f64) -> f64 {
+    let mut a: f64 = mu / 2. / h;
+    if h < 0. {
+        a = -1. * a;
     }
-    sign * mu / 2. / h
+    a
 }
 
 pub fn calculate_n(mu: f64, a: f64) -> f64 {
