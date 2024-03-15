@@ -7,6 +7,7 @@ a - semi-major axis
 ee - vector pointing towards the perihelion
 e - eccentricity (euclidean norm of ee)
 f - true anomaly
+G - gravitational constant
 h - energy integral (freely translated from Finnish 'energiaintegraali' used in Johdatus Taivaanmekaniikkaan by Karttunen, 2020)
 kk - angular momentum vector
 k - angular momentum scalar (euclidean norm of kk)
