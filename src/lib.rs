@@ -1,5 +1,16 @@
+/// This module contains functions to calculate various properties of orbits.
+///
+/// It is currently limited to deal with the 2-body problem.
 pub mod orbit;
+
+/// This module contains structs for orbital elements.
+///
+/// It is currently limited to deal with the 2-body problem.
 pub mod orbital_elements;
+
+/// This module contains functions for transformations between coordinate systems.
+///
+/// Eg. switching from the orbital plane of a 2-body system to spherical coordinates with one of the bodies at origin.
 pub mod transformations;
 
 #[cfg(test)]
@@ -124,11 +135,7 @@ mod tests {
         let omega: f64 = 0.;
         assert_eq!(
             array![PI / 2., PI / 2., PI / 2.],
-            transformations::polar_angle_from_keplerian_elements(
-                array![1., 2., 3.],
-                iota,
-                omega
-            )
+            transformations::polar_angle_from_keplerian_elements(array![1., 2., 3.], iota, omega)
         );
     }
 
@@ -138,11 +145,8 @@ mod tests {
         let omega: f64 = 0.;
         let longitude_of_the_ascending_node: f64 = 0.;
         let f: Array1<f64> = array![0., PI / 2., PI, 3. / 2. * PI];
-        let polar_angle: Array1<f64> = transformations::polar_angle_from_keplerian_elements(
-            f.clone(),
-            iota,
-            omega,
-        );
+        let polar_angle: Array1<f64> =
+            transformations::polar_angle_from_keplerian_elements(f.clone(), iota, omega);
         assert_eq!(
             f.clone(),
             transformations::azimuthal_angle_from_keplerian_elements_and_polar_angle(
@@ -160,12 +164,8 @@ mod tests {
         let omega: f64 = 0.;
         let f = orbit::calculate_f_from_series(Array1::linspace(0., 1., 10), 0., 1., 0.);
         let f_sin = f.clone().mapv_into(|v| v.sin());
-        let polar_angle_opposite = PI / 2.
-            - transformations::polar_angle_from_keplerian_elements(
-                f.clone(),
-                iota,
-                omega,
-            );
+        let polar_angle_opposite =
+            PI / 2. - transformations::polar_angle_from_keplerian_elements(f.clone(), iota, omega);
         let polar_angle_opposite_sin = polar_angle_opposite.clone().mapv_into(|v| v.sin());
         assert!((f_sin - polar_angle_opposite_sin)
             .mapv_into_any(|v| v < 0.00000001 && v > -0.00000001)
@@ -183,11 +183,8 @@ mod tests {
         let iota: f64 = PI / 4.;
         let f: Array1<f64> =
             orbit::calculate_f_from_series(Array1::linspace(0., 1., 10), 0., 1., 0.);
-        let polar_angle: Array1<f64> = transformations::polar_angle_from_keplerian_elements(
-            f.clone(),
-            iota,
-            omega,
-        );
+        let polar_angle: Array1<f64> =
+            transformations::polar_angle_from_keplerian_elements(f.clone(), iota, omega);
         let azimuthal_angle_zero_loan: Array1<f64> =
             transformations::azimuthal_angle_from_keplerian_elements_and_polar_angle(
                 f.clone(),
@@ -214,11 +211,8 @@ mod tests {
         let ticks: usize = 2 * half_ticks;
         let f: Array1<f64> =
             orbit::calculate_f_from_series(Array1::linspace(0., 1., ticks), 0., 1., 0.);
-        let polar_angle: Array1<f64> = transformations::polar_angle_from_keplerian_elements(
-            f.clone(),
-            iota,
-            omega,
-        );
+        let polar_angle: Array1<f64> =
+            transformations::polar_angle_from_keplerian_elements(f.clone(), iota, omega);
         let azimuthal_angle_zero_aop: Array1<f64> =
             transformations::azimuthal_angle_from_keplerian_elements_and_polar_angle(
                 f.clone(),

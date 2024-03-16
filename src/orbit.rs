@@ -3,6 +3,7 @@ use ndarray::Array1;
 use std::collections::HashMap;
 use std::f64::consts::PI;
 
+/// This module contains mathematical helper functions for orbit calculations.
 pub mod math;
 
 /// Gravitational constant in SI units
@@ -95,10 +96,38 @@ pub fn calculate_a(mu: f64, h: f64) -> f64 {
     a
 }
 
+/// Calculates the average angular velocity in a 2-body system
+///
+/// a = μ * a<sup>-3/2</sup>
+///
+/// where
+///
+/// μ = see [μ](`calculate_mu`)
+///
+/// a = Semi-major axis
+///
+/// Inputs are [μ](`calculate_mu`) and semi-major axis [a](`calculate_a`) of the system.
+///
+/// For elliptic orbits this is the same as calculating 2π / P, where P is the period of the orbit.
 pub fn calculate_n(mu: f64, a: f64) -> f64 {
     mu.sqrt() * a.powf(-3. / 2.)
 }
 
+/// Calculates the mean anomaly M in a 2-body system
+///
+/// M = n * (t - τ)
+///
+/// where
+///
+/// n = average angular velocity
+///
+/// t = time
+///
+/// τ = perihelion time
+///
+/// Inputs are time t as well as average angular velocity [n](`calculate_n`) and perihelion time τ of the system.
+///
+/// If mean anomaly at some point of time is known, the equation above can be used to [calculate τ](`calculate_tau`).
 pub fn calculate_mean_anomaly(t: Array1<f64>, n: f64, tau: f64) -> Array1<f64> {
     n * (t - tau)
 }
@@ -148,10 +177,54 @@ pub fn calculate_eccentric_anomaly_from_f(f: Array1<f64>, e: f64) -> Array1<f64>
     }
 }
 
+/// Calculates perihelion time of a 2-body system
+///
+/// τ = t - M / n
+///
+/// where
+///
+/// t = time
+///
+/// n = average angular velocity
+///
+/// M = mean anomaly
+///
+/// Inputs are time t and the mean anomaly at that time as well as average angular velocity [n](`calculate_n`) of the system.
+///
+/// If τ is known, the equation above can be used to [calculate n](`calculate_n`).
 pub fn calculate_tau(t: f64, mean_anomaly: f64, n: f64) -> f64 {
     t - mean_anomaly / n
 }
 
+/// Calculates on iterative step when solving eccentric anomaly from the the Kepler equation for a 2-body system.
+///
+/// The iterative step is:
+///
+/// E<sub>i+1</sub> = e * sin(E<sub>i</sub>) + n * (t - τ)
+///
+/// for the Kepler equation:
+///
+/// E - e*sin(E) = n * (t - τ),
+///
+/// where
+///
+/// E = eccentric anomaly
+///
+/// e = eccentricity
+///
+/// n = average angular velocity
+///
+/// t = time
+///
+/// τ = perihelion time
+///
+/// which cannot be solved in closed form for E.
+///
+/// Inputs are the eccentric anomalies at step i for some time range, the said time range and a hashmap of parameters that should contain n, e and τ.
+///
+/// The contents of the paremeters hashmap are currently not checked in any way so it is the responsibility of the user to make sure the right content is included.
+///
+/// Note that n * (t - τ) = M, where M is the mean anomaly.
 fn kepler_eq_iterative_step(
     eccentric_anomaly: Array1<f64>,
     time: Array1<f64>,
@@ -161,31 +234,128 @@ fn kepler_eq_iterative_step(
         + parameters["n"] * (time - parameters["tau"])
 }
 
+/// Calculates on iterative step when solving eccentric anomaly E from the 'hyperbolic Kepler equation' for a 2-body system.
+///
+/// **Inputs**:
+///
+/// eccentric_anomaly: E at step i for some time range
+///
+/// time: the said time range. Note that the length of time and eccentric_anomaly should be the same
+///
+/// parameters: a hashmap of parameters that should contain n, e and τ (see their meaning below). The contents of the paremeters hashmap are currently not checked in any way so it is the responsibility of the user to make sure the right content is included.
+///
+/// **Output**: An array of eccentric anomalies.
+///
+/// The iterative step is:
+///
+/// E<sub>i+1</sub> = E<sub>i</sub> - (e * sinh(E<sub>i</sub>) - E<sub>i</sub> - n * (t - τ)) / (e * cosh(E<sub>i</sub>) - 1)
+///
+/// which is derived using Newton-Raphson method from the 'hyperbolic Kepler equation':
+///
+/// E - e*sinh(E) = n * (t - τ),
+///
+/// where
+///
+/// E = eccentric anomaly
+///
+/// e = eccentricity
+///
+/// n = see [n](`calculate_n`)
+///
+/// t = time
+///
+/// τ = perihelion time
+///
+/// which cannot be solved in closed form for E.
+///
+/// Note that n * (t - τ) = M, where M is the mean anomaly.
 fn hyperbolic_kepler_eq_iterative_step(
-    hyperbolic_anomaly: Array1<f64>,
+    eccentric_anomaly: Array1<f64>,
     time: Array1<f64>,
     parameters: HashMap<&str, f64>,
 ) -> Array1<f64> {
-    let mean_anomaly: Array1<f64> = parameters["n"] * (time - parameters["tau"]);
-    let f: Array1<f64> = parameters["e"] * hyperbolic_anomaly.clone().mapv_into(|v| v.sinh())
-        - hyperbolic_anomaly.clone()
+    let mean_anomaly: Array1<f64> =
+        calculate_mean_anomaly(time, parameters["n"], parameters["tau"]);
+    let f: Array1<f64> = parameters["e"] * eccentric_anomaly.clone().mapv_into(|v| v.sinh())
+        - eccentric_anomaly.clone()
         - mean_anomaly;
     let df_dh: Array1<f64> =
-        parameters["e"] * hyperbolic_anomaly.clone().mapv_into(|v| v.cosh()) - 1.;
-    hyperbolic_anomaly - f / df_dh
-    //    parameters["e"] * eccentric_anomaly.mapv_into(|v| v.sinh())
-    //        + parameters["n"] * (time - parameters["tau"])
+        parameters["e"] * eccentric_anomaly.clone().mapv_into(|v| v.cosh()) - 1.;
+    eccentric_anomaly - f / df_dh
 }
 
+/// Calculates on iterative step when solving eccentric anomaly E from the Barker equation for a 2-body system.
+///
+/// **Inputs**:
+///
+/// eccentric_anomaly: E at step i for some time range
+///
+/// time: the said time range. Note that the length of time and eccentric_anomaly should be the same
+///
+/// parameters: a hashmap of parameters that should contain n and τ (see their meaning below). The contents of the paremeters hashmap are currently not checked in any way so it is the responsibility of the user to make sure the right content is included.
+///
+/// **Output**: An array of eccentric anomalies.
+///
+/// The iterative step is:
+///
+/// E<sub>i+1</sub> = E <sub>i</sub> - (E<sub>i</sub><sup>3</sup>/6 + E<sub>i</sub>/2 + n * (t - τ)) / (E<sub>i</sub><sup>2</sup>/3 + 1/2)
+///
+/// which is derived using Newton-Raphson method from the Barker equation:
+///
+/// E<sup>3</sup> / 6 + E / 2 = n * (t - τ),
+///
+/// where
+///
+/// E = eccentric anomaly
+///
+/// e = eccentricity
+///
+/// n = see [n](`calculate_n`)
+///
+/// t = time
+///
+/// τ = perihelion time
+///
+/// Note that n * (t - τ) = M, where M is the mean anomaly.
 fn barker_eq_iterative_step(
     eccentric_anomaly: Array1<f64>,
     time: Array1<f64>,
     parameters: HashMap<&str, f64>,
 ) -> Array1<f64> {
-    2. * parameters["n"] * (time - parameters["tau"])
-        - eccentric_anomaly.mapv_into(|v| v.powf(3.)) / 3.
+    let f: Array1<f64> = eccentric_anomaly.clone().mapv_into(|v| v.powf(3.)) / 6.
+        + eccentric_anomaly.clone() / 2.
+        - parameters["n"] * (time - parameters["tau"]);
+    let df_de: Array1<f64> = eccentric_anomaly.clone().mapv_into(|v| v.powf(2.)) / 3. + 0.5;
+    eccentric_anomaly - f / df_de;
 }
 
+/// Calculates the eccentric anomaly iteratively from some initial conditions.
+///
+/// **Inputs**:
+///
+/// t: time range for which we calculate
+///
+/// initial_value: initial guesses of the eccentric anomalies for the time range t
+///
+/// tolerance: stop iteration when the difference between the old and new value of the eccentric anomaly at a given time point is less than this parameter.
+///
+/// max_iterations: maximum number of itarations if tolerance is not reached first.
+///
+/// n: average angular velocity
+///
+/// e: eccentricity
+///
+/// tau: perihelion time
+///
+/// **Output**: An array of eccentric anomalies
+///
+/// The equation to be solved depends on the value of the eccentricity which is one of the inputs:
+///
+/// 0 <= e < 1: Kepler equation
+///
+/// e = 1: Barker equation
+///
+/// e > 1: 'hyperbolic Kepler equation'
 pub fn calculate_eccentric_anomaly_iteratively(
     t: Array1<f64>,
     initial_value: Array1<f64>,
@@ -215,9 +385,6 @@ pub fn calculate_eccentric_anomaly_iteratively(
             max_iterations,
         )
     } else if (e < 1.) && (e >= 0.) {
-        //        let initial_value: Array1<f64> = t.clone().mapv_into(|v| {
-        //            e * (n * v - tau).sin() / (1. - e * (n * (v - tau)).cos())
-        //        });
         solve_equation_iteratively(
             &kepler_eq_iterative_step,
             initial_value,
@@ -231,6 +398,21 @@ pub fn calculate_eccentric_anomaly_iteratively(
     }
 }
 
+/// Calculates true anomaly f from Fourier series for a 2-body system.
+///
+/// **Warning**: this function is currently suitable only for elliptic orbits ie. 0 <= eccentricity e < 1.
+///
+/// **Inputs**:
+///
+/// t: a time range for which the true anomalies are solved
+///
+/// e: [eccentricity](`calculate_e`)
+///
+/// rotation_time: time of one rotation of one body around the other
+///
+/// tau: [perihelion time](`calculate_tau`) of the system
+///
+/// **Output**: An array of true anomalies.
 pub fn calculate_f_from_series(
     t: Array1<f64>,
     e: f64,
@@ -244,6 +426,27 @@ pub fn calculate_f_from_series(
         + (13. * e.powf(3.) / 12.) * (3. * mean_anomaly.clone()).mapv_into(|v| v.sin())
 }
 
+/// Calculates true anomaly f from eccentric anomaly E for a 2-body system.
+///
+/// **Inputs**:
+///
+/// eccentric_anomaly: an array of eccentric anomalies
+///
+/// e: [eccentricity](`calculate_e`)
+///
+/// rotation_time: time of one rotation of one body around the other
+///
+/// **Output**:
+///
+/// An array of true anomalies.
+///
+/// Diffrent equations are used for different orbit shapes ie. different eccentricites.
+///
+/// 0 <= e < 1: f = acos((cos(E) - e) / (1 - e * cos(E)))
+///
+/// e = 1:  f = atan(E) / 2
+///
+/// e > 1: f = atan(((e + 1) / (e - 1))<sup>1/2</sup> * tanh(E / 2))
 pub fn calculate_f_from_eccentric_anomaly(eccentric_anomaly: Array1<f64>, e: f64) -> Array1<f64> {
     if e > 1. {
         (((e + 1.) / (e - 1.)).sqrt() * (eccentric_anomaly / 2.).mapv_into(|v| v.tanh()))
@@ -252,14 +455,31 @@ pub fn calculate_f_from_eccentric_anomaly(eccentric_anomaly: Array1<f64>, e: f64
     } else if (e < 1.) && (e >= 0.) {
         let f_cos: Array1<(f64, f64)> = eccentric_anomaly
             .mapv_into_any(|v| (v.sin().signum(), (v.cos() - e) / (1. - e * v.cos())));
+        //sin(E) is used to determine whether f is in [-PI, 0] or [0, PI]
         f_cos.mapv_into_any(|v| v.0 * v.1.acos())
     } else if e == 1. {
+        //TODO: this has to be checked and tested!
         eccentric_anomaly.mapv_into(|v| v.atan()) / 2.
     } else {
         panic!("Eccentricity cannot be negative!")
     }
 }
 
+/// Calculates the distance r between 2 bodies from true anomaly f, eccentricity e and semi-major axis a.
+///
+/// Using a reference frame with one of the bodies fixed as origin, this can also be undrstood as the radius of the orbit of the other body with respect to the first.
+///
+/// r = a * |(1-e<sup>2</sup>>)| / (1 + e * cos(f))
+///
+/// where
+///
+/// a = semi-major axis
+///
+/// e = eccentricity
+///
+/// f = true anomaly
+///
+/// Inputs are an array of true anomalies as well the semi-major axis [a](`calculate_a`) and the eccentricity [e](`calculate_e`) of the system.
 pub fn calculate_radius_from_f(f: Array1<f64>, e: f64, a: f64) -> Array1<f64> {
     a * (1. - e.powf(2.)).abs() / (1. + e * f.mapv_into(|v| v.cos()))
 }
