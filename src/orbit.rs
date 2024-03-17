@@ -161,16 +161,36 @@ pub fn calculate_initial_f_from_initial_conditions(
     initial_f_cos.acos()
 }
 
+/// Calculates eccentric anomaly E from from true anomaly f and eccenctricity e for a 2-body system
+///
+/// **Inputs**:
+///
+/// f: array of true anomalies
+///
+/// e: [eccentricity](`calculate_e`)
+///
+/// **Output**: an array of eccentric anomalies
+///
+/// The equation to solve depends on which shape (elliptic, hyperbolic, parabolic) of the orbit ie. the value of e:
+///
+/// 0 <= e < 1 (elliptic orbit): E = acos((cos(f) + e) / (1 + e * cos(f)))
+///
+/// e = 1 (parabolic orbit): TODO
+///
+/// e > 1 (hyperbolic orbit): acosh((cos(f) + e) / (1 + cos(f) * e))
+///
+/// For the elliptic and hyperbolic cases, sin(f) is used whether E is in range [-π, 0] or (0, π]
 pub fn calculate_eccentric_anomaly_from_f(f: Array1<f64>, e: f64) -> Array1<f64> {
     if e > 1. {
         let f_cos: Array1<f64> = f.mapv_into(|v| v.cos());
-        let hyperbolic_anomaly_cosh: Array1<f64> = (f_cos.clone() + e) / (1. + f_cos * e);
-        hyperbolic_anomaly_cosh.mapv_into(|v| v.acosh())
+        let eccentric_anomaly_cosh: Array1<f64> = (f_cos.clone() + e) / (1. + f_cos * e);
+        eccentric_anomaly_cosh.mapv_into(|v| v.acosh())
     } else if (e >= 0.) && (e < 1.) {
         let eccentric_anomaly_cos: Array1<(f64, f64)> =
             f.mapv_into_any(|v| (v.sin().signum(), (v.cos() + e) / (1. + e * v.cos())));
         eccentric_anomaly_cos.mapv_into_any(|v| v.0 * v.1.acos())
     } else if e == 1. {
+        // TODO: Check and test
         (f / 2.).mapv_into(|v| v.tan())
     } else {
         panic!("Eccentricity cannot be negative!")
