@@ -61,7 +61,7 @@ pub fn calculate_ee(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> Array1<f64> {
 ///
 /// μ = see [μ](`calculate_mu`).
 ///
-/// **Output**: eccentricity e
+/// **Output**: eccentricity e'
 ///
 /// Calculation is done from e's definition as the length of the vector **e** ([`ee`](`calculate_ee`)).
 pub fn calculate_e(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> f64 {
@@ -398,7 +398,7 @@ fn barker_eq_iterative_step(
         + eccentric_anomaly.clone() / 2.
         - parameters["n"] * (time - parameters["tau"]);
     let df_de: Array1<f64> = eccentric_anomaly.clone().mapv_into(|v| v.powf(2.)) / 3. + 0.5;
-    eccentric_anomaly - f / df_de;
+    eccentric_anomaly - f / df_de
 }
 
 /// Calculates the eccentric anomaly iteratively from some initial conditions.

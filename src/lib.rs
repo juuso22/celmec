@@ -137,28 +137,28 @@ mod tests {
     }
 
     #[test]
-    fn polar_angle_for_zero_iota() {
+    fn theta_for_zero_iota() {
         let iota: f64 = 0.;
         let omega: f64 = 0.;
         assert_eq!(
             array![PI / 2., PI / 2., PI / 2.],
-            transformations::polar_angle_from_keplerian_elements(array![1., 2., 3.], iota, omega)
+            transformations::theta_from_keplerian_elements(array![1., 2., 3.], iota, omega)
         );
     }
 
     #[test]
-    fn azimuthal_angle_for_zero_iota() {
+    fn phi_for_zero_iota() {
         let iota: f64 = 0.;
         let omega: f64 = 0.;
         let longitude_of_the_ascending_node: f64 = 0.;
         let f: Array1<f64> = array![0., PI / 2., PI, 3. / 2. * PI];
-        let polar_angle: Array1<f64> =
-            transformations::polar_angle_from_keplerian_elements(f.clone(), iota, omega);
+        let theta: Array1<f64> =
+            transformations::theta_from_keplerian_elements(f.clone(), iota, omega);
         assert_eq!(
             f.clone(),
-            transformations::azimuthal_angle_from_keplerian_elements_and_polar_angle(
+            transformations::phi_from_keplerian_elements_and_theta(
                 f,
-                polar_angle,
+                theta,
                 omega,
                 longitude_of_the_ascending_node,
             )
@@ -166,51 +166,51 @@ mod tests {
     }
 
     #[test]
-    fn polar_angle_for_pi_per_two_iota() {
+    fn theta_for_pi_per_two_iota() {
         let iota: f64 = PI / 2.;
         let omega: f64 = 0.;
         let f = orbit::calculate_f_from_series(Array1::linspace(0., 1., 10), 0., 1., 0.);
         let f_sin = f.clone().mapv_into(|v| v.sin());
-        let polar_angle_opposite =
-            PI / 2. - transformations::polar_angle_from_keplerian_elements(f.clone(), iota, omega);
-        let polar_angle_opposite_sin = polar_angle_opposite.clone().mapv_into(|v| v.sin());
-        assert!((f_sin - polar_angle_opposite_sin)
+        let theta_opposite =
+            PI / 2. - transformations::theta_from_keplerian_elements(f.clone(), iota, omega);
+        let theta_opposite_sin = theta_opposite.clone().mapv_into(|v| v.sin());
+        assert!((f_sin - theta_opposite_sin)
             .mapv_into_any(|v| v < 0.00000001 && v > -0.00000001)
             .fold(true, |a, b| a && *b));
         let f_cos = f.clone().mapv_into(|v| v.cos());
-        let polar_angle_opposite_cos = polar_angle_opposite.clone().mapv_into(|v| v.cos());
-        assert!((f_cos.mapv_into(|v| v.abs()) - polar_angle_opposite_cos)
+        let theta_opposite_cos = theta_opposite.clone().mapv_into(|v| v.cos());
+        assert!((f_cos.mapv_into(|v| v.abs()) - theta_opposite_cos)
             .mapv_into_any(|v| v < 0.00000001 && v > -0.00000001)
             .fold(true, |a, b| a && *b));
     }
 
     #[test]
-    fn azimuthal_angle_for_pi_longitude_of_ascending_node() {
+    fn phi_for_pi_longitude_of_ascending_node() {
         let omega: f64 = 0.;
         let iota: f64 = PI / 4.;
         let f: Array1<f64> =
             orbit::calculate_f_from_series(Array1::linspace(0., 1., 10), 0., 1., 0.);
-        let polar_angle: Array1<f64> =
-            transformations::polar_angle_from_keplerian_elements(f.clone(), iota, omega);
-        let azimuthal_angle_zero_loan: Array1<f64> =
-            transformations::azimuthal_angle_from_keplerian_elements_and_polar_angle(
+        let theta: Array1<f64> =
+            transformations::theta_from_keplerian_elements(f.clone(), iota, omega);
+        let phi_zero_loan: Array1<f64> =
+            transformations::phi_from_keplerian_elements_and_theta(
                 f.clone(),
-                polar_angle.clone(),
+                theta.clone(),
                 omega,
                 0.,
             );
-        let azimuthal_angle_pi_loan: Array1<f64> =
-            transformations::azimuthal_angle_from_keplerian_elements_and_polar_angle(
+        let phi_pi_loan: Array1<f64> =
+            transformations::phi_from_keplerian_elements_and_theta(
                 f.clone(),
-                polar_angle.clone(),
+                theta.clone(),
                 omega,
                 PI,
             );
-        assert_eq!(azimuthal_angle_zero_loan + PI, azimuthal_angle_pi_loan);
+        assert_eq!(phi_zero_loan + PI, phi_pi_loan);
     }
 
     #[test]
-    fn azimuthal_angle_for_pi_omega() {
+    fn phi_for_pi_omega() {
         let longitude_of_ascending_node: f64 = 0.;
         let iota: f64 = PI / 4.;
         let omega: f64 = 0.;
@@ -218,31 +218,31 @@ mod tests {
         let ticks: usize = 2 * half_ticks;
         let f: Array1<f64> =
             orbit::calculate_f_from_series(Array1::linspace(0., 1., ticks), 0., 1., 0.);
-        let polar_angle: Array1<f64> =
-            transformations::polar_angle_from_keplerian_elements(f.clone(), iota, omega);
-        let azimuthal_angle_zero_aop: Array1<f64> =
-            transformations::azimuthal_angle_from_keplerian_elements_and_polar_angle(
+        let theta: Array1<f64> =
+            transformations::theta_from_keplerian_elements(f.clone(), iota, omega);
+        let phi_zero_aop: Array1<f64> =
+            transformations::phi_from_keplerian_elements_and_theta(
                 f.clone(),
-                polar_angle.clone(),
+                theta.clone(),
                 0.,
                 longitude_of_ascending_node,
             );
-        let azimuthal_angle_pi_aop: Array1<f64> =
-            transformations::azimuthal_angle_from_keplerian_elements_and_polar_angle(
+        let phi_pi_aop: Array1<f64> =
+            transformations::phi_from_keplerian_elements_and_theta(
                 f.clone(),
-                polar_angle.clone(),
+                theta.clone(),
                 PI,
                 longitude_of_ascending_node,
             );
-        let iter1 = azimuthal_angle_pi_aop.iter();
+        let iter1 = phi_pi_aop.iter();
         for (i, v) in iter1.enumerate() {
             println!("{}", (i + half_ticks) % ticks);
-            assert_eq!(*v, azimuthal_angle_zero_aop[(i + half_ticks) % ticks]);
+            assert_eq!(*v, phi_zero_aop[(i + half_ticks) % ticks]);
         }
-        assert!(azimuthal_angle_pi_aop
+        assert!(phi_pi_aop
             .iter()
             .enumerate()
-            .map(|(idx, v)| *v == azimuthal_angle_zero_aop[(idx + half_ticks) % ticks])
+            .map(|(idx, v)| *v == phi_zero_aop[(idx + half_ticks) % ticks])
             .fold(true, |a, b| a && b));
     }
 }

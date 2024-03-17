@@ -18,8 +18,10 @@ r - distance (euclidean norm of rr)
 vv - velocity vector
 v - velocity (euclidean norm of vv)
 t - time
+theta - polar angle (spherical coordinates)
 iota - inclination
 tau - perihelion time
+phi - azimuthal angle (spherical coordinates)
 omega - argument of periapsis
 ```
 
