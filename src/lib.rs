@@ -1,6 +1,13 @@
 /// This module contains functions to calculate various properties of orbits.
 ///
 /// It is currently limited to deal with the 2-body problem.
+///
+/// ## Naming
+/// Naming tends to cause headaches at times and this module is no different. Here are some terms I use in a way that are to my best knowledge non-standard, but for which the standard terminology escapes me:
+///
+/// Eccentric anomaly: I call the equivalent of the eccentric anomaly for elliptic orbit eccentric anomaly also in the context of prabolic and hyperbolic orbits.
+///
+/// 'hyperbolic Kepler's equation': This is the equation M = E - e * sinh(E) which relates mean anomaly M to eccentric anomaly (see note above) for hyperbolic orbits (with help from eccentricity e). I donät know what the correct name for this equation is.
 pub mod orbit;
 
 /// This module contains structs for orbital elements.

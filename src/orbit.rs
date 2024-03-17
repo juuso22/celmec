@@ -53,9 +53,17 @@ pub fn calculate_ee(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> Array1<f64> {
 
 /// Calculates eccentricity of an orbit for 2 bodies.
 ///
-/// Calculates eccentricity e from its definition as the length of the vector **e** (`ee`).
+/// **Inputs**:
 ///
-/// Inputs are a position **r** (`rr`) and the velocity **v** (`vv`) of the 2 bodies with respect to each other at any one point of time as well as their [μ](`calculate_mu`).
+/// rr = position of the 2 bodies with respect to each other
+///
+/// vv = velocity of the 2 bodies with respect to each other
+///
+/// μ = see [μ](`calculate_mu`).
+///
+/// **Output**: eccentricity e
+///
+/// Calculation is done from e's definition as the length of the vector **e** ([`ee`](`calculate_ee`)).
 pub fn calculate_e(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> f64 {
     euclidean_norm(calculate_ee(rr, vv, mu))
 }
@@ -132,6 +140,23 @@ pub fn calculate_mean_anomaly(t: Array1<f64>, n: f64, tau: f64) -> Array1<f64> {
     n * (t - tau)
 }
 
+/// calculates mean anomaly M from eccentric anomaly E fro a 2-body system.
+///
+/// **Inputs**:
+///
+/// eccentric_anomaly: an array of eccentric anomalies
+///
+/// e: eccentricity
+///
+/// **Output**: an array of true anomalies
+///
+/// A different equations is used depending on the value of eccentricity:
+///
+/// 0 <= e < 1: Kepler's equation M = E - e * sin(E)
+///
+/// e = 1: Barker's equation M = E<sup>3</sup> / 6 + E / 2
+///
+/// e > 1: 'hyperbolic Kepler's equation' M = E - e * sinh(E)
 pub fn calculate_mean_anomaly_from_eccentric_anomaly(
     eccentric_anomaly: Array1<f64>,
     e: f64,
@@ -147,6 +172,33 @@ pub fn calculate_mean_anomaly_from_eccentric_anomaly(
     }
 }
 
+/// Calculates true anomaly f from the initial relative distance, the [`ee`](`calculate_ee`) vector and [eccentricity](`calculate_e`) of a 2-body system.
+///
+/// **Inputs**:
+///
+/// rr: distance between the two bodies at some point of time
+///
+/// ee: see [`ee`](`calculate_ee`)
+///
+/// e: eccentricity
+///
+/// **Output**: true anomaly at the position `rr`
+///
+/// f calculated from the formula:
+///
+/// f = cos(**r** &middot **e**) / (r * e),
+///
+/// where
+///
+/// **r** = `rr`
+///
+/// **e** = `ee`
+///
+/// r = |**r**|
+///
+/// e = eccentricity
+///
+/// Lenght of the cross product of **r** and **e** is used to determine sin(f) which in term is used to determine whether f is in range [-π, 0] or (0, π].
 pub fn calculate_initial_f_from_initial_conditions(
     rr: Array1<f64>,
     ee: Array1<f64>,
@@ -179,7 +231,7 @@ pub fn calculate_initial_f_from_initial_conditions(
 ///
 /// e > 1 (hyperbolic orbit): acosh((cos(f) + e) / (1 + cos(f) * e))
 ///
-/// For the elliptic and hyperbolic cases, sin(f) is used whether E is in range [-π, 0] or (0, π]
+/// For the elliptic and hyperbolic cases, sin(f) is used whether E is in range [-π, 0] or (0, π].
 pub fn calculate_eccentric_anomaly_from_f(f: Array1<f64>, e: f64) -> Array1<f64> {
     if e > 1. {
         let f_cos: Array1<f64> = f.mapv_into(|v| v.cos());
