@@ -24,11 +24,15 @@ To access the documentation, do the following:
 
 (Not necessarily in the order they're going to be done)
 
-1. Parallellize 2-body problem
-2. Configurable number of Fourier series terms
-3. Publish as crate
-4. First order perturbations
-5. Gauss's orbit determination method
+1. Fix parabolic orbit stuff
+2. Make "Book" more complete
+3. Setup website
+4. Make open source
+5. Parallellize 2-body problem
+6. Configurable number of Fourier series terms
+7. First order perturbations
+8. Gauss's orbit determination method
+9. Maybe publish as crate
 
 ## Sources
 
