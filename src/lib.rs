@@ -7,7 +7,7 @@
 ///
 /// Eccentric anomaly: I call the equivalent of the eccentric anomaly for elliptic orbit eccentric anomaly also in the context of prabolic and hyperbolic orbits.
 ///
-/// 'hyperbolic Kepler's equation': This is the equation M = E - e * sinh(E) which relates mean anomaly M to eccentric anomaly (see note above) for hyperbolic orbits (with help from eccentricity e). I donät know what the correct name for this equation is.
+/// 'hyperbolic Kepler's equation': This is the equation M = E - e * sinh(E) which relates mean anomaly M to eccentric anomaly (see note above) for hyperbolic orbits (with help from eccentricity e). I don't know what the correct name for this equation is.
 pub mod orbit;
 
 /// This module contains structs for orbital elements.
@@ -192,20 +192,18 @@ mod tests {
             orbit::calculate_f_from_series(Array1::linspace(0., 1., 10), 0., 1., 0.);
         let theta: Array1<f64> =
             transformations::theta_from_keplerian_elements(f.clone(), iota, omega);
-        let phi_zero_loan: Array1<f64> =
-            transformations::phi_from_keplerian_elements_and_theta(
-                f.clone(),
-                theta.clone(),
-                omega,
-                0.,
-            );
-        let phi_pi_loan: Array1<f64> =
-            transformations::phi_from_keplerian_elements_and_theta(
-                f.clone(),
-                theta.clone(),
-                omega,
-                PI,
-            );
+        let phi_zero_loan: Array1<f64> = transformations::phi_from_keplerian_elements_and_theta(
+            f.clone(),
+            theta.clone(),
+            omega,
+            0.,
+        );
+        let phi_pi_loan: Array1<f64> = transformations::phi_from_keplerian_elements_and_theta(
+            f.clone(),
+            theta.clone(),
+            omega,
+            PI,
+        );
         assert_eq!(phi_zero_loan + PI, phi_pi_loan);
     }
 
@@ -220,20 +218,18 @@ mod tests {
             orbit::calculate_f_from_series(Array1::linspace(0., 1., ticks), 0., 1., 0.);
         let theta: Array1<f64> =
             transformations::theta_from_keplerian_elements(f.clone(), iota, omega);
-        let phi_zero_aop: Array1<f64> =
-            transformations::phi_from_keplerian_elements_and_theta(
-                f.clone(),
-                theta.clone(),
-                0.,
-                longitude_of_ascending_node,
-            );
-        let phi_pi_aop: Array1<f64> =
-            transformations::phi_from_keplerian_elements_and_theta(
-                f.clone(),
-                theta.clone(),
-                PI,
-                longitude_of_ascending_node,
-            );
+        let phi_zero_aop: Array1<f64> = transformations::phi_from_keplerian_elements_and_theta(
+            f.clone(),
+            theta.clone(),
+            0.,
+            longitude_of_ascending_node,
+        );
+        let phi_pi_aop: Array1<f64> = transformations::phi_from_keplerian_elements_and_theta(
+            f.clone(),
+            theta.clone(),
+            PI,
+            longitude_of_ascending_node,
+        );
         let iter1 = phi_pi_aop.iter();
         for (i, v) in iter1.enumerate() {
             println!("{}", (i + half_ticks) % ticks);
