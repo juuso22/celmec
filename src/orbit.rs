@@ -104,17 +104,53 @@ pub fn calculate_a(mu: f64, h: f64) -> f64 {
     a
 }
 
-/// Calculates the average angular velocity in a 2-body system
+/// Calculates focal parameter for parabola from a known distance and eccentric anomaly at some point of time for a 2-body system
 ///
-/// a = μ * a<sup>-3/2</sup>
+/// **Inputs**:
+///
+/// eccentric_anomaly: eccentric anomaly
+///
+/// r: distance
+///
+/// **Output**: focal parameter of a parabola
+///
+/// The relevant equation is:
+///
+/// p = 2*r / (E<sup>2</sup> + 1),
 ///
 /// where
 ///
+/// p = the focal parameter of a conic section
+///
+/// r = distance
+///
+/// E = eccentric anomaly
+pub fn calculate_focal_parameter_for_parabola_from_orbital_position(
+    eccentric_anomaly: f64,
+    r: f64,
+) -> f64 {
+    2. * r / (eccentric_anomaly.powf(2.0) + 1.)
+}
+
+/// Calculates the average angular velocity in a 2-body system
+///
+/// **Inputs**
+///
+/// mu: see [μ](`calculate_mu`)
+///
+/// a: semi-major axis [a](`calculate_a`) or [focal parameter p](`calculate_focal_parameter_for_parabola_from_orbital_position`) (in case of a parabolic orbit)
+///
+/// **Output**: Average angular velocity
+///
+/// n = μ<sup>1/2</sup> * a<sup>-3/2</sup>
+///
+/// where
+///
+/// n = average angular velocity
+///
 /// μ = see [μ](`calculate_mu`)
 ///
-/// a = Semi-major axis
-///
-/// Inputs are [μ](`calculate_mu`) and semi-major axis [a](`calculate_a`) of the system.
+/// a = Semi-major axis or [focal parameter](`calculate_focal_parameter_for_parabola_from_orbital_position`) (in case of a parabolic orbit)
 ///
 /// For elliptic orbits this is the same as calculating 2π / P, where P is the period of the orbit.
 pub fn calculate_n(mu: f64, a: f64) -> f64 {
@@ -227,9 +263,9 @@ pub fn calculate_initial_f_from_initial_conditions(
 ///
 /// 0 <= e < 1 (elliptic orbit): E = acos((cos(f) + e) / (1 + e * cos(f)))
 ///
-/// e = 1 (parabolic orbit): TODO
+/// e = 1 (parabolic orbit): E = tan(f / 2)
 ///
-/// e > 1 (hyperbolic orbit): acosh((cos(f) + e) / (1 + cos(f) * e))
+/// e > 1 (hyperbolic orbit): E = acosh((cos(f) + e) / (1 + cos(f) * e))
 ///
 /// For the elliptic and hyperbolic cases, sin(f) is used whether E is in range [-π, 0] or (0, π].
 pub fn calculate_eccentric_anomaly_from_f(f: Array1<f64>, e: f64) -> Array1<f64> {
@@ -242,7 +278,6 @@ pub fn calculate_eccentric_anomaly_from_f(f: Array1<f64>, e: f64) -> Array1<f64>
             f.mapv_into_any(|v| (v.sin().signum(), (v.cos() + e) / (1. + e * v.cos())));
         eccentric_anomaly_cos.mapv_into_any(|v| v.0 * v.1.acos())
     } else if e == 1. {
-        // TODO: Check and test
         (f / 2.).mapv_into(|v| v.tan())
     } else {
         panic!("Eccentricity cannot be negative!")
