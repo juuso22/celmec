@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Quickstart - Celmec</title>
+        <title>Keplerian Elements: Simulation - Celmec</title>
 
 
         <!-- Custom HTML head -->
@@ -83,7 +83,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="installation.html"><strong aria-hidden="true">2.1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="quickstart.html" class="active"><strong aria-hidden="true">2.2.</strong> Quickstart</a></li></ol></li><li class="chapter-item expanded "><a href="underlying_physics.html"><strong aria-hidden="true">3.</strong> Underlying Physics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">3.1.</strong> Glossary of Terms</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">3.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html" class="active"><strong aria-hidden="true">3.1.</strong> Keplerian Elements: Simulation</a></li></ol></li><li class="chapter-item expanded "><a href="underlying_physics.html"><strong aria-hidden="true">4.</strong> Underlying Physics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">4.1.</strong> Glossary of Terms</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -166,7 +166,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="quickstart"><a class="header" href="#quickstart">Quickstart</a></h1>
+                        <h1 id="halleys-comet-simulation"><a class="header" href="#halleys-comet-simulation">Halley's Comet: Simulation</a></h1>
 <p>As a quickstart example, we'll use celmec calculate the idealized 2-body problem orbit of <a href="https://en.wikipedia.org/wiki/Halley%27s_Comet">Halley's comet</a> from its Keplerian elements as given by Wikipedia.</p>
 <p>We'll first walkthrough the creation of a program that does the calculation, but for the impatient, the final result is available at the end of this page.</p>
 <h2 id="walking-through-the-example"><a class="header" href="#walking-through-the-example">Walking through the example</a></h2>
@@ -200,7 +200,7 @@ omega - argument of periapsis
         omega: 1.95564,
     };
 </code></pre>
-<p>Everything is in SI units and we set the perihelion time to zero for simplicity.</p>
+<p>Everything is in SI units and the perihelion time is set to zero for simplicity.</p>
 <p>Next, we need some mote imports from celmec to actually calculate something using the orbital elements:</p>
 <pre><code>use celmec::{orbit, orbital_elements};
 </code></pre>
@@ -313,12 +313,53 @@ fn main() {
     }
 }
 </code></pre>
+<h2 id="visualising-the-results"><a class="header" href="#visualising-the-results">Visualising the results</a></h2>
+<p>To visualise the results, the following bit of Python code can be used. Have Python and the necessary libraries installed, and then run the script inside the base directory of the cargo project with:</p>
+<pre><code>python plot_halleys_orbit.py
+</code></pre>
+<p>The script itself:</p>
+<pre><code>import pandas as pd
+import math
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation, PillowWriter
+
+df=pd.read_csv(&quot;halleys_orbit_2d.csv&quot;)
+
+def plot_2d_orbit(i):
+    plt.polar(df.f[0:i], df.radius[0:i], 'k.')
+
+def main():
+    fig = plt.figure()
+    plotn=111
+    ax = fig.add_subplot(plotn, polar=True)
+    ax.set_rlim(rmin=0, rmax=6e12)    
+    anim = FuncAnimation(fig, plot_2d_orbit, frames=50, repeat=True)
+    
+    f = r&quot;halley.gif&quot; 
+    writergif = PillowWriter(fps=20)
+    anim.save(f, writer=writergif)
+
+    plt.show()
+
+if __name__ == &quot;__main__&quot;:
+    main()
+
+</code></pre>
+<h3 id="so-what-do-the-simulation-results-look-like"><a class="header" href="#so-what-do-the-simulation-results-look-like">So what do the simulation results look like</a></h3>
+<p>The way the above python script is done, should save an animated gif, but print a graph where the position of the comet at all the chosen time points. That graph should look something like this:</p>
+<p><img src="images/halley.png" alt="Halley's comet's orbit" /></p>
+<p>The orbit look like an ellipse as it should. Moreover, it can be seen that the further from the middle (ie. the Sun) the comet is the closer the plotted orbit points are to each other. As the time between two consecutive points is constant, this means that the further the comet is from the Sun, the slower it moves. This is even clearer in the animation of the orbit:</p>
+<details>
+  <summary>Halley's comet's orbit animated</summary>
+<p><img src="images/halley.gif" alt="Halley's comet's orbit animated" /></p>
+</details>
+<p>This is in fact what <em>Kepler's third law</em> tells us and to explain what that is all about, it's best to jump to the next physics chapter.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="installation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="getting_started.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
@@ -332,7 +373,7 @@ fn main() {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="installation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="getting_started.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 

@@ -24,7 +24,6 @@ To access the documentation, do the following:
 
 (Not necessarily in the order they're going to be done)
 
-1. Fix parabolic orbit stuff
 2. Make "Book" more complete
 3. Setup website
 4. Make open source

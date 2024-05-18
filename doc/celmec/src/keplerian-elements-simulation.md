@@ -1,4 +1,4 @@
-# Quickstart
+# Halley's Comet: Simulation
 
 As a quickstart example, we'll use celmec calculate the idealized 2-body problem orbit of [Halley's comet](https://en.wikipedia.org/wiki/Halley%27s_Comet) from its Keplerian elements as given by Wikipedia.
 
@@ -54,7 +54,7 @@ In our main function, let's create an instance of `KeplerianElements` for Halley
     };
 ```
 
-Everything is in SI units and we set the perihelion time to zero for simplicity.
+Everything is in SI units and the perihelion time is set to zero for simplicity.
 
 Next, we need some mote imports from celmec to actually calculate something using the orbital elements:
 
@@ -193,3 +193,59 @@ fn main() {
     }
 }
 ```
+
+## Visualising the results
+
+To visualise the results, the following bit of Python code can be used. Have Python and the necessary libraries installed, and then run the script inside the base directory of the cargo project with:
+
+```
+python plot_halleys_orbit.py
+```
+
+The script itself:
+
+```
+import pandas as pd
+import math
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation, PillowWriter
+
+df=pd.read_csv("halleys_orbit_2d.csv")
+
+def plot_2d_orbit(i):
+    plt.polar(df.f[0:i], df.radius[0:i], 'k.')
+
+def main():
+    fig = plt.figure()
+    plotn=111
+    ax = fig.add_subplot(plotn, polar=True)
+    ax.set_rlim(rmin=0, rmax=6e12)    
+    anim = FuncAnimation(fig, plot_2d_orbit, frames=50, repeat=True)
+    
+    f = r"halley.gif" 
+    writergif = PillowWriter(fps=20)
+    anim.save(f, writer=writergif)
+
+    plt.show()
+
+if __name__ == "__main__":
+    main()
+
+```
+
+### So what do the simulation results look like
+
+The way the above python script is done, should save an animated gif, but print a graph where the position of the comet at all the chosen time points. That graph should look something like this:
+
+![Halley's comet's orbit](images/halley.png)
+
+The orbit look like an ellipse as it should. Moreover, it can be seen that the further from the middle (ie. the Sun) the comet is the closer the plotted orbit points are to each other. As the time between two consecutive points is constant, this means that the further the comet is from the Sun, the slower it moves. This is even clearer in the animation of the orbit:
+
+<details>
+  <summary>Halley's comet's orbit animated</summary>
+  
+  ![Halley's comet's orbit animated](images/halley.gif)
+  
+</details>
+
+This is in fact what *Kepler's third law* tells us and to explain what that is all about, it's best to jump to the next physics chapter.
