@@ -1,10 +1,8 @@
-# Halley's Comet: Simulation
+# Keplerian Elements: Simulation
 
-As a quickstart example, we'll use celmec calculate the idealized 2-body problem orbit of [Halley's comet](https://en.wikipedia.org/wiki/Halley%27s_Comet) from its Keplerian elements as given by Wikipedia.
+To demonstrate the use of Keplerian elements, let's calculate the orbit of [Halley's comet](https://en.wikipedia.org/wiki/Halley%27s_Comet). I have stolen the Keplerian elements from Wikipedia.
 
-We'll first walkthrough the creation of a program that does the calculation, but for the impatient, the final result is available at the end of this page.
-
-## Walking through the example
+## Walking through the writing of the simulation
 
 First init a new rust project called `halleys-comet`:
 

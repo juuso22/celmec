@@ -84,7 +84,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">3.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">3.1.</strong> Keplerian Elements: Simulation</a></li></ol></li><li class="chapter-item expanded "><a href="underlying_physics.html"><strong aria-hidden="true">4.</strong> Underlying Physics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">4.1.</strong> Glossary of Terms</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Simulation</a></li></ol></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li></ol></li><li class="chapter-item expanded "><a href="underlying_physics.html"><strong aria-hidden="true">5.</strong> Underlying Physics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">5.1.</strong> Glossary of Terms</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -182,11 +182,12 @@
 <pre><code>celmec = { git = &quot;https://github.com/juuso22/celmec.git&quot; }
 </code></pre>
 <p>Celmec uses <code>ndarray</code> for vector algebra, so you also need to add that library to your <code>Cargo.toml</code>. The examples in this book point out which version of <code>ndarray</code> was used for them. I'll try to make it so that the examples would work with the latest version, but given that this a free-time project, I will be checking if newer version work only sporadically.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="two-body-problem"><a class="header" href="#two-body-problem">Two Body Problem</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="two-body-problem-simulation"><a class="header" href="#two-body-problem-simulation">Two Body Problem: Simulation</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="keplerian-elements"><a class="header" href="#keplerian-elements">Keplerian Elements</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="halleys-comet-simulation"><a class="header" href="#halleys-comet-simulation">Halley's Comet: Simulation</a></h1>
-<p>As a quickstart example, we'll use celmec calculate the idealized 2-body problem orbit of <a href="https://en.wikipedia.org/wiki/Halley%27s_Comet">Halley's comet</a> from its Keplerian elements as given by Wikipedia.</p>
-<p>We'll first walkthrough the creation of a program that does the calculation, but for the impatient, the final result is available at the end of this page.</p>
-<h2 id="walking-through-the-example"><a class="header" href="#walking-through-the-example">Walking through the example</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="keplerian-elements-simulation"><a class="header" href="#keplerian-elements-simulation">Keplerian Elements: Simulation</a></h1>
+<p>To demonstrate the use of Keplerian elements, let's calculate the orbit of <a href="https://en.wikipedia.org/wiki/Halley%27s_Comet">Halley's comet</a>. I have stolen the Keplerian elements from Wikipedia.</p>
+<h2 id="walking-through-the-writing-of-the-simulation"><a class="header" href="#walking-through-the-writing-of-the-simulation">Walking through the writing of the simulation</a></h2>
 <p>First init a new rust project called <code>halleys-comet</code>:</p>
 <pre><code>cargo init halleys-comet
 </code></pre>
