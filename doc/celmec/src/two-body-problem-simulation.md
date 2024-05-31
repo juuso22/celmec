@@ -35,11 +35,66 @@ Next, we need the masses of Mercury and the sun and some initial conditions for 
 
 ```
     let mu: f64 = orbit::calculate_mu(3.301e23, 1.989e30);
-    let r0: Array1<f64> = array![69.818e9, 0., 0.];
-    let v0: Array1<f64> = array![0., 38860., 0.];
+    let rr: Array1<f64> = array![69.818e9, 0., 0.];
+    let vv: Array1<f64> = array![0., 38860., 0.];
 ```
 
+Before using these values for the simulation, let's first check a key quantity of the system from them: the eccentricity `e`:
 
+```
+    let e: f64 = orbit::calculate_e(rr.clone(), vv.clone(), mu);
+    println!("Eccentricity: {}", e);
+```
+
+Then we need some info about how long and how finely we want to simulate:
+
+```
+    let steps: usize = 100;
+    let simulation_time: f64 = 7603200.;
+```
+
+The `steps` is the number of point we want to have results for and `simulation_time` is the sideral orbit period from the fact sheet above converted to seconds (so * 24 h/d * 60 min/h * 60 s/min). Then we can calculate the true anomaly `f` for our simulation period using `celmec`:
+
+```
+    let f: Array1<f64> = orbit::calculate_f_from_initial_rr_and_vv(
+        rr.clone(),
+        vv.clone(),
+        mu,
+        simulation_time,
+        steps,
+    );
+
+```
+
+Despite starting with xy-coordinates, let's switch to polar coordinates as they are somewhat more convenient for orbits. We chose the orbital plane as our xy-plane and in that plane `f` will serve as the angle for polar coordinates in that plane. But we still need radii corresponding to the values of `f` we obtained above. For that, we need the semi-major axis `a` of the system and can then proceed to calculate the radius:
+
+```
+    let a: f64 = orbit::calculate_a_from_initial_rr_and_vv(rr, vv, mu);
+    let radius: Array1<f64> = orbit::calculate_radius_from_f(f.clone(), e, a);
+```
+
+Let's then print some values from our simulation as checks:
+
+```
+    println!(
+        "Maximum distance from the sun (aphelion): {}",
+        radius.iter().max_by(|a, b| a.total_cmp(b)).unwrap()
+    );
+    println!(
+        "Minimum distance from the sun (perihelion): {}",
+        radius.iter().min_by(|a, b| a.total_cmp(b)).unwrap()
+    );
+```
+
+And then write the results into a file:
+
+```
+    let mut coordinate_file = File::create("mercury.csv").unwrap();
+    write!(coordinate_file, "radius,f\n").unwrap();
+    for i in 0..=(steps - 1) {
+        write!(coordinate_file, "{},{}\n", radius[i], f[i]).unwrap();
+    }
+```
 
 ## Final Rust code
 
@@ -60,45 +115,32 @@ celmec = { git = "https://github.com/juuso22/celmec.git" }
 
 ```
 use celmec::orbit;
-use ndarray::{array, Array, Array1};
+use ndarray::{array, Array1};
 use std::fs::File;
 use std::io::Write;
 
 fn main() {
     let mu: f64 = orbit::calculate_mu(3.301e23, 1.989e30);
-    let r0: Array1<f64> = array![69.818e9, 0., 0.];
-    let v0: Array1<f64> = array![0., -38860., 0.];
+    let rr: Array1<f64> = array![69.818e9, 0., 0.];
+    let vv: Array1<f64> = array![0., 38.86e3, 0.];
 
-    let ee: Array1<f64> = orbit::calculate_ee(r0.clone(), v0.clone(), mu);
-    let e: f64 = orbit::calculate_e(r0.clone(), v0.clone(), mu);
-    let h: f64 = orbit::calculate_h(r0.clone(), v0, mu);
-    let a: f64 = orbit::calculate_a(mu, h);
-    let n: f64 = orbit::calculate_n(mu, a);
-    let initial_f: f64 = orbit::calculate_initial_f_from_initial_conditions(r0, ee, e);
-    let initial_eccentric_anomaly: Array1<f64> =
-        orbit::calculate_eccentric_anomaly_from_f(array![initial_f], e);
-    let tau: f64 = orbit::calculate_tau(
-        0.,
-        orbit::calculate_mean_anomaly_from_eccentric_anomaly(initial_eccentric_anomaly, e)[0],
-        n,
+    let e: f64 = orbit::calculate_e(rr.clone(), vv.clone(), mu);
+    println!("Eccentricity: {}", e);
+
+    let steps: usize = 100;
+    let simulation_time: f64 = 7603200.;
+
+    let f: Array1<f64> = orbit::calculate_f_from_initial_rr_and_vv(
+        rr.clone(),
+        vv.clone(),
+        mu,
+        simulation_time,
+        steps,
     );
 
-    let ticks: usize = 100;
-    let t: Array1<f64> = Array::linspace(0., 7603200., ticks);
-
-    let eccentric_anomaly: Array1<f64> = orbit::calculate_eccentric_anomaly_iteratively(
-        t.clone(),
-        Array::zeros(ticks),
-        0.0001,
-        100,
-        orbit::calculate_n(mu, a),
-        e,
-        tau,
-    );
-    let f: Array1<f64> = orbit::calculate_f_from_eccentric_anomaly(eccentric_anomaly, e);
+    let a: f64 = orbit::calculate_a_from_initial_rr_and_vv(rr, vv, mu);
     let radius: Array1<f64> = orbit::calculate_radius_from_f(f.clone(), e, a);
 
-    println!("Eccentricity: {}", e);
     println!(
         "Maximum distance from the sun (aphelion): {}",
         radius.iter().max_by(|a, b| a.total_cmp(b)).unwrap()
@@ -107,12 +149,11 @@ fn main() {
         "Minimum distance from the sun (perihelion): {}",
         radius.iter().min_by(|a, b| a.total_cmp(b)).unwrap()
     );
-    println!("Perihelion time: {}", tau / 3600. / 24.);
 
     let mut coordinate_file = File::create("mercury.csv").unwrap();
-    write!(coordinate_file, "t,radius,f\n").unwrap();
-    for i in 0..=(ticks - 1) {
-        write!(coordinate_file, "{},{},{}\n", t[i], radius[i], f[i]).unwrap();
+    write!(coordinate_file, "radius,f\n").unwrap();
+    for i in 0..=(steps - 1) {
+        write!(coordinate_file, "{},{}\n", radius[i], f[i]).unwrap();
     }
 }
 ```
