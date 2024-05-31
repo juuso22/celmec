@@ -1,5 +1,5 @@
 use math::{cross_product, euclidean_norm, solve_equation_iteratively};
-use ndarray::Array1;
+use ndarray::{array, Array1};
 use std::collections::HashMap;
 use std::f64::consts::PI;
 
@@ -589,4 +589,70 @@ pub fn calculate_f_from_eccentric_anomaly(eccentric_anomaly: Array1<f64>, e: f64
 /// Inputs are an array of true anomalies as well the semi-major axis [a](`calculate_a`) and the eccentricity [e](`calculate_e`) of the system.
 pub fn calculate_radius_from_f(f: Array1<f64>, e: f64, a: f64) -> Array1<f64> {
     a * (1. - e.powf(2.)).abs() / (1. + e * f.mapv_into(|v| v.cos()))
+}
+
+/// Calculates the true anomaly f for a 2 body problem for a given total time split into a given number of steps.
+///
+/// One of the bodies lies at the origin and all the inputs are given with respect to this body, referred to as "the central body". The other body is referred to as "the rotating body"
+///
+/// **Inputs**:
+///
+/// rr: The initial position of the rotating body with respect to the central body.
+///
+/// vv: The initial velocity of the rotating body with respect to the central body.
+///
+/// mu: The gravitational parameter of the system. See [μ](`calculate_mu`).
+///
+/// total_time: The time to be simulated.
+///
+/// steps: The number of intervals the original interval [0, total_time] is split into.
+///
+/// **Output**: An array of true anomalies.
+pub fn calculate_f_from_initial_rr_and_vv(
+    rr: Array1<f64>,
+    vv: Array1<f64>,
+    mu: f64,
+    total_time: f64,
+    steps: usize,
+) -> Array1<f64> {
+    let ee: Array1<f64> = calculate_ee(rr.clone(), vv.clone(), mu);
+    let e: f64 = calculate_e(rr.clone(), vv.clone(), mu);
+    let initial_f: f64 = calculate_initial_f_from_initial_conditions(rr.clone(), ee, e);
+    let initial_eccentric_anomaly: Array1<f64> =
+        calculate_eccentric_anomaly_from_f(array![initial_f], e);
+    let a: f64 = calculate_a_from_initial_rr_and_vv(rr, vv, mu);
+    let n: f64 = calculate_n(mu, a);
+    let tau: f64 = calculate_tau(
+        0.,
+        calculate_mean_anomaly_from_eccentric_anomaly(initial_eccentric_anomaly, e)[0],
+        n,
+    );
+
+    let t: Array1<f64> = Array1::linspace(0., total_time, steps);
+    let eccentric_anomaly: Array1<f64> = calculate_eccentric_anomaly_iteratively(
+        t.clone(),
+        Array1::zeros(steps),
+        0.0001,
+        100,
+        n,
+        e,
+        tau,
+    );
+    calculate_f_from_eccentric_anomaly(eccentric_anomaly, e)
+}
+
+/// Calculates the semi-major axis a for a 2 body problem from initial conditions.
+///
+/// **Inputs**:
+///
+/// rr: The initial position of the rotating body with respect to the central body.
+///
+/// vv: The initial velocity of the rotating body with respect to the central body.
+///
+/// mu: The gravitational parameter of the system. See [μ](`calculate_mu`).
+///
+/// **Output**: Semi-major axis a.
+pub fn calculate_a_from_initial_rr_and_vv(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> f64 {
+    let h: f64 = calculate_h(rr, vv, mu);
+    calculate_a(mu, h)
 }
