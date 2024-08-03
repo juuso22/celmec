@@ -176,7 +176,7 @@ pub fn calculate_mean_anomaly(t: Array1<f64>, n: f64, tau: f64) -> Array1<f64> {
     n * (t - tau)
 }
 
-/// calculates mean anomaly M from eccentric anomaly E fro a 2-body system.
+/// calculates mean anomaly M from eccentric anomaly E for a 2-body system.
 ///
 /// **Inputs**:
 ///
