@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Glossary of Terms - Celmec</title>
+        <title>Hyperbolic and parabolic orbits - Celmec</title>
 
 
         <!-- Custom HTML head -->
@@ -85,7 +85,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.2.</strong> Hyperbolic and parabolic orbits</a></li></ol></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li></ol></li><li class="chapter-item expanded "><a href="underlying_physics.html"><strong aria-hidden="true">5.</strong> Underlying Physics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="glossary_of_terms.html" class="active"><strong aria-hidden="true">5.1.</strong> Glossary of Terms</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="hyperbolic-and-parabolic-orbits.html" class="active"><strong aria-hidden="true">3.2.</strong> Hyperbolic and parabolic orbits</a></li></ol></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li></ol></li><li class="chapter-item expanded "><a href="underlying_physics.html"><strong aria-hidden="true">5.</strong> Underlying Physics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">5.1.</strong> Glossary of Terms</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -168,39 +168,45 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="glossary-of-terms"><a class="header" href="#glossary-of-terms">Glossary of Terms</a></h1>
-<p>This a list of abbreviations that celmec aims to use:</p>
-<pre><code>a - semi-major axis
-ee - vector pointing towards the perihelion
-e - eccentricity (euclidean norm of ee)
-f - true anomaly
-G - gravitational constant
-h - energy integral (freely translated from Finnish 'energiaintegraali' used in Johdatus Taivaanmekaniikkaan by Karttunen, 2020)
-kk - angular momentum vector
-k - angular momentum scalar (euclidean norm of kk)
-m - mass
-n - average angular velocity
-rr - position vector
-r - distance (euclidean norm of rr)
-vv - velocity vector
-v - velocity (euclidean norm of vv)
-t - time
-theta - polar angle (spherical coordinates)
-iota - inclination
-tau - perihelion time
-phi - azimuthal angle (spherical coordinates)
-omega - argument of periapsis
+                        <h1 id="hyperbolic-and-parabolic-orbits"><a class="header" href="#hyperbolic-and-parabolic-orbits">Hyperbolic and parabolic orbits</a></h1>
+<p>Instead of a closed, elliptic orbit like Mercury's objects can also just fly past each other. This happens when we have:</p>
+<p>\[ e \ge 1 \]</p>
+<p>The \( e &gt; 1 \) case corresponds to a hyperbole-shaped orbit and the \( e = 1 \) case to a parabola and after some algebra the replacement for Kepler equation for these two cases becomes:</p>
+<p>\[ n(t-\tau) = e\sinh{E} - E, \textrm{ when } e \gt 0 \]</p>
+<p>\[ n(t-\tau) = \frac{E^3}{6}+\frac{E}{2}, \textrm{ when } e = 0 \]</p>
+<p>Where the quantity \( n \) cannot geometrically be understood as in the elliptic case, but obeys the formula:</p>
+<p>\[ n = \sqrt{\mu}a^\frac{-3}{2} \]</p>
+<p>In case of an eccentricity greater or equal to 1, <code>celmec</code> solves these equations instead of the Kepler equation.</p>
+<h2 id="simulating-a-hyperbolic-orbit"><a class="header" href="#simulating-a-hyperbolic-orbit">Simulating a hyperbolic orbit</a></h2>
+<p>To simulate a hyperbolic orbit, we can use the Mercury example, but give the nearest planet the following initial conditions:</p>
+<pre><code>    let rr: Array1&lt;f64&gt; = array![-3e11, 0., 0.];
+    let vv: Array1&lt;f64&gt; = array![-6e4, -1e4, 0.];
 </code></pre>
-<p>Note in the above, that when same letter is usually used for a scalar and a vector, the letter is doubled for the vector in the code.</p>
+<p>The plotting script also needs a small scaling adjustment then:</p>
+<pre><code>    ax.set_rlim(rmin=0, rmax=3.1e11)
+</code></pre>
+<p>and rerunning the simulation we should end up with the following:</p>
+<p><img src="images/flyby-mercury.png" alt="&quot;Flyby Mercury's&quot; orbit" /></p>
+<p>and the same animated:</p>
+<details>
+  <summary>"Flyby Mercury's" orbit animated</summary>
+<p><img src="images/flyby-mercury.gif" alt="&quot;Flyby Mercury's&quot; orbit animated" /></p>
+</details>
+<p>You can try playing around with different initial conditions, simulation times and object masses to see what kind of orbits you'll get!</p>
+<h2 id="parabolic-orbit-simulation"><a class="header" href="#parabolic-orbit-simulation">Parabolic orbit simulation</a></h2>
+<p>As it's a bit tedious to construct a combination of initial conditions and masses that would result in an eccentricity of exactly 1, it would be handy if we could start by telling <code>celmec</code> to simulate using a given <code>e</code>. Here is where it's time to change chapters and talk about orbital elements which will enable us to do just that.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="underlying_physics.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="two-body-problem-simulation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
+                            <a rel="next" href="getting_started.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -208,10 +214,13 @@ omega - argument of periapsis
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="underlying_physics.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="two-body-problem-simulation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
+                    <a rel="next" href="getting_started.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>

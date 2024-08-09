@@ -4,6 +4,7 @@
 - [Getting the Celmec Library](./getting-the-celmec-library.md)
 - [Two Body Problem](./two-body-problem.md) 
   - [Two Body Problem: Simulation](two-body-problem-simulation.md)
+  - [Hyperbolic and parabolic orbits](hyperbolic-and-parabolic-orbits.md)
 - [Keplerian Elements](./getting_started.md) 
   - [Keplerian Elements: Simulation](./keplerian-elements-simulation.md)
 - [Underlying Physics](./underlying_physics.md)

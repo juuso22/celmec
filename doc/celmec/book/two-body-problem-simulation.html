@@ -30,6 +30,8 @@
 
         <!-- Custom theme stylesheets -->
 
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     </head>
     <body>
     <div id="body-container">
@@ -83,7 +85,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-simulation.html" class="active"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Simulation</a></li></ol></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li></ol></li><li class="chapter-item expanded "><a href="underlying_physics.html"><strong aria-hidden="true">5.</strong> Underlying Physics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">5.1.</strong> Glossary of Terms</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-simulation.html" class="active"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.2.</strong> Hyperbolic and parabolic orbits</a></li></ol></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li></ol></li><li class="chapter-item expanded "><a href="underlying_physics.html"><strong aria-hidden="true">5.</strong> Underlying Physics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">5.1.</strong> Glossary of Terms</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -167,6 +169,168 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="two-body-problem-simulation"><a class="header" href="#two-body-problem-simulation">Two Body Problem: Simulation</a></h1>
+<p>As a first simulation with <code>celmec</code>, we'll simulate one round of Mercury around the sun as a two body problem. We'll first walk through building the simulation, but the final Rust code can be found further down.</p>
+<h2 id="walking-through-the-writing-of-the-simulation"><a class="header" href="#walking-through-the-writing-of-the-simulation">Walking through the writing of the simulation</a></h2>
+<p>First init a new Rust project called <code>two-body-problem</code>:</p>
+<pre><code>cargo init two-body-problem
+</code></pre>
+<p>Edit the project's <code>Cargo.toml</code> by adding the following under <code>[dependencies]</code>:</p>
+<pre><code>ndarray = &quot;0.15.6&quot; #Or choose your preferred version
+celmec = { git = &quot;https://github.com/juuso22/celmec.git&quot; }
+</code></pre>
+<p>Then we can start editing the project's <code>src/main.rs</code>. First, remove the default content and import the following from <code>ndarray</code> </p>
+<pre><code>use ndarray::{Array, Array1}
+</code></pre>
+<p>Then import the following from celmec:</p>
+<pre><code>use celmec::orbit;
+</code></pre>
+<p>The <code>orbit</code> module contains functions functions for the simulation.</p>
+<p>Next, we need the masses of Mercury and the sun and some initial conditions for the position and velocity of the planet with respect to the sun. Sun's mass is (the googlable) 1.989 * 10<sup>30</sup>kg and the mass of Mercury (along other info about the planet that will be used), namely 3.3010 * 10<sup>23</sup> kg, can be found from <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/mercuryfact.html">Nasa's fact sheet</a>. To have some simple initial conditions, let's have Mercury furthest away from the sun it reaches (ie. Mercury's aphelion) and let's fix our coordinates so that this point is to the direction of the negative x-axis. The distance of Mercury from the sun in the aphelion is 69.818 * 10<sup>9</sup> m. According to Kepler's third law, Mercury's orbital velocity is the slowest at aphelion. That slowest speed is 38.86 * 10<sup>3</sup> m/s and that is in the direction of the negative y-axis. Let's decide, for convenience, that is the to the direction of the negativee y-axis. As a small spoiler, choosing to start with negative values will align our xy-plane nicely with the choice of polar coordinates that will be done later. Now we write all this into the <code>main</code> function of our project:</p>
+<pre><code>    let mu: f64 = orbit::calculate_mu(3.301e23, 1.989e30);
+    let rr: Array1&lt;f64&gt; = array![-69.818e9, 0., 0.];
+    let vv: Array1&lt;f64&gt; = array![0., -38.86e3, 0.];
+</code></pre>
+<p>Before using these values for the simulation, let's first check a key quantity of the system from them: the eccentricity <code>e</code>:</p>
+<pre><code>    let e: f64 = orbit::calculate_e(rr.clone(), vv.clone(), mu);
+    println!(&quot;Eccentricity: {}&quot;, e);
+</code></pre>
+<p>Then we need some info about how long and how finely we want to simulate:</p>
+<pre><code>    let steps: usize = 100;
+    let simulation_time: f64 = 7603200.;
+</code></pre>
+<p>The <code>steps</code> is the number of point we want to have results for and <code>simulation_time</code> is the sideral orbit period from the fact sheet above converted to seconds (so * 24 h/d * 60 min/h * 60 s/min). Then we can calculate the true anomaly <code>f</code> for our simulation period using <code>celmec</code>:</p>
+<pre><code>    let f: Array1&lt;f64&gt; = orbit::calculate_f_from_initial_rr_and_vv(
+        rr.clone(),
+        vv.clone(),
+        mu,
+        simulation_time,
+        steps,
+    );
+
+</code></pre>
+<p>Despite starting with xy-coordinates, let's switch to polar coordinates as they are somewhat more convenient for orbits. We chose the orbital plane as our xy-plane and in that plane <code>f</code> will serve as the angle for polar coordinates in that plane. But we still need radii corresponding to the values of <code>f</code> we obtained above. For that, we need the semi-major axis <code>a</code> of the system and can then proceed to calculate the radius:</p>
+<pre><code>    let a: f64 = orbit::calculate_a_from_initial_rr_and_vv(rr, vv, mu);
+    let radius: Array1&lt;f64&gt; = orbit::calculate_radius_from_f(f.clone(), e, a);
+</code></pre>
+<p>Let's then print some values from our simulation as checks:</p>
+<pre><code>    println!(
+        &quot;Maximum distance from the sun (aphelion): {}&quot;,
+        radius.iter().max_by(|a, b| a.total_cmp(b)).unwrap()
+    );
+    println!(
+        &quot;Minimum distance from the sun (perihelion): {}&quot;,
+        radius.iter().min_by(|a, b| a.total_cmp(b)).unwrap()
+    );
+</code></pre>
+<p>And then write the results into a file. First some imports to the beginning of our <code>main.rs</code>:</p>
+<pre><code>use std::fs::File;
+use std::io::Write;
+</code></pre>
+<p>And then the actual writing inside the main function:</p>
+<pre><code>    let mut coordinate_file = File::create(&quot;mercury.csv&quot;).unwrap();
+    write!(coordinate_file, &quot;radius,f\n&quot;).unwrap();
+    for i in 0..=(steps - 1) {
+        write!(coordinate_file, &quot;{},{}\n&quot;, radius[i], f[i]).unwrap();
+    }
+</code></pre>
+<h2 id="final-rust-code"><a class="header" href="#final-rust-code">Final Rust code</a></h2>
+<p><code>Cargo.toml</code>:</p>
+<pre><code>[package]
+name = &quot;two-body-problem&quot;
+version = &quot;0.1.0&quot;
+edition = &quot;2021&quot;
+
+[dependencies]
+ndarray = &quot;0.15.6&quot;
+celmec = { git = &quot;https://github.com/juuso22/celmec.git&quot; }
+</code></pre>
+<p><code>main.rs</code>:</p>
+<pre><code>use celmec::orbit;
+use ndarray::{array, Array1};
+use std::fs::File;
+use std::io::Write;
+
+fn main() {
+    let mu: f64 = orbit::calculate_mu(3.301e23, 1.989e30);
+    let rr: Array1&lt;f64&gt; = array![-69.818e9, 0., 0.];
+    let vv: Array1&lt;f64&gt; = array![0., -38.86e3, 0.];
+
+    let e: f64 = orbit::calculate_e(rr.clone(), vv.clone(), mu);
+    println!(&quot;Eccentricity: {}&quot;, e);
+
+    let steps: usize = 100;
+    let simulation_time: f64 = 7603200.;
+
+    let f: Array1&lt;f64&gt; = orbit::calculate_f_from_initial_rr_and_vv(
+        rr.clone(),
+        vv.clone(),
+        mu,
+        simulation_time,
+        steps,
+    );
+
+    let a: f64 = orbit::calculate_a_from_initial_rr_and_vv(rr, vv, mu);
+    let radius: Array1&lt;f64&gt; = orbit::calculate_radius_from_f(f.clone(), e, a);
+
+    println!(
+        &quot;Maximum distance from the sun (aphelion): {}&quot;,
+        radius.iter().max_by(|a, b| a.total_cmp(b)).unwrap()
+    );
+    println!(
+        &quot;Minimum distance from the sun (perihelion): {}&quot;,
+        radius.iter().min_by(|a, b| a.total_cmp(b)).unwrap()
+    );
+
+    let mut coordinate_file = File::create(&quot;mercury.csv&quot;).unwrap();
+    write!(coordinate_file, &quot;radius,f\n&quot;).unwrap();
+    for i in 0..=(steps - 1) {
+        write!(coordinate_file, &quot;{},{}\n&quot;, radius[i], f[i]).unwrap();
+    }
+}
+</code></pre>
+<h2 id="visualising-the-results"><a class="header" href="#visualising-the-results">Visualising the results</a></h2>
+<p>To visualise the results, the following bit of Python code can be used. Have Python and the necessary libraries installed, and then run the script inside the base directory of the cargo project with:</p>
+<pre><code>python plot_two_body_orbit.py
+</code></pre>
+<p>The script itself:</p>
+<pre><code>#!/usr/bin/python
+
+import pandas as pd
+import math
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation, PillowWriter
+
+df=pd.read_csv(&quot;mercury.csv&quot;)
+
+def plot_2d_orbit(i):
+    plt.polar(df.f[0:i], df.radius[0:i], 'k.')
+
+def main():
+    fig = plt.figure()
+    plotn=111
+    ax = fig.add_subplot(plotn, polar=True)
+    ax.set_rlim(rmin=0, rmax=7e10)
+    anim = FuncAnimation(fig, plot_2d_orbit, frames=100, repeat=True)
+    
+    f = r&quot;mercury.gif&quot;
+    writergif = PillowWriter(fps=20)
+    anim.save(f, writer=writergif)
+
+    plt.show()
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre>
+<h2 id="a-look-at-the-results"><a class="header" href="#a-look-at-the-results">A look at the results</a></h2>
+<p>The Python script should produce a plot with the all the points at different times plotted at once and an animated gif of the time evolution of the orbit. Let's look at the final plot first:</p>
+<p><img src="images/mercury.png" alt="Mercury's orbit" /></p>
+<p>We have a fairly circular orbit around the origin, which is indeed how a planet's orbit around the sun should look like. By looking carefully, we see that that the orbit is not quite a circle, but stratches further away from the origin on the left. In fact, the orbit should be an ellipsis in fact, but that is perhaps a bit hard to tell with naked eye (at least for the author).</p>
+<p>Then, there is the animation:</p>
+<details>
+  <summary>Mercury's orbit animated</summary>
+<p><img src="images/mercury.gif" alt="Mercury's orbit animated" /></p>
+</details>
+<p>Looking at the animation, we see it starting from the aphelion in the left as expected given our choice of the initial coordinates. One full orbit is then completed. Because true anomaly is measured from perihelion and matplolib sets the zero angle to the direction of the positive x-axis, we picked our initial position and velocity in the way we did so they would align with the final polar view we are using.</p>
 
                     </main>
 
@@ -176,7 +340,7 @@
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next" href="getting_started.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="hyperbolic-and-parabolic-orbits.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -190,7 +354,7 @@
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next" href="getting_started.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="hyperbolic-and-parabolic-orbits.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

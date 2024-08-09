@@ -104,7 +104,7 @@ use std::fs::File;
 use std::io::Write;
 ```
 
-The the actual writing:
+Then the actual writing:
 
 ```
     let mut coordinate_file = File::create("halleys_polar_coordinates.csv").unwrap();
