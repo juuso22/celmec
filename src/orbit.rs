@@ -61,7 +61,7 @@ pub fn calculate_ee(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> Array1<f64> {
 ///
 /// μ = see [μ](`calculate_mu`).
 ///
-/// **Output**: eccentricity e'
+/// **Output**: eccentricity e
 ///
 /// Calculation is done from e's definition as the length of the vector **e** ([`ee`](`calculate_ee`)).
 pub fn calculate_e(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> f64 {
@@ -69,6 +69,16 @@ pub fn calculate_e(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> f64 {
 }
 
 /// Calculates the Lagrangian h of a 2-body system.
+///
+/// **Inputs**:
+///
+/// rr = position of the 2 bodies with respect to each other
+///
+/// vv = velocity of the 2 bodies with respect to each other
+///
+/// μ = see [μ](`calculate_mu`).
+///
+/// **Output**: Lagrangian h
 ///
 /// For a Newtonian 2-body system the Lagrangian is the difference between the kinetic and the potential energy of the system:
 ///
