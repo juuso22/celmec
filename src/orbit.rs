@@ -415,7 +415,7 @@ fn hyperbolic_kepler_eq_iterative_step(
 ///
 /// The iterative step is:
 ///
-/// E<sub>i+1</sub> = E <sub>i</sub> - (E<sub>i</sub><sup>3</sup>/6 + E<sub>i</sub>/2 + n * (t - τ)) / (E<sub>i</sub><sup>2</sup>/3 + 1/2)
+/// E<sub>i+1</sub> = E <sub>i</sub> - (E<sub>i</sub><sup>3</sup>/6 + E<sub>i</sub>/2 - n * (t - τ)) / (E<sub>i</sub><sup>2</sup>/3 + 1/2)
 ///
 /// which is derived using Newton-Raphson method from the Barker equation:
 ///
@@ -575,14 +575,26 @@ pub fn calculate_f_from_eccentric_anomaly(eccentric_anomaly: Array1<f64>, e: f64
         //sin(E) is used to determine whether f is in [-PI, 0] or [0, PI]
         f_cos.mapv_into_any(|v| v.0 * v.1.acos())
     } else if e == 1. {
-        //TODO: this has to be checked and tested!
-        eccentric_anomaly.mapv_into(|v| v.atan()) / 2.
+        let f_cos: Array1<(f64, f64)> =
+            eccentric_anomaly.mapv_into_any(|v| (v.sin().signum(), 2. / (v.powf(2.) + 1.) - 1.));
+        //sin(E) is used to determine whether f is in [-PI, 0] or [0, PI]
+        f_cos.mapv_into_any(|v| v.0 * v.1.acos())
     } else {
         panic!("Eccentricity cannot be negative!")
     }
 }
 
 /// Calculates the distance r between 2 bodies from true anomaly f, eccentricity e and semi-major axis a.
+///
+/// **Inputs**:
+///
+/// f: An array of true anomalies
+///
+/// e: eccentricity
+///
+/// a: semi-major axis
+///
+/// **Output**: An array of radii between to bodies attracted by gravitation
 ///
 /// Using a reference frame with one of the bodies fixed as origin, this can also be undrstood as the radius of the orbit of the other body with respect to the first.
 ///
@@ -597,8 +609,14 @@ pub fn calculate_f_from_eccentric_anomaly(eccentric_anomaly: Array1<f64>, e: f64
 /// f = true anomaly
 ///
 /// Inputs are an array of true anomalies as well the semi-major axis [a](`calculate_a`) and the eccentricity [e](`calculate_e`) of the system.
-pub fn calculate_radius_from_f(f: Array1<f64>, e: f64, a: f64) -> Array1<f64> {
-    a * (1. - e.powf(2.)).abs() / (1. + e * f.mapv_into(|v| v.cos()))
+pub fn calculate_r_from_f(f: Array1<f64>, e: f64, a: f64) -> Array1<f64> {
+    if (e != 1.) && (e >= 0.) {
+        a * (1. - e.powf(2.)).abs() / (1. + e * f.mapv_into(|v| v.cos()))
+    } else if e == 1. {
+        0.5 * a / (1. + f.mapv_into(|v| v.cos()))
+    } else {
+        panic!("Eccentricity cannot be negative!")
+    }
 }
 
 /// Calculates the true anomaly f for a 2 body problem for a given total time split into a given number of steps.

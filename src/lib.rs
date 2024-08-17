@@ -131,9 +131,9 @@ mod tests {
     }
 
     #[test]
-    fn radius_from_f_with_zero_e() {
+    fn r_from_f_with_zero_e() {
         let a: f64 = 1.;
-        assert_eq!(array![a], orbit::calculate_radius_from_f(array![3.], 0., a));
+        assert_eq!(array![a], orbit::calculate_r_from_f(array![3.], 0., a));
     }
 
     #[test]
