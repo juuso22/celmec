@@ -86,7 +86,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.2.</strong> Hyperbolic and parabolic orbits</a></li></ol></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li></ol></li><li class="chapter-item expanded "><a href="underlying_physics.html"><strong aria-hidden="true">5.</strong> Underlying Physics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">5.1.</strong> Glossary of Terms</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.2.</strong> Hyperbolic and parabolic orbits</a></li></ol></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="underlying_physics.html"><strong aria-hidden="true">5.</strong> Underlying Physics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">5.1.</strong> Glossary of Terms</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -563,6 +563,164 @@ if __name__ == &quot;__main__&quot;:
 <p><img src="images/halley.gif" alt="Halley's comet's orbit animated" /></p>
 </details>
 <p>This is in fact what <em>Kepler's third law</em> tells us and to explain what that is all about, it's best to jump to the next physics chapter.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="keplerian-elements-parabolic-orbit"><a class="header" href="#keplerian-elements-parabolic-orbit">Keplerian Elements: Parabolic Orbit</a></h1>
+<p>With Keplerian elements, creating a simulation for parabolic orbit becomes somewhat easier. Instead of trying to figure out a right position-velocity combination to get \( e = 1 \), we can just set the eccentricity to one. Let's do that for Halley's comet by changing the definition of the Keplerian elements from the previous simulation to the following:</p>
+<pre><code>    let halleys_keplerian_elements = orbital_elements::KeplerianElements {
+        e: 1., //This has now changed compared to the previous simulation
+        longitude_of_the_ascending_node: 1.03666,
+        tau: 0.,
+        a: 2.65342e12,
+        iota: 2.82674,
+        omega: 1.95564,
+    };
+
+</code></pre>
+<p>One further change is needed. As the orbit will now be parabolic, there is no longer a <code>rotation_time</code> which can be used to calculate the 5th argument in:</p>
+<pre><code>    let eccentric_anomaly: Array1&lt;f64&gt; = orbit::calculate_eccentric_anomaly_iteratively(
+        time.clone(),
+        time.clone(),
+        0.00001,
+        100,
+        2. * PI / rotation_time,
+        halleys_keplerian_elements.e,
+        halleys_keplerian_elements.tau,
+    );
+</code></pre>
+<p>But that 5th argument is the quantity \(n\), which can alternatively be calculated from the formula:</p>
+<p>\[ n = \sqrt{\mu}a^\frac{-3}{2}, \textrm{ where } \mu = G(m_1m_2) \]</p>
+<p><code>celmec</code> in fact has functions to calculate bot \(n\) and \(\mu\). Let's first add a line somewhere before the calculation of the eccentric anomaly which calculates the latter. I'll be lazy and not look up any estimates for the mass of the comet but simply set \(m_1\) to the mass of the Sun and \(m_2=0\):</p>
+<pre><code>    let mu: f64 = orbit::calculate_mu(1.989e30, 0.);
+
+</code></pre>
+<p>Then the 5th parameter in the calculation of the eccentric anomaly can be set as follows:</p>
+<pre><code>    let eccentric_anomaly: Array1&lt;f64&gt; = orbit::calculate_eccentric_anomaly_iteratively(
+        time.clone(),
+        time.clone(),
+        0.00001,
+        100,
+        orbit::calculate_n(mu, halleys_keplerian_elements.a),
+        halleys_keplerian_elements.e,
+        halleys_keplerian_elements.tau,
+    );
+</code></pre>
+<p>When you run the simulation, Rust compiler will complain about unused import of the <code>PI</code> constant. You can get rid of that by commenting the line:</p>
+<pre><code>use std::f64::consts::PI;
+</code></pre>
+<p>if you want to.</p>
+<h2 id="simulation-results"><a class="header" href="#simulation-results">Simulation results</a></h2>
+<p>Running the modified Rust coed and the plotter script should yield the following nice parabola:</p>
+<p><img src="images/flyby-halley.png" alt="&quot;Flyby Halley's&quot; orbit" /></p>
+<p>And the same thing animated:</p>
+<details>
+  <summary>"Flyby Halley's" orbit animated</summary>
+<p><img src="images/flyby-halley.gif" alt="&quot;Flyby Halley's&quot; orbit animated" /></p>
+</details>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="keplerian-elements-coordinate-transformation"><a class="header" href="#keplerian-elements-coordinate-transformation">Keplerian Elements: Coordinate Transformation</a></h1>
+<p>So far all the visualisations in this book have been restricted to the orbital plane of the system being simulated. However, the Keplerian elements contain a bunch of angles, which determine the the position of the orbit with respect to the orbital plane of the Earth. For 3d visuals, let us know use these angles to switch from the plane of the system to a three-dimensional volume where the Sun lies at origin and the xy-plane is the orbital plane of the earth and use spherical coordinates there. In order to do that, we can copy the code from the original simulation of Halley's comet's orbit and add some pieces.</p>
+<p>Firstly, in order to do the coordinate switch, we'll need the <code>transformations</code> module of <code>celmec</code> so we'll modify our imports as follows:</p>
+<pre><code>use celmec::{orbit, orbital_elements, transformations};
+</code></pre>
+<p>Then, after calculating the radii and true anomalies, the new module can be used to perform the coordinate transformation:</p>
+<pre><code>    let spherical_coordinates: (Array1&lt;f64&gt;, Array1&lt;f64&gt;) =
+        transformations::spherical_coordinates_from_f_and_keplerian_elements(
+            f,
+            halleys_keplerian_elements,
+        );
+
+</code></pre>
+<p>Then the output file generation has to be adjusted as well. Instead of what we previously had, we'll use:</p>
+<pre><code>    let mut coordinate_file = File::create(&quot;halleys_orbit_3d.csv&quot;).unwrap();
+    write!(coordinate_file, &quot;t,radius,theta,phi\n&quot;).unwrap();
+    for i in 0..=(ticks - 1) {
+        write!(
+            coordinate_file,
+            &quot;{},{},{},{}\n&quot;,
+            time[i], radius[i], spherical_coordinates.0[i], spherical_coordinates.1[i]
+        )
+        .unwrap();
+    }
+</code></pre>
+<h3 id="the-final-rust-code"><a class="header" href="#the-final-rust-code">The Final Rust Code</a></h3>
+<p>In the end, <code>Config.toml</code> should look like this:</p>
+<pre><code>[package]
+name = &quot;coordinate-transformation&quot;
+version = &quot;0.1.0&quot;
+edition = &quot;2021&quot;
+
+[dependencies]
+ndarray = &quot;0.15.6&quot;
+celmec = { git = &quot;https://github.com/juuso22/celmec.git&quot; }
+</code></pre>
+<p>and <code>main.rs</code> should look like this</p>
+<pre><code>use celmec::{orbit, orbital_elements, transformations};
+use ndarray::{Array, Array1};
+use std::f64::consts::PI;
+use std::fs::File;
+use std::io::Write;
+
+fn main() {
+    let halleys_keplerian_elements = orbital_elements::KeplerianElements {
+        e: 0.96658,
+        longitude_of_the_ascending_node: 1.03666,
+        tau: 0.,
+        a: 2.65342e12,
+        iota: 2.82674,
+        omega: 1.95564,
+    };
+
+    let ticks = 50;
+    let rotation_time: f64 = 2379801600.;
+    let time: Array1&lt;f64&gt; = Array::linspace(
+        halleys_keplerian_elements.tau - rotation_time / 2.,
+        halleys_keplerian_elements.tau + rotation_time / 2.,
+        ticks,
+    );
+    let eccentric_anomaly: Array1&lt;f64&gt; = orbit::calculate_eccentric_anomaly_iteratively(
+        time.clone(),
+        time.clone(),
+        0.00001,
+        100,
+        2. * PI / rotation_time,
+        halleys_keplerian_elements.e,
+        halleys_keplerian_elements.tau,
+    );
+
+    let f: Array1&lt;f64&gt; =
+        orbit::calculate_f_from_eccentric_anomaly(eccentric_anomaly, halleys_keplerian_elements.e);
+
+    let radius = orbit::calculate_r_from_f(
+        f.clone(),
+        halleys_keplerian_elements.e,
+        halleys_keplerian_elements.a,
+    );
+
+    let spherical_coordinates: (Array1&lt;f64&gt;, Array1&lt;f64&gt;) =
+        transformations::spherical_coordinates_from_f_and_keplerian_elements(
+            f,
+            halleys_keplerian_elements,
+        );
+
+    let mut coordinate_file = File::create(&quot;halleys_orbit_3d.csv&quot;).unwrap();
+    write!(coordinate_file, &quot;t,radius,theta,phi\n&quot;).unwrap();
+    for i in 0..=(ticks - 1) {
+        write!(
+            coordinate_file,
+            &quot;{},{},{},{}\n&quot;,
+            time[i], radius[i], spherical_coordinates.0[i], spherical_coordinates.1[i]
+        )
+        .unwrap();
+    }
+}
+</code></pre>
+<h3 id="visualising-the-results-2"><a class="header" href="#visualising-the-results-2">Visualising the results</a></h3>
+<p>For the visualisation, the following python script can be used:</p>
+<pre><code>TODO: add script
+</code></pre>
+<p>which can be run like this:</p>
+<pre><code>TODO
+</code></pre>
+<p>This should give something like this:</p>
+<p>TODO: pic and gif here</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="underlying-physics"><a class="header" href="#underlying-physics">Underlying Physics</a></h1>
 <p>This chapter describes the physics used in celmec.</p>
 <p>Currently almost everything comes from &quot;Johdatus Taivaanmekaniikkaan&quot; from Karttunen (2020) unless explicitly otherwise cited.</p>

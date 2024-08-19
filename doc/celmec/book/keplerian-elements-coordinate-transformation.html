@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>The Celmec Book - Celmec</title>
+        <title>Keplerian Elements: Coordinate Transformation - Celmec</title>
 
 
         <!-- Custom HTML head -->
@@ -85,7 +85,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html" class="active"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.2.</strong> Hyperbolic and parabolic orbits</a></li></ol></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="underlying_physics.html"><strong aria-hidden="true">5.</strong> Underlying Physics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">5.1.</strong> Glossary of Terms</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.2.</strong> Hyperbolic and parabolic orbits</a></li></ol></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html" class="active"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="underlying_physics.html"><strong aria-hidden="true">5.</strong> Underlying Physics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">5.1.</strong> Glossary of Terms</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -168,22 +168,122 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="the-celmec-book---or-learning-elementary-celectial-mechanics-via-coding"><a class="header" href="#the-celmec-book---or-learning-elementary-celectial-mechanics-via-coding">The Celmec Book - or learning elementary celectial mechanics via coding</a></h1>
-<p>This a book that want's to be 2 things at once:</p>
-<ol>
-<li>An introduction to elementary celestial mechanics.</li>
-<li>An guide to the <code>celmec</code> Rust library for celestial mechanics.</li>
-</ol>
-<p>I'll try to write it so that no pre-requisite knowledge of celestial mechanics is necessary. Some knowledge of basic programming, Rust, Python (especially <code>matplotlib</code>) and vector algebra is needed, though.</p>
-<p>After instructions on how to make the <code>celmec</code> library available for you, each chapter introduces a little simulation with visualization with Python. The chapters start with a section  about some necessary physics to understand the simulation, the simulation itself as well as its results and then some additional physics which can be seen working in the simulation results. The physics sections will mainly provide ready formulas that other people have proved/calculated from lower principles, but for those interested, there will be references to other texts.</p>
-<p>Currently <code>celmec</code> covers only the <em>two-body problem</em> ie. how to bodies move with gravity acting between them, but I'll attempt to extend the library (and then this book) in the future.</p>
+                        <h1 id="keplerian-elements-coordinate-transformation"><a class="header" href="#keplerian-elements-coordinate-transformation">Keplerian Elements: Coordinate Transformation</a></h1>
+<p>So far all the visualisations in this book have been restricted to the orbital plane of the system being simulated. However, the Keplerian elements contain a bunch of angles, which determine the the position of the orbit with respect to the orbital plane of the Earth. For 3d visuals, let us know use these angles to switch from the plane of the system to a three-dimensional volume where the Sun lies at origin and the xy-plane is the orbital plane of the earth and use spherical coordinates there. In order to do that, we can copy the code from the original simulation of Halley's comet's orbit and add some pieces.</p>
+<p>Firstly, in order to do the coordinate switch, we'll need the <code>transformations</code> module of <code>celmec</code> so we'll modify our imports as follows:</p>
+<pre><code>use celmec::{orbit, orbital_elements, transformations};
+</code></pre>
+<p>Then, after calculating the radii and true anomalies, the new module can be used to perform the coordinate transformation:</p>
+<pre><code>    let spherical_coordinates: (Array1&lt;f64&gt;, Array1&lt;f64&gt;) =
+        transformations::spherical_coordinates_from_f_and_keplerian_elements(
+            f,
+            halleys_keplerian_elements,
+        );
+
+</code></pre>
+<p>Then the output file generation has to be adjusted as well. Instead of what we previously had, we'll use:</p>
+<pre><code>    let mut coordinate_file = File::create(&quot;halleys_orbit_3d.csv&quot;).unwrap();
+    write!(coordinate_file, &quot;t,radius,theta,phi\n&quot;).unwrap();
+    for i in 0..=(ticks - 1) {
+        write!(
+            coordinate_file,
+            &quot;{},{},{},{}\n&quot;,
+            time[i], radius[i], spherical_coordinates.0[i], spherical_coordinates.1[i]
+        )
+        .unwrap();
+    }
+</code></pre>
+<h3 id="the-final-rust-code"><a class="header" href="#the-final-rust-code">The Final Rust Code</a></h3>
+<p>In the end, <code>Config.toml</code> should look like this:</p>
+<pre><code>[package]
+name = &quot;coordinate-transformation&quot;
+version = &quot;0.1.0&quot;
+edition = &quot;2021&quot;
+
+[dependencies]
+ndarray = &quot;0.15.6&quot;
+celmec = { git = &quot;https://github.com/juuso22/celmec.git&quot; }
+</code></pre>
+<p>and <code>main.rs</code> should look like this</p>
+<pre><code>use celmec::{orbit, orbital_elements, transformations};
+use ndarray::{Array, Array1};
+use std::f64::consts::PI;
+use std::fs::File;
+use std::io::Write;
+
+fn main() {
+    let halleys_keplerian_elements = orbital_elements::KeplerianElements {
+        e: 0.96658,
+        longitude_of_the_ascending_node: 1.03666,
+        tau: 0.,
+        a: 2.65342e12,
+        iota: 2.82674,
+        omega: 1.95564,
+    };
+
+    let ticks = 50;
+    let rotation_time: f64 = 2379801600.;
+    let time: Array1&lt;f64&gt; = Array::linspace(
+        halleys_keplerian_elements.tau - rotation_time / 2.,
+        halleys_keplerian_elements.tau + rotation_time / 2.,
+        ticks,
+    );
+    let eccentric_anomaly: Array1&lt;f64&gt; = orbit::calculate_eccentric_anomaly_iteratively(
+        time.clone(),
+        time.clone(),
+        0.00001,
+        100,
+        2. * PI / rotation_time,
+        halleys_keplerian_elements.e,
+        halleys_keplerian_elements.tau,
+    );
+
+    let f: Array1&lt;f64&gt; =
+        orbit::calculate_f_from_eccentric_anomaly(eccentric_anomaly, halleys_keplerian_elements.e);
+
+    let radius = orbit::calculate_r_from_f(
+        f.clone(),
+        halleys_keplerian_elements.e,
+        halleys_keplerian_elements.a,
+    );
+
+    let spherical_coordinates: (Array1&lt;f64&gt;, Array1&lt;f64&gt;) =
+        transformations::spherical_coordinates_from_f_and_keplerian_elements(
+            f,
+            halleys_keplerian_elements,
+        );
+
+    let mut coordinate_file = File::create(&quot;halleys_orbit_3d.csv&quot;).unwrap();
+    write!(coordinate_file, &quot;t,radius,theta,phi\n&quot;).unwrap();
+    for i in 0..=(ticks - 1) {
+        write!(
+            coordinate_file,
+            &quot;{},{},{},{}\n&quot;,
+            time[i], radius[i], spherical_coordinates.0[i], spherical_coordinates.1[i]
+        )
+        .unwrap();
+    }
+}
+</code></pre>
+<h3 id="visualising-the-results"><a class="header" href="#visualising-the-results">Visualising the results</a></h3>
+<p>For the visualisation, the following python script can be used:</p>
+<pre><code>TODO: add script
+</code></pre>
+<p>which can be run like this:</p>
+<pre><code>TODO
+</code></pre>
+<p>This should give something like this:</p>
+<p>TODO: pic and gif here</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="keplerian-elements-parabolic-orbit.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
-                            <a rel="next" href="getting-the-celmec-library.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="underlying_physics.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -193,8 +293,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="keplerian-elements-parabolic-orbit.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
-                    <a rel="next" href="getting-the-celmec-library.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="underlying_physics.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
