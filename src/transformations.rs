@@ -1,6 +1,8 @@
 use ndarray::Array1;
 use std::f64::consts::PI;
 
+use crate::orbital_elements;
+
 /// Calculates polar angle from true anomaly f and relevant Keplerian elements.
 ///
 /// **Inputs**:
@@ -94,4 +96,30 @@ pub fn phi_from_keplerian_elements_and_theta(
         .mapv_into(|f| f.cos() / ((PI / 2.) - theta_iterator.next().unwrap()).cos())
         .mapv_into(|f| f.acos());
     phi_refinment(raw_phi, theta) + longitude_of_the_ascending_node
+}
+
+/// Calculates spherical angle coordinates theta and phi from an array of true anomalies and orbital elements
+///
+/// **Inputs:***
+///
+/// f: an array of true anomalies
+///
+/// keplerian_elements: a struct containing Keplerian orbital elements
+///
+/// **Output:** A tuple where the first array is an array of sphrical angles theta and the the second array is an array of spherical angles phi
+///
+/// The math behind this method can be found from the functions it uses: [theta_from_keplerian_elements](`theta_from_keplerian_elements`) and [phi_from_keplerian_elements_and_theta](`phi_from_keplerian_elements_and_theta`)
+pub fn spherical_coordinates_from_f_and_keplerian_elements(
+    f: Array1<f64>,
+    keplerian_elements: orbital_elements::KeplerianElements,
+) -> (Array1<f64>, Array1<f64>) {
+    let theta: Array1<f64> =
+        theta_from_keplerian_elements(f, keplerian_elements.iota, keplerian_elements.omega);
+    let phi: Array1<f64> = phi_from_keplerian_elements_and_theta(
+        f,
+        theta.clone(),
+        keplerian_elements.omega,
+        keplerian_elements.longitude_of_the_ascending_node,
+    );
+    (theta, phi)
 }
