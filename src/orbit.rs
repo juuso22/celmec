@@ -1,3 +1,4 @@
+use crate::orbital_elements::KeplerianElements;
 use math::{cross_product, euclidean_norm, solve_equation_iteratively};
 use ndarray::{array, Array1};
 use std::collections::HashMap;
@@ -668,6 +669,42 @@ pub fn calculate_f_from_initial_rr_and_vv(
         tau,
     );
     calculate_f_from_eccentric_anomaly(eccentric_anomaly, e)
+}
+
+/// Calculates the true anomaly f for a 2 body problem from keplerian elements for a given total time split into a given number of steps.
+///
+/// One of the bodies lies at the origin and all the inputs are given with respect to this body, referred to as "the central body". The other body is referred to as "the rotating body"
+///
+/// **Inputs**:
+///
+/// elements: Keplerian elements of the 2-body system
+///
+/// mu: The gravitational parameter of the system. See [μ](`calculate_mu`).
+///
+/// total_time: The time to be simulated.
+///
+/// steps: The number of intervals the original interval [0, total_time] is split into.
+///
+/// **Output**: An array of true anomalies.
+pub fn calculate_f_from_keplerian_elements(
+    elements: &KeplerianElements,
+    mu: f64,
+    start_time: f64,
+    end_time: f64,
+    steps: usize,
+) -> Array1<f64> {
+    let n: f64 = calculate_n(mu, elements.a);
+    let t: Array1<f64> = Array1::linspace(start_time, end_time, steps);
+    let eccentric_anomaly: Array1<f64> = calculate_eccentric_anomaly_iteratively(
+        t.clone(),
+        Array1::zeros(steps),
+        0.0001,
+        100,
+        n,
+        elements.e,
+        elements.tau,
+    );
+    calculate_f_from_eccentric_anomaly(eccentric_anomaly, elements.e)
 }
 
 /// Calculates the semi-major axis a for a 2 body problem from initial conditions.
