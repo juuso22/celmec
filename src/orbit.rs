@@ -619,7 +619,7 @@ pub fn calculate_r_from_f(f: Array1<f64>, e: f64, a: f64) -> Array1<f64> {
     }
 }
 
-/// Calculates the true anomaly f for a 2 body problem for a given total time split into a given number of steps.
+/// Calculates the true anomaly f for a 2 body problem from initial conditions for a given total time split into a given number of steps.
 ///
 /// One of the bodies lies at the origin and all the inputs are given with respect to this body, referred to as "the central body". The other body is referred to as "the rotating body"
 ///
@@ -640,7 +640,8 @@ pub fn calculate_f_from_initial_rr_and_vv(
     rr: Array1<f64>,
     vv: Array1<f64>,
     mu: f64,
-    total_time: f64,
+    start_time: f64,
+    end_time: f64,
     steps: usize,
 ) -> Array1<f64> {
     let ee: Array1<f64> = calculate_ee(rr.clone(), vv.clone(), mu);
@@ -656,7 +657,7 @@ pub fn calculate_f_from_initial_rr_and_vv(
         n,
     );
 
-    let t: Array1<f64> = Array1::linspace(0., total_time, steps);
+    let t: Array1<f64> = Array1::linspace(start_time, end_time, steps);
     let eccentric_anomaly: Array1<f64> = calculate_eccentric_anomaly_iteratively(
         t.clone(),
         Array1::zeros(steps),
