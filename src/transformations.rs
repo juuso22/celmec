@@ -114,7 +114,7 @@ pub fn spherical_coordinates_from_f_and_keplerian_elements(
     keplerian_elements: orbital_elements::KeplerianElements,
 ) -> (Array1<f64>, Array1<f64>) {
     let theta: Array1<f64> =
-        theta_from_keplerian_elements(f, keplerian_elements.iota, keplerian_elements.omega);
+        theta_from_keplerian_elements(f.clone(), keplerian_elements.iota, keplerian_elements.omega);
     let phi: Array1<f64> = phi_from_keplerian_elements_and_theta(
         f,
         theta.clone(),
