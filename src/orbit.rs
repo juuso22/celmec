@@ -21,9 +21,11 @@ pub const G: f64 = 6.67430e-11;
 /// μ can be used to calculate the gravitational force between the 2 masses if the distance r between them is known:
 ///
 /// ```
-/// let m1 = 10;
-/// let m2 = 20;
-/// let r = 100;
+/// use celmec::orbit::calculate_mu;
+///
+/// let m1: f64 = 10.;
+/// let m2: f64 = 20.;
+/// let r: f64 = 100.;
 /// let force = calculate_mu(m1, m2) / r.powf(2.);
 /// ```
 pub fn calculate_mu(m1: f64, m2: f64) -> f64 {
