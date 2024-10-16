@@ -234,7 +234,7 @@ mod tests {
         let mut omega: f64 = 0.;
         let f: Array1<f64> = array![0., PI / 2., PI, 3. / 2. * PI];
         assert_eq!(
-            array![0., 0., 0., 0.],
+            array![PI / 2., PI / 2., PI / 2., PI / 2.],
             transformations::phi_from_keplerian_elements(f.clone(), iota, omega,)
         );
 
@@ -242,7 +242,7 @@ mod tests {
         omega = rng.gen::<f64>() * 2. * PI;
         println!("Random omega: {}", omega);
         assert_eq!(
-            array![0., 0., 0., 0.],
+            array![PI / 2., PI / 2., PI / 2., PI / 2.],
             transformations::phi_from_keplerian_elements(f, iota, omega,)
         );
     }
@@ -278,14 +278,15 @@ mod tests {
             (array![0., 0., 0., 0., 0., 0., 0., 0.] - theta.clone().mapv_into(|v| v.sin()))
                 .mapv_into_any(|v| (v.abs() < 1.0e-10) as u8)
                 .sum(),
-            f.clone().len() as u8
+            6
         );
         assert_eq!(
-            (array![1., 1., -1., -1., -1., 1., 1., 1.] - theta.mapv_into(|v| v.cos()))
+            (array![1., 1., -1., -1., -1., 1., 1., 1.] - theta.clone().mapv_into(|v| v.cos()))
                 .mapv_into_any(|v| (v.abs() < 1.0e-10) as u8)
                 .sum(),
-            f.clone().len() as u8
+            6
         );
+        assert_eq!(theta.mapv_into_any(|v| (v.is_nan()) as u8).sum(), 2);
 
         let mut rng = rand::thread_rng();
         longitude_of_the_ascending_node = rng.gen::<f64>() * 2. * PI;
@@ -309,20 +310,19 @@ mod tests {
             longitude_of_the_ascending_node,
             longitude_of_the_ascending_node
         ];
-        println!("{}", theta);
-        println!("{}", control);
         assert_eq!(
             (control.clone().mapv_into(|v| v.sin()) - theta.clone().mapv_into(|v| v.sin()))
                 .mapv_into_any(|v| (v.abs() < 1.0e-10) as u8)
                 .sum(),
-            f.clone().len() as u8
+            6
         );
         assert_eq!(
-            (control.clone().mapv_into(|v| v.cos()) - theta.mapv_into(|v| v.cos()))
+            (control.clone().mapv_into(|v| v.cos()) - theta.clone().mapv_into(|v| v.cos()))
                 .mapv_into_any(|v| (v.abs() < 1.0e-10) as u8)
                 .sum(),
-            f.clone().len() as u8
+            6
         );
+        assert_eq!(theta.mapv_into_any(|v| (v.is_nan()) as u8).sum(), 2);
     }
 
     #[test]
@@ -343,13 +343,13 @@ mod tests {
         assert_eq!(
             (f.clone().mapv_into(|v| {
                 if (v >= PI / 2.) & (v < PI) {
-                    PI - v
+                    v - PI / 2.
                 } else if (v >= PI) & (v < PI * 3. / 2.) {
-                    -v + PI
+                    v - PI / 2.
                 } else if v >= PI * 3. / 2. {
-                    v - 2. * PI
+                    5. * PI / 2. - v
                 } else {
-                    v
+                    PI / 2. - v
                 }
             }) - transformations::phi_from_keplerian_elements(f.clone(), iota, omega,))
             .mapv_into_any(|v| (v.abs() < 1.0e-10) as u8)
@@ -359,5 +359,50 @@ mod tests {
 
         f = array![PI];
         assert!(0. - transformations::phi_from_keplerian_elements(f, iota, omega,)[0] < 1.0e-10);
+    }
+
+    #[test]
+    fn sphericals_for_arbitrary_iota() {
+        //This is more like a regression test:
+        //I picked the values by adapting the demo coordinate_transformation
+        //at a time when I was pretty sure the functions tested here work correctly
+        //(ie. 16.10.2024)
+        //The modification I made was to calculate spherical coordinates instead of
+        //cartesians.
+        let iota: f64 = 2.82674;
+        let omega: f64 = 1.95564;
+        let longitude_of_the_ascending_node: f64 = 1.03666;
+        let f: Array1<f64> = array![
+            3.1396486577792015,
+            -3.0618489166515466,
+            -2.907447721707956,
+            2.8766713188022917,
+            3.0513809874254925,
+        ];
+        assert_eq!(
+            array![
+                1.8621521944438066,
+                1.8513135484528696,
+                1.8257708767582101,
+                1.8833107655695367,
+                1.8716463184907006,
+            ],
+            transformations::phi_from_keplerian_elements(f.clone(), iota, omega,)
+        );
+        assert_eq!(
+            array![
+                6.149735192706617,
+                6.234129679841356,
+                0.10886093708854638,
+                5.875107345304375,
+                6.057983613318866,
+            ],
+            transformations::theta_from_keplerian_elements(
+                f.clone(),
+                iota,
+                omega,
+                longitude_of_the_ascending_node
+            )
+        );
     }
 }

@@ -13,6 +13,7 @@
 /// i = inclination
 ///
 /// omega = argument of perihelion
+#[derive(Clone)]
 pub struct KeplerianElements {
     pub e: f64,
     pub longitude_of_the_ascending_node: f64,

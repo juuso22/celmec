@@ -17,7 +17,7 @@ use crate::orbital_elements;
 ///
 /// Polar angle is calculated in a reference frame where one of the two bodies of a 2-body system is at origin from the formula:
 ///
-/// θ = asin(sin(f + ω) * cos(ι)) + Ω,
+/// θ = atan(sin(f + ω) * cos(ι) / cos(f + ω)) + Ω,
 ///
 /// where
 ///
@@ -33,13 +33,13 @@ use crate::orbital_elements;
 ///
 /// Because asin values are bound between -π/2 and π/2, the resulting polar angles need to be shifted to the second and third qudrant of the unit circle if needed. The value of of f+ω is always is the same quadrant of the unit circle as value projected to the epliptical plane (ie. the value that comes out of the asin, before adding the longitude of the ascending node in the formula above). Therefore, if that value is in the second or third quadrant, the value coming out of the asin is shifted from first quadrant to second or fourth quadrant to the third:
 ///
-/// θ<sub>projected</sub> = asin(sin(f + ω) * cos(ι)), if f+ω ∈ [-π/2, π/2]
+/// θ<sub>projected</sub> = atan(sin(f + ω) * cos(ι) / cos(f + ω)), if f+ω ∈ [-π/2, π/2]
 ///
-/// θ<sub>projected</sub> = π - asin(sin(f + ω) * cos(ι)), otherwise
+/// θ<sub>projected</sub> = π + atan(sin(f + ω) * cos(ι) / cos(f + ω)), otherwise
 ///
 /// where
 ///
-/// θ<sub>projected</sub> = the polar angle projectd on the ecliptica before adding longitude of the ascending node
+/// θ<sub>projected</sub> = the polar angle projected on the ecliptica before adding longitude of the ascending node
 ///
 /// In the end, the polar angle is bound to the interval [0, 2π).
 pub fn theta_from_keplerian_elements(
@@ -51,14 +51,27 @@ pub fn theta_from_keplerian_elements(
     let f_plus_omega_bound: Array1<f64> =
         ((f + omega) % (2. * PI)).mapv_into(|v| if v < 0. { 2. * PI + v } else { v });
     let over_pi_per_two_mask: Array1<f64> = (f_plus_omega_bound.clone())
-        .mapv_into(|f| ((f.abs() > PI / 2.) & (f.abs() < PI * 3. / 2.)) as i32 as f64);
-    let f_sign: Array1<f64> = over_pi_per_two_mask
-        .clone()
-        .mapv_into(|f| -(f - 0.5).signum());
+        .mapv_into(|f| ((f > PI / 2.) & (f < PI * 3. / 2.)) as i32 as f64);
     ((PI * over_pi_per_two_mask
-        + f_sign
-            * ((f_plus_omega_bound).mapv_into_any(|f| (f.sin())) * iota.cos())
-                .mapv_into(|f| f.asin())
+        + (f_plus_omega_bound).mapv_into_any(|f| {
+            if f.sin() == -1. {
+                let iota_norm = iota % (2. * PI);
+                if (iota_norm == (PI / 2.)) || (iota_norm == (3. * PI / 2.)) {
+                    f64::NAN
+                } else {
+                    3. * PI / 2.
+                }
+            } else if f.sin() == 1. {
+                let iota_norm = iota % (2. * PI);
+                if (iota_norm == (PI / 2.)) || (iota_norm == (3. * PI / 2.)) {
+                    f64::NAN
+                } else {
+                    PI / 2.
+                }
+            } else {
+                ((f.sin() * iota.cos().abs()) / f.cos()).atan()
+            }
+        })
         + longitude_of_the_ascending_node)
         % (2. * PI))
         .mapv_into(|v| if v < 0. { 2. * PI + v } else { v })
@@ -90,7 +103,7 @@ pub fn theta_from_keplerian_elements(
 ///
 /// ω = argument of perihelion
 pub fn phi_from_keplerian_elements(f: Array1<f64>, iota: f64, omega: f64) -> Array1<f64> {
-    ((f + omega).mapv_into(|v| v.sin()) * iota.sin()).mapv_into(|v| v.asin())
+    PI / 2. - ((f + omega).mapv_into(|v| v.sin()) * iota.sin()).mapv_into(|v| v.asin())
 }
 
 /// Calculates spherical angle coordinates theta and phi corresponding to ecliptical coordinates from an array of true anomalies and orbital elements
