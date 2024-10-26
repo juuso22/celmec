@@ -1,6 +1,6 @@
 # Keplerian Elements: Coordinate Transformation
 
-So far all the visualisations in this book have been restricted to the orbital plane of the system being simulated. However, the Keplerian elements contain a bunch of angles, which determine the the position of the orbit with respect to the orbital plane of the Earth. For 3d visuals, let us know use these angles to switch from the plane of the system to a three-dimensional volume where the Sun lies at origin and the xy-plane is the orbital plane of the earth and use spherical coordinates there. In order to do that, we can copy the code from the original simulation of Halley's comet's orbit and add some pieces.
+So far all the visualisations in this book have been restricted to the orbital plane of the system being simulated. However, the Keplerian elements contain a bunch of angles, which determine the the position of the orbit with respect to the orbital plane of the Earth. For 3d visuals, let us know use these angles to switch from the plane of the system to a three-dimensional volume where the Sun lies at origin and the xy-plane is the orbital plane of the earth and use cartesian coordinates there. In order to do that, we can copy the code from the original simulation of Halley's comet's orbit and add some pieces.
 
 Firstly, in order to do the coordinate switch, we'll need the `transformations` module of `celmec` so we'll modify our imports as follows:
 
@@ -11,9 +11,10 @@ use celmec::{orbit, orbital_elements, transformations};
 Then, after calculating the radii and true anomalies, the new module can be used to perform the coordinate transformation:
 
 ```
-    let spherical_coordinates: (Array1<f64>, Array1<f64>) =
-        transformations::spherical_coordinates_from_f_and_keplerian_elements(
-            f,
+    let cartesian_coordinates: (Array1<f64>, Array1<f64>, Array1<f64>) =
+        transformations::cartesian_coordinates_from_f_r_and_keplerian_elements(
+            f.clone(),
+            radius.clone(),
             halleys_keplerian_elements,
         );
 
@@ -23,12 +24,12 @@ Then the output file generation has to be adjusted as well. Instead of what we p
 
 ```
     let mut coordinate_file = File::create("halleys_orbit_3d.csv").unwrap();
-    write!(coordinate_file, "t,radius,theta,phi\n").unwrap();
+    write!(coordinate_file, "x,y,z\n").unwrap();
     for i in 0..=(ticks - 1) {
         write!(
             coordinate_file,
-            "{},{},{},{}\n",
-            time[i], radius[i], spherical_coordinates.0[i], spherical_coordinates.1[i]
+            "{},{},{}\n",
+            cartesian_coordinates.0[i], cartesian_coordinates.1[i], cartesian_coordinates.2[i],
         )
         .unwrap();
     }
@@ -53,8 +54,7 @@ and `main.rs` should look like this
 
 ```
 use celmec::{orbit, orbital_elements, transformations};
-use ndarray::{Array, Array1};
-use std::f64::consts::PI;
+use ndarray::Array1;
 use std::fs::File;
 use std::io::Write;
 
@@ -70,23 +70,14 @@ fn main() {
 
     let ticks = 50;
     let rotation_time: f64 = 2379801600.;
-    let time: Array1<f64> = Array::linspace(
+    let mu: f64 = orbit::calculate_mu(1.989e30, 0.);
+    let f: Array1<f64> = orbit::calculate_f_from_keplerian_elements(
+        &halleys_keplerian_elements,
+        mu,
         halleys_keplerian_elements.tau - rotation_time / 2.,
         halleys_keplerian_elements.tau + rotation_time / 2.,
         ticks,
     );
-    let eccentric_anomaly: Array1<f64> = orbit::calculate_eccentric_anomaly_iteratively(
-        time.clone(),
-        time.clone(),
-        0.00001,
-        100,
-        2. * PI / rotation_time,
-        halleys_keplerian_elements.e,
-        halleys_keplerian_elements.tau,
-    );
-
-    let f: Array1<f64> =
-        orbit::calculate_f_from_eccentric_anomaly(eccentric_anomaly, halleys_keplerian_elements.e);
 
     let radius = orbit::calculate_r_from_f(
         f.clone(),
@@ -94,19 +85,20 @@ fn main() {
         halleys_keplerian_elements.a,
     );
 
-    let spherical_coordinates: (Array1<f64>, Array1<f64>) =
-        transformations::spherical_coordinates_from_f_and_keplerian_elements(
-            f,
+    let cartesian_coordinates: (Array1<f64>, Array1<f64>, Array1<f64>) =
+        transformations::cartesian_coordinates_from_f_r_and_keplerian_elements(
+            f.clone(),
+            radius.clone(),
             halleys_keplerian_elements,
         );
 
     let mut coordinate_file = File::create("halleys_orbit_3d.csv").unwrap();
-    write!(coordinate_file, "t,radius,theta,phi\n").unwrap();
+    write!(coordinate_file, "x,y,z\n").unwrap();
     for i in 0..=(ticks - 1) {
         write!(
             coordinate_file,
-            "{},{},{},{}\n",
-            time[i], radius[i], spherical_coordinates.0[i], spherical_coordinates.1[i]
+            "{},{},{}\n",
+            cartesian_coordinates.0[i], cartesian_coordinates.1[i], cartesian_coordinates.2[i],
         )
         .unwrap();
     }
@@ -118,15 +110,55 @@ fn main() {
 For the visualisation, the following python script can be used:
 
 ```
-TODO: add script
+import pandas as pd
+import numpy as np
+import math
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation, PillowWriter
+
+df=pd.read_csv("halleys_orbit_3d.csv")
+
+def plot_3d_orbit(i):
+    plt.plot(df.x[0:i], df.y[0:i], df.z[0:i], 'k.')
+
+def main():
+    fig = plt.figure()
+    plotn=111
+    ax = fig.add_subplot(plotn, projection='3d')
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.set_zlabel("z")
+    ax.set_xlim([0, 1.1*np.max(df.x)])
+    ax.set_ylim([1.1*np.min(df.y), 1.1*np.max(df.y)])
+    ax.set_zlim([1.1*np.min(df.z), 0])
+    anim = FuncAnimation(fig, plot_3d_orbit, frames=50, repeat=True)
+    
+    f = r"halley_3d.gif"
+    writergif = PillowWriter(fps=20)
+    anim.save(f, writer=writergif)
+
+    plt.show()
+
+if __name__ == "__main__":
+    main()
+
 ```
 
 which can be run like this:
 
 ```
-TODO
+python plot_halleys_3d_orbit.py
 ```
 
-This should give something like this:
+This should give an image like this:
 
-TODO: pic and gif here
+![Halley's 3d orbit](images/halley-3d.png)
+
+and the same animated:
+
+<details>
+  <summary>Halley's 3d orbit animated</summary>
+  
+  ![Halley's 3d orbit](images/halley-3d.gif)
+  
+</details>

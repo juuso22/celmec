@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Getting the Celmec Library - Celmec</title>
+        <title>Keplerian Elements - Celmec</title>
 
 
         <!-- Custom HTML head -->
@@ -85,7 +85,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html" class="active"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-necessary-concepts.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Necessary Concepts</a></li><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.2.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-the-underlying-physics.html"><strong aria-hidden="true">3.3.</strong> Two Body Problem: The Underlying Physics</a></li><li class="chapter-item expanded "><a href="two-body-problem-a-look-inside-the-functions-used-in-the-simulation.html"><strong aria-hidden="true">3.4.</strong> Two-body Problem: A Look Inside the Functions Used in the Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.5.</strong> Two-body Problem: Hyperbolic and Parabolic Orbits</a></li></ol></li><li class="chapter-item expanded "><a href="keplerian-elements.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-a-look-inside-the-transformation.html"><strong aria-hidden="true">4.4.</strong> Keplerian Elements: A Look Inside the Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">5.</strong> Glossary of Terms</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-necessary-concepts.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Necessary Concepts</a></li><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.2.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-the-underlying-physics.html"><strong aria-hidden="true">3.3.</strong> Two Body Problem: The Underlying Physics</a></li><li class="chapter-item expanded "><a href="two-body-problem-a-look-inside-the-functions-used-in-the-simulation.html"><strong aria-hidden="true">3.4.</strong> Two-body Problem: A Look Inside the Functions Used in the Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.5.</strong> Two-body Problem: Hyperbolic and Parabolic Orbits</a></li></ol></li><li class="chapter-item expanded "><a href="keplerian-elements.html" class="active"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-a-look-inside-the-transformation.html"><strong aria-hidden="true">4.4.</strong> Keplerian Elements: A Look Inside the Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">5.</strong> Glossary of Terms</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -168,22 +168,26 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="getting-the-celmec-library"><a class="header" href="#getting-the-celmec-library">Getting the Celmec Library</a></h1>
-<p><code>Celmec</code> is Rust library and can be made available by adding it to your Rust project's <code>Cargo.toml</code>. To get the necessary info about what <code>Cargo.toml</code> is read <a href="https://doc.rust-lang.org/book/ch01-03-hello-cargo.html">this</a> and <a href="https://doc.rust-lang.org/book/ch02-00-guessing-game-tutorial.html">this</a> section from the &quot;The Rust Programming Language&quot; -book.</p>
-<p>To use <code>celmec</code> you need to add this to your project's <code>Cargo.toml</code> under <code>[dependencies]</code>:</p>
-<pre><code>celmec = { git = &quot;https://github.com/juuso22/celmec.git&quot; }
-</code></pre>
-<p>Celmec uses <code>ndarray</code> for vector algebra, so you also need to add that library to your <code>Cargo.toml</code>. The examples in this book point out which version of <code>ndarray</code> was used for them. I'll try to make it so that the examples would work with the latest version, but given that this a free-time project, I will be checking if newer version work only sporadically.</p>
+                        <h1 id="keplerian-elements"><a class="header" href="#keplerian-elements">Keplerian Elements</a></h1>
+<p>Instead of starting with a known initial position and velocity of a planet it is also possible to have collected a collection of the properties of the orbit and to calculate the time-evolution of the planet along the orbit using those. One set of such properties are called the Keplerian elements and what they are is <a href="https://en.wikipedia.org/wiki/Orbital_elements#Keplerian_elements">described in Wikipedia</a> with an especially helpful picture attached at the time of the writing.</p>
+<p>In a nutshell, the Keplerian elements as used by <code>celmec</code> consist of quantities that describe:</p>
+<ol>
+<li>How the plane of the orbit of the planet (or other object of interest) is positioned vis-à-vis the ecliptica ie. the plane on which the erath orbits the sun. These quantities are the angle between the orbital plane of the object being studied and ecliptica: inclination (<code>iota</code>) and the angle at which the orbit rises from below above to ecliptica with respect to a fixed direction (spring equinox): longitude of the ascending node (<code>longitude_of_the_ascending_node</code>).</li>
+<li>How the orbit is shaped ie. its eccentricity <code>e</code> and semi-major axis <code>a</code>.</li>
+<li>The angle from longitude of the ascending node to the perihelion along the orbital plane: argument of perihelion (<code>omega</code>)</li>
+<li>A time at which the object passes its perihelion <code>tau</code>. Note that if you read the Wikipedia article, this differs slightly from the &quot;true anomaly at t<sub>0</sub>&quot;: <code>tau</code> is equal to that t<sub>0</sub> when true anomaly is 0.</li>
+</ol>
+<p>Next a little simulation using the Keplerian elements. And the reason I moved from talking about the orbit of a planet to the orbit of an object is because the simulation target won't be a planet, but a comet instead.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="the-celmec-book.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="two-body-problem-hyperbolic-and-parabolic-orbits.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next" href="two-body-problem.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="keplerian-elements-simulation.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -193,11 +197,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="the-celmec-book.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="two-body-problem-hyperbolic-and-parabolic-orbits.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next" href="two-body-problem.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="keplerian-elements-simulation.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

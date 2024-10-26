@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Getting the Celmec Library - Celmec</title>
+        <title>Two Body Problem: The Underlying Physics - Celmec</title>
 
 
         <!-- Custom HTML head -->
@@ -85,7 +85,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html" class="active"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-necessary-concepts.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Necessary Concepts</a></li><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.2.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-the-underlying-physics.html"><strong aria-hidden="true">3.3.</strong> Two Body Problem: The Underlying Physics</a></li><li class="chapter-item expanded "><a href="two-body-problem-a-look-inside-the-functions-used-in-the-simulation.html"><strong aria-hidden="true">3.4.</strong> Two-body Problem: A Look Inside the Functions Used in the Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.5.</strong> Two-body Problem: Hyperbolic and Parabolic Orbits</a></li></ol></li><li class="chapter-item expanded "><a href="keplerian-elements.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-a-look-inside-the-transformation.html"><strong aria-hidden="true">4.4.</strong> Keplerian Elements: A Look Inside the Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">5.</strong> Glossary of Terms</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-necessary-concepts.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Necessary Concepts</a></li><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.2.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-the-underlying-physics.html" class="active"><strong aria-hidden="true">3.3.</strong> Two Body Problem: The Underlying Physics</a></li><li class="chapter-item expanded "><a href="two-body-problem-a-look-inside-the-functions-used-in-the-simulation.html"><strong aria-hidden="true">3.4.</strong> Two-body Problem: A Look Inside the Functions Used in the Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.5.</strong> Two-body Problem: Hyperbolic and Parabolic Orbits</a></li></ol></li><li class="chapter-item expanded "><a href="keplerian-elements.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-a-look-inside-the-transformation.html"><strong aria-hidden="true">4.4.</strong> Keplerian Elements: A Look Inside the Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">5.</strong> Glossary of Terms</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -168,22 +168,32 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="getting-the-celmec-library"><a class="header" href="#getting-the-celmec-library">Getting the Celmec Library</a></h1>
-<p><code>Celmec</code> is Rust library and can be made available by adding it to your Rust project's <code>Cargo.toml</code>. To get the necessary info about what <code>Cargo.toml</code> is read <a href="https://doc.rust-lang.org/book/ch01-03-hello-cargo.html">this</a> and <a href="https://doc.rust-lang.org/book/ch02-00-guessing-game-tutorial.html">this</a> section from the &quot;The Rust Programming Language&quot; -book.</p>
-<p>To use <code>celmec</code> you need to add this to your project's <code>Cargo.toml</code> under <code>[dependencies]</code>:</p>
-<pre><code>celmec = { git = &quot;https://github.com/juuso22/celmec.git&quot; }
-</code></pre>
-<p>Celmec uses <code>ndarray</code> for vector algebra, so you also need to add that library to your <code>Cargo.toml</code>. The examples in this book point out which version of <code>ndarray</code> was used for them. I'll try to make it so that the examples would work with the latest version, but given that this a free-time project, I will be checking if newer version work only sporadically.</p>
+                        <h1 id="two-body-problem-the-underlying-physics"><a class="header" href="#two-body-problem-the-underlying-physics">Two-Body Problem: The Underlying Physics</a></h1>
+<p>To understand the way <code>celmec</code> calculates the true anomaly, definitions for two additional anomalies are needed. Firstly, mean anomaly \( M \) would be the angle from the perihelion if a planet were orbiting the sun on a circular orbit with constant speed. Secondly, eccentric anomaly \( E \) is defined as the image below:</p>
+<p align="center">
+  <img src="images/eccentric-anomaly.png" />
+  <figcaption>Geometric definition of eccentric anomaly</figcaption>
+</p>
+<p>It can be shown, that these two anomalies are related by the Kepler equation:</p>
+<p>\[ M = E - e \sin(E) \]</p>
+<p>where:</p>
+<p>\[ M = \textrm{ mean anomaly } \]
+\[ E = \textrm{ eccentric anomaly } \]
+\[ e = \textrm{ eccentricity } \]</p>
+<p>The eccentric anomaly is then related to true anomaly by:</p>
+<p>\[ f = \arccos( \frac{\cos(E) - e}{1 - e \cos(E)} ) \]</p>
+<p><code>celmec</code> solves the Kepler equation for \( E \) using the <a href="https://en.wikipedia.org/wiki/Newton%27s_method">Newton-Raphson method</a> for:</p>
+<p>\[ 0 = E - e \sin(E) - M \]</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="the-celmec-book.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="two-body-problem-simulation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next" href="two-body-problem.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="two-body-problem-a-look-inside-the-functions-used-in-the-simulation.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -193,11 +203,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="the-celmec-book.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="two-body-problem-simulation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next" href="two-body-problem.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="two-body-problem-a-look-inside-the-functions-used-in-the-simulation.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

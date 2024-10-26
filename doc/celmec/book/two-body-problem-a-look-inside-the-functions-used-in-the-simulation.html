@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Keplerian Elements - Celmec</title>
+        <title>Two-body Problem: A Look Inside the Functions Used in the Simulation - Celmec</title>
 
 
         <!-- Custom HTML head -->
@@ -85,7 +85,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.2.</strong> Hyperbolic and parabolic orbits</a></li></ol></li><li class="chapter-item expanded "><a href="getting_started.html" class="active"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="underlying_physics.html"><strong aria-hidden="true">5.</strong> Underlying Physics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">5.1.</strong> Glossary of Terms</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-necessary-concepts.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Necessary Concepts</a></li><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.2.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-the-underlying-physics.html"><strong aria-hidden="true">3.3.</strong> Two Body Problem: The Underlying Physics</a></li><li class="chapter-item expanded "><a href="two-body-problem-a-look-inside-the-functions-used-in-the-simulation.html" class="active"><strong aria-hidden="true">3.4.</strong> Two-body Problem: A Look Inside the Functions Used in the Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.5.</strong> Two-body Problem: Hyperbolic and Parabolic Orbits</a></li></ol></li><li class="chapter-item expanded "><a href="keplerian-elements.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-a-look-inside-the-transformation.html"><strong aria-hidden="true">4.4.</strong> Keplerian Elements: A Look Inside the Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">5.</strong> Glossary of Terms</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -168,17 +168,114 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="keplerian-elements"><a class="header" href="#keplerian-elements">Keplerian Elements</a></h1>
+                        <h1 id="two-body-problem-a-look-inside-the-functions-used-in-the-simulation"><a class="header" href="#two-body-problem-a-look-inside-the-functions-used-in-the-simulation">Two-body Problem: A Look Inside the Functions Used in the Simulation</a></h1>
+<p>To see all the physics and maths described in the previous subchapter to actually take place, one can look inside the function <code>orbit::calculate_f_from_initial_rr_and_vv</code>. It looks like this:</p>
+<pre><code>pub fn calculate_f_from_initial_rr_and_vv(
+    rr: Array1&lt;f64&gt;,
+    vv: Array1&lt;f64&gt;,
+    mu: f64,
+    start_time: f64,
+    end_time: f64,
+    steps: usize,
+) -&gt; Array1&lt;f64&gt; {
+    let ee: Array1&lt;f64&gt; = calculate_ee(rr.clone(), vv.clone(), mu);
+    let e: f64 = calculate_e(rr.clone(), vv.clone(), mu);
+    let initial_f: f64 = calculate_initial_f_from_initial_conditions(rr.clone(), ee, e);
+    let initial_eccentric_anomaly: Array1&lt;f64&gt; =
+        calculate_eccentric_anomaly_from_f(array![initial_f], e);
+    let a: f64 = calculate_a_from_initial_rr_and_vv(rr, vv, mu);
+    let n: f64 = calculate_n(mu, a);
+    let tau: f64 = calculate_tau(
+        0.,
+        calculate_mean_anomaly_from_eccentric_anomaly(initial_eccentric_anomaly, e)[0],
+        n,
+    );
+
+    let t: Array1&lt;f64&gt; = Array1::linspace(start_time, end_time, steps);
+    let eccentric_anomaly: Array1&lt;f64&gt; = calculate_eccentric_anomaly_iteratively(
+        t.clone(),
+        Array1::zeros(steps),
+        0.0001,
+        100,
+        n,
+        e,
+        tau,
+    );
+    calculate_f_from_eccentric_anomaly(eccentric_anomaly, e)
+}
+</code></pre>
+<p>Let's break that down:</p>
+<ol>
+<li><code>ee</code> is a vector is calculated with <code>calculate_ee</code>. Its length gives the eccentricity <code>e</code>, calculated by <code>calculate_e</code>.</li>
+<li>True anomaly <code>f</code> at the initial vector position <code>rr</code> is calculated in <code>calculate_initial_f_from_initial_conditions</code> as it is needed for...</li>
+<li>..initial eccentric anomaly calculated in <code>calculate_eccentric_anomaly_from_f</code> which in turn is needed for...</li>
+<li><code>tau</code>, the time at which the planet finds itself at the perihelion, nearest to the sun, calculated in <code>calculate_tau</code>.</li>
+<li>An additional quantity is needed to obtain <code>tau</code>. It's called <code>n</code> and is calculated in <code>calculate_n</code>.</li>
+<li>Then an array <code>t</code> for all the time points in the simulation is initialized.</li>
+<li>Next is the &quot;big thing&quot; of the simulation when eccentric anomaly is calculated for all simulation time points ie. for the array <code>t</code> in <code>calculate_eccentric_anomaly_iteratively</code>.</li>
+<li>Finally we obtain true anomalies <code>f</code> from the previously obtained eccentric anomalies in <code>calculate_f_from_eccentric_anomaly</code> and return that.</li>
+</ol>
+<p>All of the above are part of the <code>orbit</code> module of <code>celmec</code> and one could drill down further into each of the above to see what they actually do, but to keep it short(ish), I'll just show here that <code>calculate_eccentric_anomaly_iteratively</code> is where the Newton-Raphson method gets applied like this:</p>
+<pre><code>pub fn calculate_eccentric_anomaly_iteratively(
+    t: Array1&lt;f64&gt;,
+    initial_value: Array1&lt;f64&gt;,
+    tolerance: f64,
+    max_iterations: usize,
+    n: f64,
+    e: f64,
+    tau: f64,
+) -&gt; Array1&lt;f64&gt; {
+    let parameters: HashMap&lt;&amp;str, f64&gt; = HashMap::from([(&quot;n&quot;, n), (&quot;e&quot;, e), (&quot;tau&quot;, tau)]);
+    if e &gt; 1. {
+        solve_equation_iteratively(
+            &amp;hyperbolic_kepler_eq_iterative_step,
+            initial_value,
+            t,
+            parameters,
+            tolerance,
+            max_iterations,
+        )
+    } else if e == 1. {
+        solve_equation_iteratively(
+            &amp;barker_eq_iterative_step,
+            initial_value,
+            t,
+            parameters,
+            tolerance,
+            max_iterations,
+        )
+    } else if (e &lt; 1.) &amp;&amp; (e &gt;= 0.) {
+        solve_equation_iteratively(
+            &amp;kepler_eq_iterative_step,
+            initial_value,
+            t,
+            parameters,
+            tolerance,
+            max_iterations,
+        )
+    } else {
+        panic!(&quot;Eccentricity cannot be negative.&quot;);
+    }
+}
+</code></pre>
+<p>I'll not go through that function step by step but instead use it to bring up two points. Firstly, note that there is some equation solving happening for <code>e</code> (eccentricity) values of 1 and above. Eccentricity of ellipses is always between 0 and 1 (with 0 included and 1 not). So what does it mean for an orbit to have an eccentricity of 1 or above? It turn out not all orbits are closed ellipses but they can also take the form of a parabola (eccentricity 1) ot a byperbola (eccentricity above 1). These orbits will be the subject of the next subchapter so stay tuned.</p>
+<p>But first the second point: in the <code>calculate_eccentric_anomaly_iteratively</code> function the last word in its name, <code>iteratively</code>, might give a hint that there are other ways to calculate the eccentric anomaly instead of Newton-Raphson. And indeed, one could use a series expansion (if one is familiar with such things) by using <code>calculate_f_from_series</code>. Note though, that it currently contains so few terms that it gives something even remotely reliable only for near-circle orbit ie. orbits with eccentricity close to 0.</p>
+<p>All the functions described above are public, so they can be used in whatever you might fancy to try with <code>celmec</code>. To see the full technical Rust documentation of the library you can either:</p>
+<ol>
+<li>Git clone <a href="https://github.com/juuso22/celmec.git">the <code>celmec</code> repo</a> and run <code>cargo doc</code> inside it if you are familiar with git. The output of <code>cargo doc</code> should tell you where to look next.</li>
+<li>Navigate to URL_HERE to see the same docs.</li>
+</ol>
+<p>Further in this book, we'll tear some other used functions open in case the author has deemed them to have eaten things of interest. This is done to help out with navigating the the technical Rust documentation as I find those sometimes intimidating to tacḱle head on and want to ease the burden for anyone else feeling similarly.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="hyperbolic-and-parabolic-orbits.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="two-body-problem-the-underlying-physics.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next" href="keplerian-elements-simulation.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="two-body-problem-hyperbolic-and-parabolic-orbits.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -188,11 +285,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="hyperbolic-and-parabolic-orbits.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="two-body-problem-the-underlying-physics.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next" href="keplerian-elements-simulation.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="two-body-problem-hyperbolic-and-parabolic-orbits.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

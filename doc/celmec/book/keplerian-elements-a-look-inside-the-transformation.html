@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Hyperbolic and parabolic orbits - Celmec</title>
+        <title>Keplerian Elements: A Look Inside the Transformation - Celmec</title>
 
 
         <!-- Custom HTML head -->
@@ -85,7 +85,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="hyperbolic-and-parabolic-orbits.html" class="active"><strong aria-hidden="true">3.2.</strong> Hyperbolic and parabolic orbits</a></li></ol></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="underlying_physics.html"><strong aria-hidden="true">5.</strong> Underlying Physics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">5.1.</strong> Glossary of Terms</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-necessary-concepts.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Necessary Concepts</a></li><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.2.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-the-underlying-physics.html"><strong aria-hidden="true">3.3.</strong> Two Body Problem: The Underlying Physics</a></li><li class="chapter-item expanded "><a href="two-body-problem-a-look-inside-the-functions-used-in-the-simulation.html"><strong aria-hidden="true">3.4.</strong> Two-body Problem: A Look Inside the Functions Used in the Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.5.</strong> Two-body Problem: Hyperbolic and Parabolic Orbits</a></li></ol></li><li class="chapter-item expanded "><a href="keplerian-elements.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-a-look-inside-the-transformation.html" class="active"><strong aria-hidden="true">4.4.</strong> Keplerian Elements: A Look Inside the Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">5.</strong> Glossary of Terms</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -168,43 +168,44 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="hyperbolic-and-parabolic-orbits"><a class="header" href="#hyperbolic-and-parabolic-orbits">Hyperbolic and parabolic orbits</a></h1>
-<p>Instead of a closed, elliptic orbit like Mercury's objects can also just fly past each other. This happens when we have:</p>
-<p>\[ e \ge 1 \]</p>
-<p>The \( e &gt; 1 \) case corresponds to a hyperbole-shaped orbit and the \( e = 1 \) case to a parabola and after some algebra the replacement for Kepler equation for these two cases becomes:</p>
-<p>\[ n(t-\tau) = e\sinh{E} - E, \textrm{ when } e \gt 0 \]</p>
-<p>\[ n(t-\tau) = \frac{E^3}{6}+\frac{E}{2}, \textrm{ when } e = 0 \]</p>
-<p>Where the quantity \( n \) cannot geometrically be understood as in the elliptic case, but obeys the formula:</p>
-<p>\[ n = \sqrt{\mu}a^\frac{-3}{2} \]</p>
-<p>In case of an eccentricity greater or equal to 1, <code>celmec</code> solves these equations instead of the Kepler equation.</p>
-<h2 id="simulating-a-hyperbolic-orbit"><a class="header" href="#simulating-a-hyperbolic-orbit">Simulating a hyperbolic orbit</a></h2>
-<p>To simulate a hyperbolic orbit, we can use the Mercury example, but give the nearest planet the following initial conditions:</p>
-<pre><code>    let rr: Array1&lt;f64&gt; = array![-3e11, 0., 0.];
-    let vv: Array1&lt;f64&gt; = array![-6e4, -1e4, 0.];
+                        <h1 id="keplerian-elements-a-look-inside-the-transformation"><a class="header" href="#keplerian-elements-a-look-inside-the-transformation">Keplerian Elements: A Look Inside the Transformation</a></h1>
+<p>To wrap up with Keplerian elements, let's have a look inside the coordinate transformation function <code>cartesian_coordinates_from_f_r_and_keplerian_elements</code>:</p>
+<pre><code>pub fn cartesian_coordinates_from_f_r_and_keplerian_elements(
+    f: Array1&lt;f64&gt;,
+    r: Array1&lt;f64&gt;,
+    keplerian_elements: orbital_elements::KeplerianElements,
+) -&gt; (Array1&lt;f64&gt;, Array1&lt;f64&gt;, Array1&lt;f64&gt;) {
+    let (theta, phi) = spherical_coordinates_from_f_and_keplerian_elements(f, keplerian_elements);
+    cartesian_coordinates_from_spherical_coordinates(theta, phi, r)
+}
 </code></pre>
-<p>The plotting script also needs a small scaling adjustment then:</p>
-<pre><code>    ax.set_rlim(rmin=0, rmax=3.1e11)
+<p>There we see that to obtain the cartesinan coordinates, we actually go through spherical coordinates first. Let's dig deeper to see where those come from in <code>spherical_coordinates_from_f_and_keplerian_elements</code>:</p>
+<pre><code>pub fn spherical_coordinates_from_f_and_keplerian_elements(
+    f: Array1&lt;f64&gt;,
+    keplerian_elements: orbital_elements::KeplerianElements,
+) -&gt; (Array1&lt;f64&gt;, Array1&lt;f64&gt;) {
+    let theta: Array1&lt;f64&gt; = theta_from_keplerian_elements(
+        f.clone(),
+        keplerian_elements.iota,
+        keplerian_elements.omega,
+        keplerian_elements.longitude_of_the_ascending_node,
+    );
+    let phi: Array1&lt;f64&gt; =
+        phi_from_keplerian_elements(f, keplerian_elements.iota, keplerian_elements.omega);
+    (theta, phi)
+}
 </code></pre>
-<p>and rerunning the simulation we should end up with the following:</p>
-<p><img src="images/flyby-mercury.png" alt="&quot;Flyby Mercury's&quot; orbit" /></p>
-<p>and the same animated:</p>
-<details>
-  <summary>"Flyby Mercury's" orbit animated</summary>
-<p><img src="images/flyby-mercury.gif" alt="&quot;Flyby Mercury's&quot; orbit animated" /></p>
-</details>
-<p>You can try playing around with different initial conditions, simulation times and object masses to see what kind of orbits you'll get!</p>
-<h2 id="parabolic-orbit-simulation"><a class="header" href="#parabolic-orbit-simulation">Parabolic orbit simulation</a></h2>
-<p>As it's a bit tedious to construct a combination of initial conditions and masses that would result in an eccentricity of exactly 1, it would be handy if we could start by telling <code>celmec</code> to simulate using a given <code>e</code>. Here is where it's time to change chapters and talk about orbital elements which will enable us to do just that.</p>
+<p>Here are separate functions for both spherical angle coordinates <code>theta</code> and <code>phi</code>. Both functions to obtain these cooedinates, <code>theta_from_keplerian_elements</code> and <code>phi_from_keplerian_elements</code>, are public for you to use as you please if using <code>celmec</code>. The technical Rust documentation will in turn provide details about the formulae used to calculate the angles: go check it out if you want to tear open the black box of maths used by <code>celmec</code>!</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="two-body-problem-simulation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="keplerian-elements-coordinate-transformation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next" href="getting_started.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="glossary_of_terms.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -214,11 +215,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="two-body-problem-simulation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="keplerian-elements-coordinate-transformation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next" href="getting_started.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="glossary_of_terms.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
