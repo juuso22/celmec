@@ -1,3 +1,15 @@
+/// Systems module contains a system struct which represents what is to be simulated and validation functions for that struct to ensure for all necessary information is included for a given system.
+pub mod system;
+
+///This module contains "well known" constants
+pub mod constants;
+
+/// This module contains mathematical helper functions for orbit calculations.
+pub mod math;
+
+/// This module contains functions that deal with mechanics more generally than within the confines of the celestial variant
+pub mod mechanics;
+
 /// This module contains functions to calculate various properties of orbits.
 ///
 /// It is currently limited to deal with the 2-body problem.
@@ -23,9 +35,10 @@ pub mod transformations;
 #[cfg(test)]
 mod math_tests {
     use super::*;
+    use math::*;
     use ndarray::{array, Array1};
-    use orbit::math::*;
     use std::collections::HashMap;
+    use std::f64::consts::PI;
 
     #[test]
     fn non_converging_iterations() {
@@ -74,6 +87,23 @@ mod math_tests {
     #[test]
     fn eculidean_norm_of_three_and_four_is_five() {
         assert_eq!(euclidean_norm(array![3., 4., 0.]), 5.)
+    }
+
+    #[test]
+    fn atan() {
+        assert!(math::atan(0., 0.).is_nan());
+        assert_eq!(math::atan(1., 0.), PI / 2.);
+        assert_eq!(math::atan(-1., 0.), -PI / 2.);
+        assert_eq!(math::atan(1. / 2_f64.sqrt(), 1. / 2_f64.sqrt()), PI / 4.);
+        assert_eq!(
+            math::atan(1. / 2_f64.sqrt(), -1. / 2_f64.sqrt()),
+            3. * PI / 4.
+        );
+        assert_eq!(math::atan(-1. / 2_f64.sqrt(), 1. / 2_f64.sqrt()), -PI / 4.);
+        assert_eq!(
+            math::atan(-1. / 2_f64.sqrt(), -1. / 2_f64.sqrt()),
+            5. * PI / 4.
+        );
     }
 }
 

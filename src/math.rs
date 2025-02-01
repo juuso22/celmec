@@ -1,6 +1,6 @@
 use ndarray::{array, Array1};
 use std::collections::HashMap;
-//use std::f64::sqrt;
+use std::f64::consts::PI;
 
 pub fn cross_product(a: Array1<f64>, b: Array1<f64>) -> Array1<f64> {
     let c1: f64 = a[1] * b[2] - a[2] * b[1];
@@ -10,7 +10,7 @@ pub fn cross_product(a: Array1<f64>, b: Array1<f64>) -> Array1<f64> {
 }
 
 pub fn euclidean_norm(a: Array1<f64>) -> f64 {
-    (a[0].powf(2.) + a[1].powf(2.) + a[2].powf(2.)).sqrt()
+    a.map(|i| i.powf(2.)).sum().sqrt()
 }
 
 pub fn solve_equation_iteratively(
@@ -35,4 +35,18 @@ pub fn solve_equation_iteratively(
         iteration_round += 1;
     }
     new_value
+}
+
+pub fn atan(opposite: f64, adjacent: f64) -> f64 {
+    if (adjacent == 0.) & (opposite > 0.) {
+        return PI / 2.;
+    } else if (adjacent == 0.) & (opposite < 0.) {
+        return -PI / 2.;
+    } else {
+        let angle: f64 = (opposite / adjacent).atan();
+        if adjacent < 0. {
+            return angle + PI;
+        }
+        return angle;
+    }
 }
