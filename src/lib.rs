@@ -371,7 +371,7 @@ mod tests {
     }
 
     #[test]
-    fn sphericals_for_hallyes_comet() {
+    fn sphericals_for_halleys_comet() {
         //This is more like a regression test:
         //I picked the values by adapting the demo coordinate_transformation
         //at a time when I was pretty sure the functions tested here work correctly
