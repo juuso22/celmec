@@ -119,30 +119,9 @@ mod tests {
         let rr0: Array1<f64> = array![1., 3.2, 0.4];
         let v0: Array1<f64> = array![-4., 0.002, 2.2];
         let mu: f64 = 5.123;
-        let ee: Array1<f64> = orbit::calculate_ee(rr0.clone(), v0.clone(), mu);
-        let kk: Array1<f64> = orbit::math::cross_product(rr0, v0);
+        let ee: Array1<f64> = orbital_elements::calculate_ee(rr0.clone(), v0.clone(), mu);
+        let kk: Array1<f64> = math::cross_product(rr0, v0);
         assert!((ee * kk).sum() < 1.0e-10)
-    }
-
-    #[test]
-    fn earth_e() {
-        let solar_mass: f64 = 1.98847 * 10_f64.powf(30.);
-        let earth_mass: f64 = 5.972 * 10_f64.powf(24.);
-        let mu: f64 = orbit::calculate_mu(solar_mass, earth_mass);
-        let earth_perihelion = array![147.10 * 10_f64.powf(9.), 0., 0.];
-        let earth_orbital_vv_at_perihelion = array![0., 30290., 0.];
-        assert!(
-            orbit::calculate_e(
-                earth_perihelion.clone(),
-                earth_orbital_vv_at_perihelion.clone(),
-                mu
-            ) - 0.0167
-                < 0.0005
-        );
-        assert!(
-            orbit::calculate_e(earth_perihelion, earth_orbital_vv_at_perihelion, mu) - 0.0167
-                > -0.0005
-        );
     }
 
     #[test]
@@ -434,5 +413,125 @@ mod tests {
                 longitude_of_the_ascending_node
             )
         );
+    }
+}
+
+#[cfg(test)]
+mod orbital_elements_tests {
+    use super::*;
+    use math::*;
+    use ndarray::{array, Array1};
+    use orbit::*;
+    use orbital_elements::*;
+    use std::f64::consts::PI;
+
+    #[test]
+    fn iota_from_initial_conditions() {
+        let rr0: Array1<f64> = array![1., 0., 0.];
+        let vv0: Array1<f64> = array![0., 1., 0.];
+        assert_eq!(calculate_iota_from_initial_rr_and_vv(rr0, vv0), 0.);
+        let rr0: Array1<f64> = array![1., 0., 0.];
+        let vv0: Array1<f64> = array![0., 0., 1.];
+        assert_eq!(calculate_iota_from_initial_rr_and_vv(rr0, vv0), PI / 2.);
+        let rr0: Array1<f64> = array![0., 1. / 2_f64.sqrt(), 1. / 2_f64.sqrt()];
+        let vv0: Array1<f64> = array![-1., 0., 0.];
+        assert_eq!(calculate_iota_from_initial_rr_and_vv(rr0, vv0), PI / 4.);
+        let rr0: Array1<f64> = array![0., -1. / 2_f64.sqrt(), 1. / 2_f64.sqrt()];
+        let vv0: Array1<f64> = array![-1., 0., 0.];
+        assert_eq!(
+            calculate_iota_from_initial_rr_and_vv(rr0, vv0),
+            3. * PI / 4.
+        );
+        let rr0: Array1<f64> = array![0., -1. / 2_f64.sqrt(), -1. / 2_f64.sqrt()];
+        let vv0: Array1<f64> = array![1., 0., 0.];
+        assert_eq!(calculate_iota_from_initial_rr_and_vv(rr0, vv0), PI / 4.);
+        let rr0: Array1<f64> = array![0., 1. / 2_f64.sqrt(), -1. / 2_f64.sqrt()];
+        let vv0: Array1<f64> = array![1., 0., 0.];
+        assert_eq!(
+            calculate_iota_from_initial_rr_and_vv(rr0, vv0),
+            3. * PI / 4.
+        );
+    }
+
+    #[test]
+    fn longitude_of_the_ascending_node_from_initial_conditions() {
+        let rr0: Array1<f64> = array![1., 0., 0.];
+        let vv0: Array1<f64> = array![0., 1., 0.];
+        assert!(
+            calculate_longitude_of_the_ascending_node_from_initial_rr_and_vv(rr0, vv0).is_nan()
+        );
+        let rr0: Array1<f64> = array![1., 0., 0.];
+        let vv0: Array1<f64> = array![0., 1., 1.];
+        assert_eq!(
+            calculate_longitude_of_the_ascending_node_from_initial_rr_and_vv(rr0, vv0),
+            0.
+        );
+        let rr0: Array1<f64> = array![0., 1., 0.];
+        let vv0: Array1<f64> = array![-1., 0., 1.];
+        assert_eq!(
+            calculate_longitude_of_the_ascending_node_from_initial_rr_and_vv(rr0, vv0),
+            PI / 2.
+        );
+        let rr0: Array1<f64> = array![0., 1., 0.];
+        let vv0: Array1<f64> = array![1., 0., 1.];
+        assert_eq!(
+            calculate_longitude_of_the_ascending_node_from_initial_rr_and_vv(rr0, vv0),
+            PI / 2.
+        );
+        //TODO: more cases
+    }
+
+    #[test]
+    fn earth_e() {
+        let solar_mass: f64 = 1.98847 * 10_f64.powf(30.);
+        let earth_mass: f64 = 5.972 * 10_f64.powf(24.);
+        let mu: f64 = orbit::calculate_mu(solar_mass, earth_mass);
+        let earth_perihelion = array![147.10 * 10_f64.powf(9.), 0., 0.];
+        let earth_orbital_vv_at_perihelion = array![0., 30290., 0.];
+        assert!(
+            calculate_e(
+                earth_perihelion.clone(),
+                earth_orbital_vv_at_perihelion.clone(),
+                mu
+            ) - 0.0167
+                < 0.0005
+        );
+        assert!(
+            calculate_e(earth_perihelion, earth_orbital_vv_at_perihelion, mu) - 0.0167 > -0.0005
+        );
+    }
+
+    #[test]
+    fn a_and_e_for_circular_orbit() {
+        let rr0: Array1<f64> = array![0., -1., 0.];
+        let vv0: Array1<f64> = array![0., 0., 1.];
+        let mu: f64 = 1.;
+        let e: f64 = calculate_e(rr0.clone(), vv0.clone(), mu);
+        assert_eq!(e, 0.);
+        let h: f64 = calculate_h(rr0.clone(), vv0, mu);
+        let a: f64 = calculate_a(mu, h);
+        assert_eq!(a, euclidean_norm(rr0));
+    }
+
+    #[test]
+    fn omega() {
+        let rr0: Array1<f64> = array![0., -1., 0.];
+        let vv0: Array1<f64> = array![0., 0., 1.];
+        let mu: f64 = 1.;
+        //Circular orbit, so cannot determine perihelion
+        assert!(calculate_omega_from_mu_and_initial_rr_and_vv(mu, rr0, vv0).is_nan());
+        //Venus: https://nssdc.gsfc.nasa.gov/planetary/factsheet/venusfact.html
+        let rr0: Array1<f64> = array![
+            107.480e6 * 0.08204_f64.cos(),
+            0.,
+            107.480e6 * 0.08204_f64.sin()
+        ];
+        let vv0: Array1<f64> = array![0., -35.26e3, 0.];
+        let mu: f64 = calculate_mu(1.989e30, 4.8673e24);
+        assert_eq!(
+            calculate_omega_from_mu_and_initial_rr_and_vv(mu, rr0, vv0),
+            PI / 2.
+        );
+        //TODO: more cases
     }
 }

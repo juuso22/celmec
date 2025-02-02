@@ -1,14 +1,13 @@
-use crate::orbital_elements::KeplerianElements;
-use math::{cross_product, euclidean_norm, solve_equation_iteratively};
-use ndarray::{array, Array1};
+use crate::constants::G;
+use crate::math::{cross_product, euclidean_norm, solve_equation_iteratively};
+use crate::orbital_elements::{
+    calculate_a, calculate_e, calculate_ee,
+    calculate_keplerian_elements_from_initial_rr_and_vv_and_mu, KeplerianElements,
+};
+use crate::transformations::cartesian_coordinates_from_f_r_and_keplerian_elements;
+use ndarray::{array, Array1, Array2};
 use std::collections::HashMap;
 use std::f64::consts::PI;
-
-/// This module contains mathematical helper functions for orbit calculations.
-pub mod math;
-
-/// Gravitational constant in SI units
-pub const G: f64 = 6.67430e-11;
 
 /// Calculates μ (mu) from two masses m1 and m2.
 ///
@@ -30,45 +29,6 @@ pub const G: f64 = 6.67430e-11;
 /// ```
 pub fn calculate_mu(m1: f64, m2: f64) -> f64 {
     G * (m1 + m2)
-}
-
-/// Calculates vector **e** between 2 bodies.
-///
-/// This is the constant vector whose length gives the [eccentricity e](`calculate_e`) of an orbit for the 2-body problem.
-///
-/// **e** = - (**r** x **v**) / μ - **r** / r,
-///
-/// where
-///
-/// **r** = position of the 2 bodies relative to each other at some point in time,
-///
-/// **v** = velocity of the 2 bodies relative to each other at the same point of time as **r**
-///
-/// μ = see [μ](`calculate_mu`)
-///
-/// r = |**r**|
-///
-/// Inputs are a position **r** (`rr`) and the velocity **v** (`vv`) of the 2 bodies with respect to each other at any one point of time as well as their [μ](`calculate_mu`).
-pub fn calculate_ee(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> Array1<f64> {
-    let angular_momentum_per_unit_mass: Array1<f64> = cross_product(rr.clone(), vv.clone());
-    -cross_product(angular_momentum_per_unit_mass, vv) / mu - rr.clone() / euclidean_norm(rr)
-}
-
-/// Calculates eccentricity of an orbit for 2 bodies.
-///
-/// **Inputs**:
-///
-/// rr = position of the 2 bodies with respect to each other
-///
-/// vv = velocity of the 2 bodies with respect to each other
-///
-/// μ = see [μ](`calculate_mu`).
-///
-/// **Output**: eccentricity e
-///
-/// Calculation is done from e's definition as the length of the vector **e** ([`ee`](`calculate_ee`)).
-pub fn calculate_e(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> f64 {
-    euclidean_norm(calculate_ee(rr, vv, mu))
 }
 
 /// Calculates the Lagrangian h of a 2-body system.
@@ -96,25 +56,6 @@ pub fn calculate_e(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> f64 {
 /// Inputs are a position **r** (`rr`) and the velocity **v** (`vv`) of the 2 bodies with respect to each other at any one point of time as well as their [μ](`calculate_mu`).
 pub fn calculate_h(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> f64 {
     0.5 * euclidean_norm(vv).powf(2.) - mu / euclidean_norm(rr)
-}
-
-/// Calculates the semi-major axis a of a 2-body system
-///
-/// a = μ / (2 * h), if h >= 0 and -μ / (2 * h) otherwise,
-///
-/// where
-///
-/// μ = see [μ](`calculate_mu`)
-///
-/// h = Lagrangian of the system ie. the difference between its kinetic and potential energy.
-///
-/// Inputs are [μ](`calculate_mu`) and Lagrangian [h](`calculate_h`) of the system.
-pub fn calculate_a(mu: f64, h: f64) -> f64 {
-    let mut a: f64 = mu / 2. / h;
-    if h < 0. {
-        a = -1. * a;
-    }
-    a
 }
 
 /// Calculates focal parameter for parabola from a known distance and eccentric anomaly at some point of time for a 2-body system
