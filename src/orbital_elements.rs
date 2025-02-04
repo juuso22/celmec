@@ -115,13 +115,17 @@ pub fn calculate_omega_from_mu_and_initial_rr_and_vv(
 ///
 /// **Output**: argument of perihelion (omega) of an orbit
 pub fn calculate_omega_from_kk_and_ee(kk: Array1<f64>, ee: Array1<f64>) -> f64 {
-    let ascending_node_vector: Array1<f64> =
-        kk[2].signum() * cross_product(array![0., 0., kk[2]], kk);
-    let cos_omega: f64 = (ascending_node_vector.clone() * ee.clone())
-        .iter()
-        .sum::<f64>();
-    let sin_omega: f64 = euclidean_norm(cross_product(ascending_node_vector, ee));
-    atan(sin_omega, cos_omega)
+    if (kk[0] != 0.) || (kk[1] != 0.) {
+        let ascending_node_vector: Array1<f64> =
+            kk[2].signum() * cross_product(array![0., 0., kk[2]], kk);
+        let cos_omega: f64 = (ascending_node_vector.clone() * ee.clone())
+            .iter()
+            .sum::<f64>();
+        let sin_omega: f64 = euclidean_norm(cross_product(ascending_node_vector, ee));
+        atan(sin_omega, cos_omega)
+    } else {
+        atan(ee[1], ee[0])
+    }
 }
 
 /// Calculates vector **e** between 2 bodies.
