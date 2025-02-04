@@ -147,7 +147,17 @@ mod tests {
     }
 
     #[test]
-    fn theta_for_zero_iota() {
+
+#[cfg(test)]
+mod transformations_tests {
+    use super::*;
+    use ndarray::{array, Array1, Array2};
+    use rand::prelude::*;
+    use std::f64::consts::PI;
+    use transformations::*;
+
+    #[test]
+    fn phi_for_zero_iota() {
         let iota: f64 = 0.;
         let mut omega: f64 = 0.;
         let mut longitude_of_the_ascending_node: f64 = 0.;
@@ -164,7 +174,7 @@ mod tests {
 
         assert_eq!(
             (f.clone()
-                - transformations::theta_from_keplerian_elements(
+                - phi_from_keplerian_elements(
                     f.clone(),
                     iota,
                     omega,
@@ -178,7 +188,7 @@ mod tests {
         longitude_of_the_ascending_node = PI / 4.;
         assert_eq!(
             (f.clone() + longitude_of_the_ascending_node
-                - transformations::theta_from_keplerian_elements(
+                - phi_from_keplerian_elements(
                     f.clone(),
                     iota,
                     omega,
@@ -196,20 +206,16 @@ mod tests {
         //and something a tiny bit less than 2*PI. Therefore, the previously used check of a small
         //difference in the angles themselves does not work out and we compare sines and cosines
         //of the relevant angles instead.
-        let theta: Array1<f64> = transformations::theta_from_keplerian_elements(
-            f.clone(),
-            iota,
-            omega,
-            longitude_of_the_ascending_node,
-        );
+        let phi: Array1<f64> =
+            phi_from_keplerian_elements(f.clone(), iota, omega, longitude_of_the_ascending_node);
         assert_eq!(
-            ((f.clone() + omega).mapv_into(|v| v.sin()) - theta.clone().mapv_into(|v| v.sin()))
+            ((f.clone() + omega).mapv_into(|v| v.sin()) - phi.clone().mapv_into(|v| v.sin()))
                 .mapv_into_any(|v| (v.abs() < 1.0e-10) as u8)
                 .sum(),
             f.clone().len() as u8
         );
         assert_eq!(
-            ((f.clone() + omega).mapv_into(|v| v.cos()) - theta.mapv_into(|v| v.cos()))
+            ((f.clone() + omega).mapv_into(|v| v.cos()) - phi.mapv_into(|v| v.cos()))
                 .mapv_into_any(|v| (v.abs() < 1.0e-10) as u8)
                 .sum(),
             f.clone().len() as u8
@@ -225,7 +231,7 @@ mod tests {
         println!("Random argument of perihelion (omega): {}", omega);
         assert_eq!(
             ((f.clone() + omega + longitude_of_the_ascending_node) % (2. * PI)
-                - transformations::theta_from_keplerian_elements(
+                - phi_from_keplerian_elements(
                     f.clone(),
                     iota,
                     omega,
@@ -238,13 +244,13 @@ mod tests {
     }
 
     #[test]
-    fn phi_for_zero_iota() {
+    fn theta_for_zero_iota() {
         let iota: f64 = 0.;
         let mut omega: f64 = 0.;
         let f: Array1<f64> = array![0., PI / 2., PI, 3. / 2. * PI];
         assert_eq!(
             array![PI / 2., PI / 2., PI / 2., PI / 2.],
-            transformations::phi_from_keplerian_elements(f.clone(), iota, omega,)
+            theta_from_keplerian_elements(f.clone(), iota, omega,)
         );
 
         let mut rng = rand::thread_rng();
@@ -252,12 +258,12 @@ mod tests {
         println!("Random omega: {}", omega);
         assert_eq!(
             array![PI / 2., PI / 2., PI / 2., PI / 2.],
-            transformations::phi_from_keplerian_elements(f, iota, omega,)
+            theta_from_keplerian_elements(f, iota, omega,)
         );
     }
 
     #[test]
-    fn theta_for_pi_per_two_iota() {
+    fn phi_for_pi_per_two_iota() {
         let iota: f64 = PI / 2.;
         let omega: f64 = 0.;
         let mut longitude_of_the_ascending_node: f64 = 0.;
@@ -277,25 +283,21 @@ mod tests {
         //and something a tiny bit less than 2*PI. Therefore, the previously used check of a small
         //difference in the angles themselves does not work out and we compare sines and cosines
         //of the relevant angles instead.
-        let theta: Array1<f64> = transformations::theta_from_keplerian_elements(
-            f.clone(),
-            iota,
-            omega,
-            longitude_of_the_ascending_node,
-        );
+        let phi: Array1<f64> =
+            phi_from_keplerian_elements(f.clone(), iota, omega, longitude_of_the_ascending_node);
         assert_eq!(
-            (array![0., 0., 0., 0., 0., 0., 0., 0.] - theta.clone().mapv_into(|v| v.sin()))
+            (array![0., 0., 0., 0., 0., 0., 0., 0.] - phi.clone().mapv_into(|v| v.sin()))
                 .mapv_into_any(|v| (v.abs() < 1.0e-10) as u8)
                 .sum(),
             6
         );
         assert_eq!(
-            (array![1., 1., -1., -1., -1., 1., 1., 1.] - theta.clone().mapv_into(|v| v.cos()))
+            (array![1., 1., -1., -1., -1., 1., 1., 1.] - phi.clone().mapv_into(|v| v.cos()))
                 .mapv_into_any(|v| (v.abs() < 1.0e-10) as u8)
                 .sum(),
             6
         );
-        assert_eq!(theta.mapv_into_any(|v| (v.is_nan()) as u8).sum(), 2);
+        assert_eq!(phi.mapv_into_any(|v| (v.is_nan()) as u8).sum(), 2);
 
         let mut rng = rand::thread_rng();
         longitude_of_the_ascending_node = rng.gen::<f64>() * 2. * PI;
@@ -303,12 +305,8 @@ mod tests {
             "Random longitude of the ascending node: {}",
             longitude_of_the_ascending_node
         );
-        let theta: Array1<f64> = transformations::theta_from_keplerian_elements(
-            f.clone(),
-            iota,
-            omega,
-            longitude_of_the_ascending_node,
-        );
+        let phi: Array1<f64> =
+            phi_from_keplerian_elements(f.clone(), iota, omega, longitude_of_the_ascending_node);
         let control: Array1<f64> = array![
             longitude_of_the_ascending_node,
             longitude_of_the_ascending_node,
@@ -320,22 +318,22 @@ mod tests {
             longitude_of_the_ascending_node
         ];
         assert_eq!(
-            (control.clone().mapv_into(|v| v.sin()) - theta.clone().mapv_into(|v| v.sin()))
+            (control.clone().mapv_into(|v| v.sin()) - phi.clone().mapv_into(|v| v.sin()))
                 .mapv_into_any(|v| (v.abs() < 1.0e-10) as u8)
                 .sum(),
             6
         );
         assert_eq!(
-            (control.clone().mapv_into(|v| v.cos()) - theta.clone().mapv_into(|v| v.cos()))
+            (control.clone().mapv_into(|v| v.cos()) - phi.clone().mapv_into(|v| v.cos()))
                 .mapv_into_any(|v| (v.abs() < 1.0e-10) as u8)
                 .sum(),
             6
         );
-        assert_eq!(theta.mapv_into_any(|v| (v.is_nan()) as u8).sum(), 2);
+        assert_eq!(phi.mapv_into_any(|v| (v.is_nan()) as u8).sum(), 2);
     }
 
     #[test]
-    fn phi_for_pi_per_two_iota() {
+    fn theta_for_pi_per_two_iota() {
         let iota: f64 = PI / 2.;
         let omega: f64 = 0.;
         let mut f: Array1<f64> = array![
@@ -360,14 +358,35 @@ mod tests {
                 } else {
                     PI / 2. - v
                 }
-            }) - transformations::phi_from_keplerian_elements(f.clone(), iota, omega,))
+            }) - theta_from_keplerian_elements(f.clone(), iota, omega,))
             .mapv_into_any(|v| (v.abs() < 1.0e-10) as u8)
             .sum(),
             f.clone().len() as u8
         );
 
         f = array![PI];
-        assert!(0. - transformations::phi_from_keplerian_elements(f, iota, omega,)[0] < 1.0e-10);
+        assert!(0. - theta_from_keplerian_elements(f, iota, omega,)[0] < 1.0e-10);
+    }
+
+    #[test]
+    fn cartesians_from_sphericals() {
+        let theta: Array1<f64> = array![PI / 4.];
+        let phi: Array1<f64> = array![PI / 2.];
+        let r: Array1<f64> = array![2_f64.sqrt()];
+        let xyz: Array2<f64> = cartesian_coordinates_from_spherical_coordinates(phi, theta, r);
+        assert!((xyz[[0, 0]] - 0.) < 1.0e-10);
+        assert!((xyz[[1, 0]] - 1.) < 1.0e-10);
+        assert!((xyz[[2, 0]] - 1.) < 1.0e-10);
+    }
+
+    #[test]
+    fn cartesians_from_polars() {
+        let theta: Array1<f64> = array![3. * PI / 4.];
+        let r: Array1<f64> = array![2. * 2_f64.sqrt()];
+        let xyz: Array2<f64> = cartesian_coordinates_from_polar_coordinates(theta, r);
+        assert!((xyz[[0, 0]] + 2.) < 1.0e-10);
+        assert!((xyz[[1, 0]] - 2.) < 1.0e-10);
+        assert_eq!(xyz[[2, 0]], 0.);
     }
 
     #[test]
@@ -396,7 +415,7 @@ mod tests {
                 1.8833107655695367,
                 1.8716463184907006,
             ],
-            transformations::phi_from_keplerian_elements(f.clone(), iota, omega,)
+            theta_from_keplerian_elements(f.clone(), iota, omega,)
         );
         assert_eq!(
             array![
@@ -406,12 +425,7 @@ mod tests {
                 5.875107345304375,
                 6.057983613318866,
             ],
-            transformations::theta_from_keplerian_elements(
-                f.clone(),
-                iota,
-                omega,
-                longitude_of_the_ascending_node
-            )
+            phi_from_keplerian_elements(f.clone(), iota, omega, longitude_of_the_ascending_node)
         );
     }
 }
