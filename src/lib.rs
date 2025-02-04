@@ -111,8 +111,6 @@ mod math_tests {
 mod tests {
     use super::*;
     use ndarray::{array, Array1};
-    use rand::prelude::*;
-    use std::f64::consts::PI;
 
     #[test]
     fn k_dot_e_is_almost_zero() {
