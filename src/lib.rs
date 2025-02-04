@@ -121,12 +121,21 @@ mod tests {
         let kk: Array1<f64> = math::cross_product(rr0, v0);
         assert!((ee * kk).sum() < 1.0e-10)
     }
+}
+
+#[cfg(test)]
+mod two_body_tests {
+    use super::*;
+    use ndarray::{array, Array1, Array2};
+    use orbit::*;
+    use orbital_elements::*;
+    use std::f64::consts::PI;
 
     #[test]
     fn simple_mean_anomaly() {
         assert_eq!(
             array![-4., -5.],
-            orbit::calculate_mean_anomaly(array![1., 0.5], 2., 3.)
+            calculate_mean_anomaly(array![1., 0.5], 2., 3.)
         );
     }
 
@@ -134,17 +143,68 @@ mod tests {
     fn simple_f_from_series() {
         assert_eq!(
             array![PI, PI / 2. + 1.75 - 13. / 12.],
-            orbit::calculate_f_from_series(array![1., 0.5], 1., 2., 0.)
+            calculate_f_from_series(array![1., 0.5], 1., 2., 0.)
         );
     }
 
     #[test]
     fn r_from_f_with_zero_e() {
         let a: f64 = 1.;
-        assert_eq!(array![a], orbit::calculate_r_from_f(array![3.], 0., a));
+        assert_eq!(array![a], calculate_r_from_f(array![3.], 0., a));
     }
 
     #[test]
+    fn velocity() {
+        let rr0: Array1<f64> = array![1., 0., 0.];
+        let mu: f64 = 2.;
+
+        //Elliptic case
+        let vv0: Array1<f64> = array![0., 1. / 2_f64.sqrt(), 1. / 2_f64.sqrt()];
+        let e: f64 = calculate_e(rr0.clone(), vv0.clone(), mu);
+        let a: f64 = calculate_a_from_initial_rr_and_vv(rr0.clone(), vv0.clone(), mu);
+        let eccentric_anomaly: Array1<f64> = calculate_eccentric_anomaly_from_initial_rr_and_vv(
+            rr0.clone(),
+            vv0.clone(),
+            mu,
+            0.,
+            0.,
+            1,
+        );
+        let v: Array1<f64> = calculate_v_from_eccentric_anomaly(eccentric_anomaly, mu, e, a);
+        assert!((math::euclidean_norm(vv0.clone()) - v[0]) < 1.0e-10);
+        let vv: Array2<f64> = calculate_vv_from_v_rr_and_initial_vv(
+            v,
+            array![[rr0[0]], [rr0[1]], [rr0[2]]],
+            vv0.clone(),
+        );
+        assert!((vv0[0] - vv.column(0)[0]) < 1.0e-10);
+        assert!((vv0[1] - vv.column(0)[1]) < 1.0e-10);
+        assert!((vv0[2] - vv.column(0)[2]) < 1.0e-10);
+
+        //Hyperbolic case
+        let vv0: Array1<f64> = array![0., 3. / 2_f64.sqrt(), 1. / 2_f64.sqrt()];
+        let e: f64 = calculate_e(rr0.clone(), vv0.clone(), mu);
+        let a: f64 = calculate_a_from_initial_rr_and_vv(rr0.clone(), vv0.clone(), mu);
+        let eccentric_anomaly: Array1<f64> = calculate_eccentric_anomaly_from_initial_rr_and_vv(
+            rr0.clone(),
+            vv0.clone(),
+            mu,
+            0.,
+            0.,
+            1,
+        );
+        let v: Array1<f64> = calculate_v_from_eccentric_anomaly(eccentric_anomaly, mu, e, a);
+        assert!((math::euclidean_norm(vv0.clone()) - v[0]) < 1.0e-10);
+        let vv: Array2<f64> = calculate_vv_from_v_rr_and_initial_vv(
+            v,
+            array![[rr0[0]], [rr0[1]], [rr0[2]]],
+            vv0.clone(),
+        );
+        assert!((vv0[0] - vv.column(0)[0]) < 1.0e-10);
+        assert!((vv0[1] - vv.column(0)[1]) < 1.0e-10);
+        assert!((vv0[2] - vv.column(0)[2]) < 1.0e-10);
+    }
+}
 
 #[cfg(test)]
 mod transformations_tests {
