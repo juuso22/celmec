@@ -1,8 +1,9 @@
 use crate::constants::G;
 use crate::math::{cross_product, euclidean_norm, solve_equation_iteratively};
 use crate::orbital_elements::{
-    calculate_a, calculate_e, calculate_ee,
-    calculate_keplerian_elements_from_initial_rr_and_vv_and_mu, KeplerianElements,
+    calculate_a_from_initial_rr_and_vv, calculate_e, calculate_ee,
+    calculate_keplerian_elements_from_initial_rr_and_vv_and_mu, calculate_tau_from_mean_anomaly,
+    KeplerianElements,
 };
 use crate::transformations::cartesian_coordinates_from_f_r_and_keplerian_elements;
 use ndarray::{array, Array1, Array2};
@@ -236,25 +237,6 @@ pub fn calculate_eccentric_anomaly_from_f(f: Array1<f64>, e: f64) -> Array1<f64>
     } else {
         panic!("Eccentricity cannot be negative!")
     }
-}
-
-/// Calculates perihelion time of a 2-body system
-///
-/// τ = t - M / n
-///
-/// where
-///
-/// t = time
-///
-/// n = average angular velocity
-///
-/// M = mean anomaly
-///
-/// Inputs are time t and the mean anomaly at that time as well as average angular velocity [n](`calculate_n`) of the system.
-///
-/// If τ is known, the equation above can be used to [calculate n](`calculate_n`).
-pub fn calculate_tau(t: f64, mean_anomaly: f64, n: f64) -> f64 {
-    t - mean_anomaly / n
 }
 
 /// Calculates on iterative step when solving eccentric anomaly from the the Kepler equation for a 2-body system.
@@ -595,23 +577,14 @@ pub fn calculate_f_from_initial_rr_and_vv(
         calculate_eccentric_anomaly_from_f(array![initial_f], e);
     let a: f64 = calculate_a_from_initial_rr_and_vv(rr, vv, mu);
     let n: f64 = calculate_n(mu, a);
-    let tau: f64 = calculate_tau(
-        0.,
+    let tau: f64 = calculate_tau_from_mean_anomaly(
+        start_time,
         calculate_mean_anomaly_from_eccentric_anomaly(initial_eccentric_anomaly, e)[0],
         n,
     );
 
     let t: Array1<f64> = Array1::linspace(start_time, end_time, steps);
-    let eccentric_anomaly: Array1<f64> = calculate_eccentric_anomaly_iteratively(
-        t.clone(),
-        Array1::zeros(steps),
-        0.0001,
-        100,
-        n,
-        e,
-        tau,
-    );
-    calculate_f_from_eccentric_anomaly(eccentric_anomaly, e)
+    calculate_eccentric_anomaly_iteratively(t.clone(), Array1::zeros(steps), 0.0001, 100, n, e, tau)
 }
 
 /// Calculates the true anomaly f for a 2 body problem from keplerian elements for a given total time split into a given number of steps.
@@ -650,7 +623,9 @@ pub fn calculate_f_from_keplerian_elements(
     calculate_f_from_eccentric_anomaly(eccentric_anomaly, elements.e)
 }
 
-/// Calculates the semi-major axis a for a 2 body problem from initial conditions.
+/// Calculates the cartesian coordinates x, y and z for a 2 body problem from initial conditions for a given total time split into a given number of steps.
+///
+/// One of the bodies lies at the origin and all the inputs are given with respect to this body, referred to as "the central body". The other body is referred to as "the rotating body". The cartesian corrdinate system is such that the central body sits at the origin and the positive x-axis points into the direction from which the longitude of the ascending node is calculated. If the orbital plane lies in the xy-plane, the x-axis points into the direction from which argument of perihelion is calculated.
 ///
 /// **Inputs**:
 ///
