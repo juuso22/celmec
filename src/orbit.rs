@@ -667,8 +667,28 @@ pub fn calculate_f_from_keplerian_elements(
 ///
 /// mu: The gravitational parameter of the system. See [μ](`calculate_mu`).
 ///
-/// **Output**: Semi-major axis a.
-pub fn calculate_a_from_initial_rr_and_vv(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> f64 {
-    let h: f64 = calculate_h(rr, vv, mu);
-    calculate_a(mu, h)
+/// total_time: The time to be simulated.
+///
+/// steps: The number of intervals the original interval [0, total_time] is split into.
+///
+/// **Output**: An array of arrays containing the x, y and z coordinates of the orbit for the simulated time points.
+pub fn calculate_xyz_from_initial_rr_and_vv(
+    rr: Array1<f64>,
+    vv: Array1<f64>,
+    mu: f64,
+    start_time: f64,
+    end_time: f64,
+    steps: usize,
+) -> Array2<f64> {
+    let keplerian_elements: KeplerianElements =
+        calculate_keplerian_elements_from_initial_rr_and_vv_and_mu(
+            rr.clone(),
+            vv.clone(),
+            mu,
+            start_time,
+        );
+    let f: Array1<f64> =
+        calculate_f_from_initial_rr_and_vv(rr, vv, mu, start_time, end_time, steps);
+    let r: Array1<f64> = calculate_r_from_f(f.clone(), keplerian_elements.e, keplerian_elements.a);
+    cartesian_coordinates_from_f_r_and_keplerian_elements(f, r, keplerian_elements)
 }
