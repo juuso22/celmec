@@ -487,6 +487,88 @@ mod transformations_tests {
             phi_from_keplerian_elements(f.clone(), iota, omega, longitude_of_the_ascending_node)
         );
     }
+
+    #[test]
+    fn sphericals_from_f_and_r() {
+        let keplerian_elements = KeplerianElements {
+            e: 0.,
+            a: 1.,
+            tau: 0.,
+            iota: 0.0,
+            omega: PI / 2.,
+            longitude_of_the_ascending_node: f64::NAN,
+        };
+        let mu: f64 = 1.;
+        let f: Array1<f64> =
+            orbit::calculate_f_from_keplerian_elements(&keplerian_elements, mu, 0., 2. * PI, 9);
+        println!("True anomaly f: {:#?}", f.clone());
+
+        let sphericals: Array2<f64> =
+            spherical_coordinates_from_f_and_keplerian_elements(f.clone(), keplerian_elements);
+        //Theta tests
+        assert_eq!(sphericals[[1, 0]], PI / 2.);
+        assert!(
+            (sphericals.row(1).to_owned() - Array1::<f64>::ones(9) * PI / 2.)
+                .iter()
+                .sum::<f64>()
+                .abs()
+                < 1.0e-10
+        );
+        //Phi tests
+        println!("Phi: {:#?}", sphericals.row(0));
+        assert!(
+            (sphericals.row(0).to_owned()
+                - array![
+                    2. * PI / 4.,
+                    3. * PI / 4.,
+                    4. * PI / 4.,
+                    5. * PI / 4.,
+                    6. * PI / 4.,
+                    7. * PI / 4.,
+                    8. * PI / 4.,
+                    1. * PI / 4.,
+                    2. * PI / 4.,
+                ])
+            .iter()
+            .sum::<f64>()
+            .abs()
+                < 1.0e-10
+        );
+    }
+
+    #[test]
+    fn cartesians_from_f_and_r() {
+        let keplerian_elements = KeplerianElements {
+            e: 0.,
+            a: 1.,
+            tau: 0.,
+            iota: 0.0,
+            omega: PI / 2.,
+            longitude_of_the_ascending_node: f64::NAN,
+        };
+        let mu: f64 = 1.;
+        let f: Array1<f64> =
+            orbit::calculate_f_from_keplerian_elements(&keplerian_elements, mu, 0., 3., 30);
+        println!("True anomaly f: {:#?}", f.clone());
+        let r: Array1<f64> =
+            orbit::calculate_r_from_f(f.clone(), keplerian_elements.e, keplerian_elements.a);
+        println!("Radius r: {:#?}", r.clone());
+
+        let xyz: Array2<f64> = cartesian_coordinates_from_f_r_and_keplerian_elements(
+            f.clone(),
+            r.clone(),
+            keplerian_elements,
+        );
+        assert_eq!(xyz.row(2).into_iter().sum::<f64>(), 0.);
+        assert!(
+            (xyz.row(0).map(|v| v.powf(2.)) + xyz.row(1).map(|v| v.powf(2.))
+                - r.mapv_into(|v| v.powf(2.)))
+            .iter()
+            .sum::<f64>()
+            .abs()
+                < 1.0e-10
+        );
+    }
 }
 
 #[cfg(test)]
