@@ -675,6 +675,7 @@ mod orbital_elements_tests {
         let mu: f64 = 1.;
         //Circular orbit, so cannot determine perihelion
         assert!(calculate_omega_from_mu_and_initial_rr_and_vv(mu, rr0, vv0).is_nan());
+
         //Venus: https://nssdc.gsfc.nasa.gov/planetary/factsheet/venusfact.html
         let rr0: Array1<f64> = array![
             107.480e6 * 0.08204_f64.cos(),
@@ -687,6 +688,7 @@ mod orbital_elements_tests {
             calculate_omega_from_mu_and_initial_rr_and_vv(mu, rr0, vv0),
             PI / 2.
         );
-        //TODO: more cases
+
+        //TODO: come up with more cases
     }
 }
