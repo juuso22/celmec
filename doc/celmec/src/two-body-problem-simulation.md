@@ -26,10 +26,10 @@ use ndarray::{Array, Array1}
 Then import the following from celmec:
 
 ```
-use celmec::orbit;
+use celmec::{orbit, orbital_elements};
 ```
 
-The `orbit` module contains functions functions for the simulation.
+The `orbit` module contains functions functions for the simulation and the `orbital_elements` module has functions to calculate certain properties of the orbit without simulating its time-evolution.
 
 Next, we need the masses of Mercury and the sun and some initial conditions for the position and velocity of the planet with respect to the sun. Sun's mass is (the googlable) 1.989 * 10<sup>30</sup>kg and the mass of Mercury (along other info about the planet that will be used), namely 3.3010 * 10<sup>23</sup> kg, can be found from [Nasa's fact sheet](https://nssdc.gsfc.nasa.gov/planetary/factsheet/mercuryfact.html). To have some simple initial conditions, let's have Mercury furthest away from the sun it reaches (ie. Mercury's aphelion) and let's fix our coordinates so that this point is to the direction of the negative x-axis. The distance of Mercury from the sun in the aphelion is 69.818 * 10<sup>9</sup> m. According to Kepler's third law, Mercury's orbital velocity is the slowest at aphelion. That slowest speed is 38.86 * 10<sup>3</sup> m/s and that is in the direction of the negative y-axis. Let's decide, for convenience, that is the to the direction of the negativee y-axis. As a small spoiler, choosing to start with negative values will align our xy-plane nicely with the choice of polar coordinates that will be done later. Now we write all this into the `main` function of our project:
 
@@ -42,7 +42,7 @@ Next, we need the masses of Mercury and the sun and some initial conditions for 
 Before using these values for the simulation, let's first check a key quantity of the system from them: the eccentricity `e`:
 
 ```
-    let e: f64 = orbit::calculate_e(rr.clone(), vv.clone(), mu);
+    let e: f64 = orbital_elements::calculate_e(rr.clone(), vv.clone(), mu);
     println!("Eccentricity: {}", e);
 ```
 
@@ -121,7 +121,7 @@ celmec = { git = "https://github.com/juuso22/celmec.git" }
 `main.rs`:
 
 ```
-use celmec::orbit;
+use celmec::{orbit, orbital_elements};
 use ndarray::{array, Array1};
 use std::fs::File;
 use std::io::Write;
@@ -131,7 +131,7 @@ fn main() {
     let rr: Array1<f64> = array![-69.818e9, 0., 0.];
     let vv: Array1<f64> = array![0., -38.86e3, 0.];
 
-    let e: f64 = orbit::calculate_e(rr.clone(), vv.clone(), mu);
+    let e: f64 = orbital_elements::calculate_e(rr.clone(), vv.clone(), mu);
     println!("Eccentricity: {}", e);
 
     let steps: usize = 100;
