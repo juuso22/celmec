@@ -210,6 +210,7 @@ mod two_body_tests {
 mod transformations_tests {
     use super::*;
     use ndarray::{array, Array1, Array2};
+    use orbital_elements::KeplerianElements;
     use rand::prelude::*;
     use std::f64::consts::PI;
     use transformations::*;
