@@ -570,6 +570,38 @@ pub fn calculate_f_from_initial_rr_and_vv(
     end_time: f64,
     steps: usize,
 ) -> Array1<f64> {
+    //TODO: calculation of e is repeated in eccentric anomaly function
+    let e: f64 = calculate_e(rr.clone(), vv.clone(), mu);
+    let eccentric_anomaly: Array1<f64> =
+        calculate_eccentric_anomaly_from_initial_rr_and_vv(rr, vv, mu, start_time, end_time, steps);
+    calculate_f_from_eccentric_anomaly(eccentric_anomaly, e)
+}
+
+/// Calculates the eccentric anomaly for a 2 body problem from initial conditions for a given total time split into a given number of steps.
+///
+/// One of the bodies lies at the origin and all the inputs are given with respect to this body, referred to as "the central body". The other body is referred to as "the rotating body"
+///
+/// **Inputs**:
+///
+/// rr: The initial position of the rotating body with respect to the central body.
+///
+/// vv: The initial velocity of the rotating body with respect to the central body.
+///
+/// mu: The gravitational parameter of the system. See [μ](`calculate_mu`).
+///
+/// total_time: The time to be simulated.
+///
+/// steps: The number of intervals the original interval [0, total_time] is split into.
+///
+/// **Output**: An array of true anomalies.
+pub fn calculate_eccentric_anomaly_from_initial_rr_and_vv(
+    rr: Array1<f64>,
+    vv: Array1<f64>,
+    mu: f64,
+    start_time: f64,
+    end_time: f64,
+    steps: usize,
+) -> Array1<f64> {
     let ee: Array1<f64> = calculate_ee(rr.clone(), vv.clone(), mu);
     let e: f64 = calculate_e(rr.clone(), vv.clone(), mu);
     let initial_f: f64 = calculate_initial_f_from_initial_conditions(rr.clone(), ee, e);
