@@ -522,7 +522,7 @@ pub fn calculate_f_from_eccentric_anomaly(eccentric_anomaly: Array1<f64>, e: f64
 ///
 /// **Output**: An array of radii between to bodies attracted by gravitation
 ///
-/// Using a reference frame with one of the bodies fixed as origin, this can also be undrstood as the radius of the orbit of the other body with respect to the first.
+/// Using a reference frame with one of the bodies fixed as origin, this can also be understood as the radius of the orbit of the other body with respect to the first.
 ///
 /// r = a * |(1-e<sup>2</sup>>)| / (1 + e * cos(f))
 ///
