@@ -48,6 +48,10 @@ pub fn phi_from_keplerian_elements(
     omega: f64,
     longitude_of_the_ascending_node: f64,
 ) -> Array1<f64> {
+    let mut non_nan_longitude_of_the_ascending_node: f64 = longitude_of_the_ascending_node;
+    if non_nan_longitude_of_the_ascending_node.is_nan() {
+        non_nan_longitude_of_the_ascending_node = 0.;
+    }
     let f_plus_omega_bound: Array1<f64> =
         ((f + omega) % (2. * PI)).mapv_into(|v| if v < 0. { 2. * PI + v } else { v });
     let over_pi_per_two_mask: Array1<f64> = (f_plus_omega_bound.clone())
@@ -72,7 +76,7 @@ pub fn phi_from_keplerian_elements(
                 ((f.sin() * iota.cos().abs()) / f.cos()).atan()
             }
         })
-        + longitude_of_the_ascending_node)
+        + non_nan_longitude_of_the_ascending_node)
         % (2. * PI))
         .mapv_into(|v| if v < 0. { 2. * PI + v } else { v })
 }
