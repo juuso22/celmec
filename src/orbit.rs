@@ -545,6 +545,56 @@ pub fn calculate_r_from_f(f: Array1<f64>, e: f64, a: f64) -> Array1<f64> {
     }
 }
 
+/// Calculates the velocity v of a body rotating another from eccentric anomaly, gravitational parameter μ, eccentricity e and semi-major axis a.
+///
+/// **Inputs**:
+///
+/// eccentric_anomaly: An array of eccentric anomalies
+///
+/// mu: The gravitational parameter of the system. See [μ](`calculate_mu`).
+///
+/// e: eccentricity
+///
+/// a: semi-major axis
+///
+/// **Output**: Array of velocities of the rotating body
+///
+/// v = (μ/a * (1 + e cos(E)) / (1 - e cos(E)))<sup>1/2</sup>
+///
+/// where
+///
+/// μ = gravitational parameter
+///
+/// a = semi-major axis
+///
+/// e = eccentricity
+///
+/// E = eccentric anomaly
+///
+/// Inputs are an array of true anomalies as well the semi-major axis [a](`calculate_a`) and the eccentricity [e](`calculate_e`) of the system.
+pub fn calculate_v_from_eccentric_anomaly(
+    eccentric_anomaly: Array1<f64>,
+    mu: f64,
+    e: f64,
+    a: f64,
+) -> Array1<f64> {
+    if a <= 0. {
+        panic!("Semi-major axis has to be positive!")
+    }
+    if (e >= 0.) & (e < 1.) {
+        (mu / a * (1. + e * eccentric_anomaly.clone().mapv_into(|v| v.cos()))
+            / (1. - e * eccentric_anomaly.mapv_into(|v| v.cos())))
+        .mapv_into(|v| v.sqrt())
+    } else if e >= 1. {
+        //TODO e == 1 has to be separated into its own case
+        (mu / a * (e * eccentric_anomaly.clone().mapv_into(|v| v.cosh()) + 1.)
+            / (e * eccentric_anomaly.mapv_into(|v| v.cosh()) - 1.))
+            .mapv_into(|v| v.sqrt())
+    } else {
+        panic!("Eccentricity cannot be negative!")
+    }
+}
+
 /// Calculates the true anomaly f for a 2 body problem from initial conditions for a given total time split into a given number of steps.
 ///
 /// One of the bodies lies at the origin and all the inputs are given with respect to this body, referred to as "the central body". The other body is referred to as "the rotating body"
@@ -691,4 +741,52 @@ pub fn calculate_xyz_from_initial_rr_and_vv(
         calculate_f_from_initial_rr_and_vv(rr, vv, mu, start_time, end_time, steps);
     let r: Array1<f64> = calculate_r_from_f(f.clone(), keplerian_elements.e, keplerian_elements.a);
     cartesian_coordinates_from_f_r_and_keplerian_elements(f, r, keplerian_elements)
+}
+
+/// Calculates vv from angular momentum per unit mass, the length of the velocity vector v and radii vectors rr for a body rotating another in a 2-body system
+///
+/// **Inputs*':
+///
+/// kk: angular momentum per unit mass vector
+///
+/// v: length of the velocity vector, which can be calculated using eg. [calculate_v_from_eccentric_anomaly](`calculate_v_from_eccentric_anomaly`)
+///
+/// rr: radii of orbit in some cartesian coordinates
+///
+/// **Output**: Array of arrays where the inner arrays represent the x, y, and z directional components of the rotating body respectively
+pub fn calculate_vv_from_kk_v_and_rr(
+    kk: Array1<f64>,
+    v: Array1<f64>,
+    rr: Array2<f64>,
+) -> Array2<f64> {
+    let mut vv: Array2<f64> = Array2::zeros((3, v.len()));
+    v.into_iter().enumerate().for_each(|(i, val)| {
+        let vector_in_vv_direction: Array1<f64> =
+            cross_product(kk.clone(), array![rr[[0, i]], rr[[1, i]], rr[[2, i]]]);
+        let unit_vector_in_vv_direction: Array1<f64> =
+            vector_in_vv_direction.clone() / euclidean_norm(vector_in_vv_direction);
+        vv.column_mut(i)
+            .assign(&(val * unit_vector_in_vv_direction));
+    });
+    vv
+}
+
+/// Calculates vv from an initial known velocity, the length of the velocity vector v and radii vectors rr for a body rotating another in a 2-body system
+///
+/// **Inputs*':
+///
+/// vv: An initial known velocity corresponding to the position obtained from the first elements of rr below
+///
+/// v: length of the velocity vector, which can be calculated using eg. [calculate_v_from_eccentric_anomaly](`calculate_v_from_eccentric_anomaly`)
+///
+/// rr: radii of orbit in some cartesian coordinates
+///
+/// **Output**: Array of arrays where the inner arrays represent the x, y, and z driectional components of the rotating body respectively
+pub fn calculate_vv_from_v_rr_and_initial_vv(
+    v: Array1<f64>,
+    rr: Array2<f64>,
+    vv0: Array1<f64>,
+) -> Array2<f64> {
+    let kk: Array1<f64> = cross_product(array![rr[[0, 0]], rr[[1, 0]], rr[[2, 0]]], vv0);
+    calculate_vv_from_kk_v_and_rr(kk, v, rr)
 }
