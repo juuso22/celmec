@@ -10,9 +10,7 @@ pub mod math;
 /// This module contains functions that deal with mechanics more generally than within the confines of the celestial variant
 pub mod mechanics;
 
-/// This module contains functions to calculate various properties of orbits.
-///
-/// It is currently limited to deal with the 2-body problem.
+/// This module contains functions make calculations of about orbits of 2-body systems
 ///
 /// ## Naming
 /// Naming tends to cause headaches at times and this module is no different. Here are some terms I use in a way that are to my best knowledge non-standard, but for which the standard terminology escapes me:
@@ -20,7 +18,7 @@ pub mod mechanics;
 /// Eccentric anomaly: I call the equivalent of the eccentric anomaly for elliptic orbit eccentric anomaly also in the context of prabolic and hyperbolic orbits.
 ///
 /// 'hyperbolic Kepler's equation': This is the equation M = E - e * sinh(E) which relates mean anomaly M to eccentric anomaly (see note above) for hyperbolic orbits (with help from eccentricity e). I don't know what the correct name for this equation is.
-pub mod orbit;
+pub mod two_body;
 
 /// This module contains structs for orbital elements.
 ///
@@ -127,9 +125,9 @@ mod tests {
 mod two_body_tests {
     use super::*;
     use ndarray::{array, Array1, Array2};
-    use orbit::*;
     use orbital_elements::*;
     use std::f64::consts::PI;
+    use two_body::*;
 
     #[test]
     fn simple_mean_anomaly() {
@@ -500,7 +498,7 @@ mod transformations_tests {
         };
         let mu: f64 = 1.;
         let f: Array1<f64> =
-            orbit::calculate_f_from_keplerian_elements(&keplerian_elements, mu, 0., 2. * PI, 9);
+            two_body::calculate_f_from_keplerian_elements(&keplerian_elements, mu, 0., 2. * PI, 9);
         println!("True anomaly f: {:#?}", f.clone());
 
         let sphericals: Array2<f64> =
@@ -548,10 +546,10 @@ mod transformations_tests {
         };
         let mu: f64 = 1.;
         let f: Array1<f64> =
-            orbit::calculate_f_from_keplerian_elements(&keplerian_elements, mu, 0., 3., 30);
+            two_body::calculate_f_from_keplerian_elements(&keplerian_elements, mu, 0., 3., 30);
         println!("True anomaly f: {:#?}", f.clone());
         let r: Array1<f64> =
-            orbit::calculate_r_from_f(f.clone(), keplerian_elements.e, keplerian_elements.a);
+            two_body::calculate_r_from_f(f.clone(), keplerian_elements.e, keplerian_elements.a);
         println!("Radius r: {:#?}", r.clone());
 
         let xyz: Array2<f64> = cartesian_coordinates_from_f_r_and_keplerian_elements(
@@ -576,9 +574,9 @@ mod orbital_elements_tests {
     use super::*;
     use math::*;
     use ndarray::{array, Array1};
-    use orbit::*;
     use orbital_elements::*;
     use std::f64::consts::PI;
+    use two_body::*;
 
     #[test]
     fn iota_from_initial_conditions() {
@@ -640,7 +638,7 @@ mod orbital_elements_tests {
     fn earth_e() {
         let solar_mass: f64 = 1.98847 * 10_f64.powf(30.);
         let earth_mass: f64 = 5.972 * 10_f64.powf(24.);
-        let mu: f64 = orbit::calculate_mu(solar_mass, earth_mass);
+        let mu: f64 = two_body::calculate_mu(solar_mass, earth_mass);
         let earth_perihelion = array![147.10 * 10_f64.powf(9.), 0., 0.];
         let earth_orbital_vv_at_perihelion = array![0., 30290., 0.];
         assert!(

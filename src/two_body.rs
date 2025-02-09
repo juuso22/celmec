@@ -21,7 +21,7 @@ use std::f64::consts::PI;
 /// μ can be used to calculate the gravitational force between the 2 masses if the distance r between them is known:
 ///
 /// ```
-/// use celmec::orbit::calculate_mu;
+/// use celmec::two_body::calculate_mu;
 ///
 /// let m1: f64 = 10.;
 /// let m2: f64 = 20.;

@@ -1,6 +1,6 @@
 use crate::math::{atan, cross_product, euclidean_norm};
 use crate::mechanics::calculate_kk_from_initial_rr_and_vv;
-use crate::orbit::{
+use crate::two_body::{
     calculate_eccentric_anomaly_from_f, calculate_h, calculate_initial_f_from_initial_conditions,
     calculate_mean_anomaly_from_eccentric_anomaly, calculate_n,
 };
