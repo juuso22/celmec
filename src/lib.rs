@@ -10,6 +10,9 @@ pub mod math;
 /// This module contains functions that deal with mechanics more generally than within the confines of the celestial variant
 pub mod mechanics;
 
+/// This module contains general content for calculating orbit regardless of eg. how many bodies and which perturbations are involved.
+pub mod orbit;
+
 /// This module contains functions make calculations of about orbits of 2-body systems
 ///
 /// ## Naming
