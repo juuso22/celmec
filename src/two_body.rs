@@ -93,7 +93,7 @@ pub fn calculate_focal_parameter_for_parabola_from_orbital_position(
 ///
 /// mu: see [μ](`calculate_mu`)
 ///
-/// a: semi-major axis [a](`calculate_a`) or [focal parameter p](`calculate_focal_parameter_for_parabola_from_orbital_position`) (in case of a parabolic orbit)
+/// a: semi-major axis [a](`crate::orbital_elements::calculate_a()`) or [focal parameter p](`calculate_focal_parameter_for_parabola_from_orbital_position`) (in case of a parabolic orbit)
 ///
 /// **Output**: Average angular velocity
 ///
@@ -126,7 +126,7 @@ pub fn calculate_n(mu: f64, a: f64) -> f64 {
 ///
 /// Inputs are time t as well as average angular velocity [n](`calculate_n`) and perihelion time τ of the system.
 ///
-/// If mean anomaly at some point of time is known, the equation above can be used to [calculate τ](`calculate_tau`).
+/// If mean anomaly at some point of time is known, the equation above can be used to [calculate τ](`crate::orbital_elements::calculate_tau_from_mean_anomaly()`).
 pub fn calculate_mean_anomaly(t: Array1<f64>, n: f64, tau: f64) -> Array1<f64> {
     n * (t - tau)
 }
@@ -453,7 +453,7 @@ pub fn calculate_eccentric_anomaly_iteratively(
 ///
 /// rotation_time: time of one rotation of one body around the other
 ///
-/// tau: [perihelion time](`calculate_tau`) of the system
+/// tau: [perihelion time](`crate::orbital_elements::calculate_tau_from_mean_anomaly()`) of the system
 ///
 /// **Output**: An array of true anomalies.
 pub fn calculate_f_from_series(
@@ -534,7 +534,7 @@ pub fn calculate_f_from_eccentric_anomaly(eccentric_anomaly: Array1<f64>, e: f64
 ///
 /// f = true anomaly
 ///
-/// Inputs are an array of true anomalies as well the semi-major axis [a](`calculate_a`) and the eccentricity [e](`calculate_e`) of the system.
+/// Inputs are an array of true anomalies as well the semi-major axis [a](`crate::orbital_elements::calculate_a()`) and the eccentricity [e](`calculate_e`) of the system.
 pub fn calculate_r_from_f(f: Array1<f64>, e: f64, a: f64) -> Array1<f64> {
     if (e != 1.) && (e >= 0.) {
         a * (1. - e.powf(2.)).abs() / (1. + e * f.mapv_into(|v| v.cos()))
@@ -571,7 +571,7 @@ pub fn calculate_r_from_f(f: Array1<f64>, e: f64, a: f64) -> Array1<f64> {
 ///
 /// E = eccentric anomaly
 ///
-/// Inputs are an array of true anomalies as well the semi-major axis [a](`calculate_a`) and the eccentricity [e](`calculate_e`) of the system.
+/// Inputs are an array of true anomalies as well the semi-major axis [a](`crate::orbital_elements::calculate_a()`) and the eccentricity [e](`calculate_e`) of the system.
 pub fn calculate_v_from_eccentric_anomaly(
     eccentric_anomaly: Array1<f64>,
     mu: f64,

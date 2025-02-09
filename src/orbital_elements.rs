@@ -91,7 +91,7 @@ pub fn calculate_longitude_of_the_ascending_node_from_kk(kk: Array1<f64>) -> f64
 ///
 /// **Inputs**
 ///
-/// mu: gravitational parameter. See [calculate_mu](`calculate_mu`).
+/// mu: gravitational parameter. See [calculate_mu](`crate::two_body::calculate_mu()`).
 ///
 /// rr: The initial position of the rotating body with respect to the central body.
 ///
@@ -143,11 +143,11 @@ pub fn calculate_omega_from_kk_and_ee(kk: Array1<f64>, ee: Array1<f64>) -> f64 {
 ///
 /// **v** = velocity of the 2 bodies relative to each other at the same point of time as **r**
 ///
-/// μ = see [μ](`calculate_mu`)
+/// μ = see [μ](`crate::two_body::calculate_mu()`)
 ///
 /// r = |**r**|
 ///
-/// Inputs are a position **r** (`rr`) and the velocity **v** (`vv`) of the 2 bodies with respect to each other at any one point of time as well as their [μ](`calculate_mu`).
+/// Inputs are a position **r** (`rr`) and the velocity **v** (`vv`) of the 2 bodies with respect to each other at any one point of time as well as their [μ](`crate::two_body::calculate_mu()`).
 pub fn calculate_ee(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> Array1<f64> {
     -cross_product(
         calculate_kk_from_initial_rr_and_vv(rr.clone(), vv.clone()),
@@ -164,7 +164,7 @@ pub fn calculate_ee(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> Array1<f64> {
 ///
 /// vv = velocity of the 2 bodies with respect to each other
 ///
-/// μ = see [μ](`calculate_mu`).
+/// μ = see [μ](`crate::two_body::calculate_mu()`).
 ///
 /// **Output**: eccentricity e
 ///
@@ -179,11 +179,11 @@ pub fn calculate_e(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> f64 {
 ///
 /// where
 ///
-/// μ = see [μ](`calculate_mu`)
+/// μ = see [μ](`crate::two_body::calculate_mu()`)
 ///
 /// h = Lagrangian of the system ie. the difference between its kinetic and potential energy.
 ///
-/// Inputs are [μ](`calculate_mu`) and Lagrangian [h](`calculate_h`) of the system.
+/// Inputs are [μ](`crate::two_body::calculate_mu()`) and Lagrangian [h](`calculate_h`) of the system.
 pub fn calculate_a(mu: f64, h: f64) -> f64 {
     let mut a: f64 = mu / 2. / h;
     if h < 0. {
@@ -200,7 +200,7 @@ pub fn calculate_a(mu: f64, h: f64) -> f64 {
 ///
 /// vv: The initial velocity of the rotating body with respect to the central body.
 ///
-/// mu: The gravitational parameter of the system. See [μ](`calculate_mu`).
+/// mu: The gravitational parameter of the system. See [μ](`crate::two_body::calculate_mu()`).
 ///
 /// **Output**: Semi-major axis a.
 pub fn calculate_a_from_initial_rr_and_vv(rr: Array1<f64>, vv: Array1<f64>, mu: f64) -> f64 {
@@ -238,7 +238,7 @@ pub fn calculate_tau_from_mean_anomaly(t: f64, mean_anomaly: f64, n: f64) -> f64
 ///
 /// vv: velocity of the 2 bodies with respect to each other
 ///
-/// mu: see [μ](`calculate_mu`).
+/// mu: see [μ](`crate::two_body::calculate_mu()`).
 ///
 /// start_time: the time at which rr and vv occur
 ///
@@ -272,7 +272,7 @@ pub fn calculate_tau_from_initial_rr_and_vv_mu_and_start_time(
 ///
 /// rr: position of the 2 bodies with respect to each other
 ///
-/// mu: see [μ](`calculate_mu`).
+/// mu: see [μ](`crate::two_body::calculate_mu()`).
 ///
 /// start_time: the time at which rr and vv occur
 ///
@@ -304,7 +304,7 @@ pub fn calculate_tau_from_initial_rr_mu_start_time_a_e_and_ee(
 ///
 /// vv: velocity of the 2 bodies with respect to each other
 ///
-/// mu: see [μ](`calculate_mu`).
+/// mu: see [μ](`crate::two_body::calculate_mu()`).
 ///
 /// start_time: the time at which rr and vv occur
 ///
