@@ -28,6 +28,9 @@ pub mod two_body;
 /// It is currently limited to deal with the 2-body problem.
 pub mod orbital_elements;
 
+///This module contains functions to apply impulses to orbit
+pub mod impulse;
+
 /// This module contains functions for transformations between coordinate systems.
 ///
 /// Eg. switching from the orbital plane of a 2-body system to spherical coordinates with one of the bodies at origin.
