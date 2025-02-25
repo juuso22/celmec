@@ -5,10 +5,239 @@ use crate::orbital_elements::{
     calculate_keplerian_elements_from_initial_rr_and_vv_and_mu, calculate_tau_from_mean_anomaly,
     KeplerianElements,
 };
+use crate::system::System;
 use crate::transformations::cartesian_coordinates_from_f_r_and_keplerian_elements;
-use ndarray::{array, Array1, Array2};
+use ndarray::{array, concatenate, Array1, Array2, Axis};
 use std::collections::HashMap;
 use std::f64::consts::PI;
+
+/// A TwoBodySystem is a system where the orbital motion of a body around another is simulated.
+///
+/// **Fields**:
+///
+/// start_time: time at which the simulation of the system starts
+///
+/// end_time: time at which the simulation of the system ends
+///
+/// steps: number of time steps to be simulated
+///
+/// mu: gravitational parameter of the system
+///
+/// rr0: position of the system at start_time
+///
+/// vv0: velocity of the system at start_time
+///
+/// perturbations: Any perturbations applied to the system
+#[derive(Clone, Debug)]
+pub struct TwoBodySystem {
+    pub start_time: f64,
+    pub end_time: f64,
+    pub steps: usize,
+    pub step_size: f64,
+    pub mu: f64,
+    pub rr0: Array1<f64>,
+    pub vv0: Array1<f64>,
+    pub perturbations: Vec<String>,
+    pub orbit: Array2<f64>,
+}
+
+/// Create a 2-body system
+///
+/// **Inputs**:
+///
+/// start_time: time at which the simulation of the system starts
+///
+/// end_time: time at which the simulation of the system ends
+///
+/// steps: number of time steps to be simulated
+///
+/// mu: gravitational parameter of the system
+///
+/// rr0: position of the system at start_time
+///
+/// vv0: velocity of the system at start_time
+///
+/// **Output**: a system struct for 2-body system
+pub fn create_two_body_system(
+    start_time: f64,
+    end_time: f64,
+    steps: usize,
+    mu: f64,
+    rr0: Array1<f64>,
+    vv0: Array1<f64>,
+) -> TwoBodySystem {
+    let mut system = TwoBodySystem {
+        start_time,
+        end_time,
+        steps,
+        step_size: f64::NAN,
+        mu,
+        rr0,
+        vv0,
+        perturbations: vec![],
+        orbit: Array2::zeros((7, 1)),
+    };
+    system = system.set_step_size();
+    system
+}
+
+///TODO: what documentation goes here?
+impl System for TwoBodySystem {
+    fn get_start_time(&self) -> f64 {
+        self.start_time
+    }
+    fn set_start_time(&mut self, time: f64) -> Self {
+        let mut system: TwoBodySystem = self.clone();
+        system.start_time = time;
+        system
+    }
+
+    fn get_end_time(&self) -> f64 {
+        self.end_time
+    }
+    fn set_end_time(&mut self, time: f64) -> Self {
+        let mut system: TwoBodySystem = self.clone();
+        system.end_time = time;
+        system
+    }
+
+    fn get_steps(&self) -> usize {
+        self.steps
+    }
+    fn set_steps(&mut self, steps: usize) -> Self {
+        let mut system: TwoBodySystem = self.clone();
+        system.steps = steps;
+        system
+    }
+
+    fn get_step_size(&self) -> f64 {
+        self.step_size
+    }
+    fn set_step_size(&mut self) -> Self {
+        let mut system: TwoBodySystem = self.clone();
+        system.step_size = (self.end_time - self.start_time) / (self.steps as f64 - 1.);
+        system
+    }
+
+    fn set_simulation_time(&mut self, start_time: f64, end_time: f64, steps: usize) -> Self {
+        let mut system: TwoBodySystem = self.clone();
+        system.set_start_time(start_time);
+        system.set_end_time(end_time);
+        system.set_steps(steps);
+        system.set_step_size();
+        system
+    }
+
+    //TODO: make more general
+    fn set_initial_conditions(&self, rr0: Array1<f64>, vv0: Array1<f64>) -> Self {
+        let mut system: TwoBodySystem = self.clone();
+        system.rr0 = rr0;
+        system.vv0 = vv0;
+        system
+    }
+    fn get_initial_rr(&self) -> Array1<f64> {
+        self.rr0.clone()
+    }
+    fn get_initial_vv(&self) -> Array1<f64> {
+        self.vv0.clone()
+    }
+
+    /// Apply impulse to a 2-body system
+    ///
+    /// The system initial position and velocities as well as the gravitational parameter are changed according to the effect of the impulse. The effect of impulse are a mass ejection affecting mu and a velocity change affecting the new initial velocity to be set.
+    ///
+    /// **Inputs**:
+    ///
+    /// impulse: the impulse to be applied to the system. See [Impulse](`crate::impulse::Impulse`)
+    ///
+    /// **Output**: a 2-body system with the impulse applied to it
+    ///
+    /// The applied impulse determines the initial position (rr0), start and end times and the number of simulation steps of the output system. Additionally, the mass change (delta_m) of the impulse is used to determine the new system's gravitational parameter from:
+    ///
+    /// μ<sub>new</sub> = μ<sub>old</sub> + Δm / G,
+    ///
+    /// where
+    ///
+    /// μ<sub>new</sub> = the gravitational parameter of the system on which the impulse is applied
+    ///
+    /// μ<sub>old</sub> = the gravitational parameter of the original, un-impulsed, system
+    ///
+    /// Δm = change in the mass of the system due to the impulse
+    ///
+    /// G = [gravitational constant](`crate::constants::G`)
+    ///
+    /// and velocity change and the initial velocity of the impulse are summed to give the initial velocity (vv0) of the output struct.
+    fn apply_impulse(&self, impulse: Array1<f64>) -> Self {
+        let mut system: TwoBodySystem = self.clone();
+        system.mu = self.mu + impulse[4] / G;
+        system.vv0 = self.vv0.clone() + array![impulse[1], impulse[2], impulse[3]];
+        system
+    }
+
+    /// Simulate a 2-body system without accounting for any impulses or perturbations
+    ///
+    /// **Output**: the simulated orbit in an array of arrays where the inner arrays are, respectively, time and the x, y, z, v_x, v_y and v_z coordinates. TODO: link to coordinate system docs
+    fn simulate(&self) -> Array2<f64> {
+        let t: Array1<f64> = Array1::linspace(self.start_time, self.end_time, self.steps);
+        let keplerian_elements: KeplerianElements =
+            calculate_keplerian_elements_from_initial_rr_and_vv_and_mu(
+                self.rr0.clone(),
+                self.vv0.clone(),
+                self.mu,
+                self.start_time,
+            );
+        let eccentric_anomaly: Array1<f64> = calculate_eccentric_anomaly_from_initial_rr_and_vv(
+            self.rr0.clone(),
+            self.vv0.clone(),
+            self.mu,
+            self.start_time,
+            self.end_time,
+            self.steps,
+        );
+        let f: Array1<f64> =
+            calculate_f_from_eccentric_anomaly(eccentric_anomaly.clone(), keplerian_elements.e);
+        let r: Array1<f64> =
+            calculate_r_from_f(f.clone(), keplerian_elements.e, keplerian_elements.a);
+        let v: Array1<f64> = calculate_v_from_eccentric_anomaly(
+            eccentric_anomaly,
+            self.mu,
+            keplerian_elements.e,
+            keplerian_elements.a,
+        );
+        let rr: Array2<f64> =
+            cartesian_coordinates_from_f_r_and_keplerian_elements(f, r, keplerian_elements);
+        let vv: Array2<f64> =
+            calculate_vv_from_v_rr_and_initial_vv(v, rr.clone(), self.vv0.clone());
+        let mut t_2d: Array2<f64> = Array2::zeros((1, t.len()));
+        t_2d.row_mut(0).assign(&t);
+        concatenate(Axis(0), &[t_2d.view(), rr.view(), vv.view()]).unwrap()
+    }
+}
+
+///// Create a 2-body system from keplerian elements
+/////
+///// **Inputs**:
+/////
+///// start_time: time at which the simulation of the system starts
+/////
+///// end_time: time at which the simulation of the system ends
+/////
+///// steps: number of time steps to be simulated
+/////
+///// mu: gravitational parameter of the system
+/////
+///// elements: keplerian elements of the 2-body system
+/////
+///// **Output**: a system struct for 2-body system
+//pub fn create_2_body_system(
+//    start_time: f64,
+//    end_time: f64,
+//    steps: usize,
+//    mu: f64,
+//    elements: KeplerianElements,
+//) -> System {
+//    //TODO
+//}
 
 /// Calculates μ (mu) from two masses m1 and m2.
 ///
