@@ -195,7 +195,7 @@ impl System for TwoBodySystem {
     ///
     /// **Inputs**:
     ///
-    /// impulse: the impulse to be applied to the system. See [Impulse](`crate::impulse::Impulse`)
+    /// **impulse**: the impulse to be applied to the system. An array whose elements are the time of the impulse and its v<sub>x</sub>, v<sub>x</sub> and v<sub>x</sub> components, respectively.
     ///
     /// **Output**: a 2-body system with the impulse applied to it
     ///
