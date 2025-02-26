@@ -38,7 +38,6 @@ pub struct TwoBodySystem {
     pub rr0: Array1<f64>,
     pub vv0: Array1<f64>,
     pub perturbations: Vec<String>,
-    pub orbit: Array2<f64>,
 }
 
 /// Create a 2-body system
@@ -75,7 +74,6 @@ pub fn create_two_body_system(
         rr0,
         vv0,
         perturbations: vec![],
-        orbit: Array2::zeros((7, 1)),
     };
     system = system.set_step_size();
     system
