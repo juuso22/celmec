@@ -3,19 +3,26 @@ use ndarray::{array, concatenate, Array2, Axis};
 
 /// Calculates the effect of a given impulse
 ///
-/// Inputs:
+/// **Inputs**:
 ///
-/// system: a system struct TODO: add link within docs
+/// **system**: a system struct TODO: add link within docs
 ///
-/// orbit: the orbit unperturbed by the impulse TODO: which units
+/// **impulse_orig**: an array of changes in coordinates (TODO: which ones) due to the impulse at given times [time-array, coordinate-arrays, mass-change-array]
 ///
-/// impulse: an array of changes in coordinates (TODO: which ones) due to the impulse at given times [time-array, coordinate-arrays, mass-change-array]
-///
-/// Output: An array containing the orbit modified by the impulse
+/// **Output**: An array containing the orbit modified by the impulse
 pub fn calculate_impulse_effect(
     system: &(impl System + std::fmt::Debug),
-    impulse: Array2<f64>,
+    impulse_orig: Array2<f64>,
 ) -> Array2<f64> {
+    let mut impulse: Array2<f64> = impulse_orig.clone();
+    if (impulse.dim().0 != 4) | (impulse.dim().0 != 4) {
+        panic!("Cannot interpret impulse of dimensions {:#?}. At least 4 rows are needed (t, v_x, v_y and v_z)", impulse.dim());
+    } else if impulse.dim().0 == 4 {
+        //If no mass ajection was given, add mass ejection equal to 0
+        let mass_changes: Array2<f64> = Array2::zeros((1, impulse.row(0).len()));
+        impulse = concatenate(Axis(0), &[impulse.view(), mass_changes.view()]).unwrap();
+    }
+
     let mut impulsed_orbit: Array2<f64> = array![[]];
     let mut mut_system = system.clone();
     impulse.row(0).into_iter().enumerate().for_each(|(i, _ti)| {
@@ -51,26 +58,6 @@ pub fn calculate_impulse_effect(
     mut_system = mut_system.set_end_time(system.get_end_time());
     let simulated_patch: Array2<f64> = mut_system.simulate();
     concatenate(Axis(1), &[impulsed_orbit.view(), simulated_patch.view()]).unwrap()
-}
-
-/// Calculates the effect of a given impulse without mass change on an orbit
-///
-/// **Inputs**:
-///
-/// orbit: the orbit unperturbed by the impulse TODO: which units
-///
-/// impulse: an array of changes in coordinates (TODO: which ones) due to the impulse at given times [time-array, coordinate-arrays]
-///
-/// **Output**: An array containing the orbit modified by the impulse
-pub fn calculate_impulse_effect_without_mass_change(
-    system: &(impl System + std::fmt::Debug),
-    impulse: Array2<f64>,
-) -> Array2<f64> {
-    let mass_changes: Array2<f64> = Array2::zeros((1, impulse.row(0).len()));
-    calculate_impulse_effect(
-        system,
-        concatenate(Axis(0), &[impulse.view(), mass_changes.view()]).unwrap(),
-    )
 }
 
 //TODO: write tests
