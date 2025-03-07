@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Keplerian Elements: Coordinate Transformation - Celmec</title>
+        <title>System: A celmec Data Structure - Celmec</title>
 
 
         <!-- Custom HTML head -->
@@ -85,7 +85,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-necessary-concepts.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Necessary Concepts</a></li><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.2.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-the-underlying-physics.html"><strong aria-hidden="true">3.3.</strong> Two Body Problem: The Underlying Physics</a></li><li class="chapter-item expanded "><a href="two-body-problem-a-look-inside-the-functions-used-in-the-simulation.html"><strong aria-hidden="true">3.4.</strong> Two-body Problem: A Look Inside the Functions Used in the Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.5.</strong> Two-body Problem: Hyperbolic and Parabolic Orbits</a></li></ol></li><li class="chapter-item expanded "><a href="keplerian-elements.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html" class="active"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-a-look-inside-the-transformation.html"><strong aria-hidden="true">4.4.</strong> Keplerian Elements: A Look Inside the Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="system.html"><strong aria-hidden="true">5.</strong> System: A celmec Data Structure</a></li><li class="chapter-item expanded "><a href="impulse.html"><strong aria-hidden="true">6.</strong> Impulse</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="impulse-implementation-details.html"><strong aria-hidden="true">6.1.</strong> Impulse: Implementation Details</a></li></ol></li><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">7.</strong> Glossary of Terms</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-necessary-concepts.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Necessary Concepts</a></li><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.2.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-the-underlying-physics.html"><strong aria-hidden="true">3.3.</strong> Two Body Problem: The Underlying Physics</a></li><li class="chapter-item expanded "><a href="two-body-problem-a-look-inside-the-functions-used-in-the-simulation.html"><strong aria-hidden="true">3.4.</strong> Two-body Problem: A Look Inside the Functions Used in the Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.5.</strong> Two-body Problem: Hyperbolic and Parabolic Orbits</a></li></ol></li><li class="chapter-item expanded "><a href="keplerian-elements.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-a-look-inside-the-transformation.html"><strong aria-hidden="true">4.4.</strong> Keplerian Elements: A Look Inside the Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="system.html" class="active"><strong aria-hidden="true">5.</strong> System: A celmec Data Structure</a></li><li class="chapter-item expanded "><a href="impulse.html"><strong aria-hidden="true">6.</strong> Impulse</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="impulse-implementation-details.html"><strong aria-hidden="true">6.1.</strong> Impulse: Implementation Details</a></li></ol></li><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">7.</strong> Glossary of Terms</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -168,150 +168,129 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="keplerian-elements-coordinate-transformation"><a class="header" href="#keplerian-elements-coordinate-transformation">Keplerian Elements: Coordinate Transformation</a></h1>
-<p>So far all the visualisations in this book have been restricted to the orbital plane of the system being simulated. However, the Keplerian elements contain a bunch of angles, which determine the the position of the orbit with respect to the orbital plane of the Earth. For 3d visuals, let us know use these angles to switch from the plane of the system to a three-dimensional volume where the Sun lies at origin and the xy-plane is the orbital plane of the earth and use cartesian coordinates there. In order to do that, we can copy the code from the original simulation of Halley's comet's orbit and add some pieces.</p>
-<p>Firstly, in order to do the coordinate switch, we'll need the <code>transformations</code> module of <code>celmec</code> so we'll modify our imports as follows:</p>
-<pre><code>use celmec::{orbit, orbital_elements, transformations};
+                        <h1 id="system-a-celmec-data-structure"><a class="header" href="#system-a-celmec-data-structure">System: A <code>celmec</code> Data Structure</a></h1>
+<p>Before moving forward with the physics, I'll introduce the concept of a <code>System</code>. In <code>celmec</code>, a <code>System</code> is a celestial mechanics entity whose time-evolution can be simulated. As an example, the two bodies with one orbiting around the other as we have seen in this books so far is a system. In fact, such a <code>TwoBodySystem</code>  is currently the only available <code>System</code> in <code>celmec</code>. The concept of a <code>System</code> will, however, enable creation of further systems such as ones having more than two bodies or using a gravitational potential other than that of a sphere.</p>
+<h2 id="making-a-simulation-using-a-twobodysystem"><a class="header" href="#making-a-simulation-using-a-twobodysystem">Making a Simulation using a <code>TwoBodySystem</code></a></h2>
+<p>To simulate a <code>TwoBodySystem</code>, let's first create a new project with: <code>cargo init system</code>. Then we'll start crafting <code>systrem/src/main.rs</code>.</p>
+<p>First we need some imports:</p>
+<pre><code>use celmec::{system::System, two_body};
+use ndarray::{array, Array1, Array2};
+use std::fs::File;
+use std::io::Write;
 </code></pre>
-<p>Then, after calculating the radii and true anomalies, the new module can be used to perform the coordinate transformation:</p>
-<pre><code>    let cartesian_coordinates: (Array1&lt;f64&gt;, Array1&lt;f64&gt;, Array1&lt;f64&gt;) =
-        transformations::cartesian_coordinates_from_f_r_and_keplerian_elements(
-            f.clone(),
-            radius.clone(),
-            halleys_keplerian_elements,
-        );
+<p>The first line imports the already familiar methods to manipulate a 2-body system and, with <code>system::System</code> the methods that any <code>System</code> has available.</p>
+<p>Then, inside the <code>main</code> function, we shall wipe out the default &quot;Hello, world&quot; stuff and start by adding some information that will make up our <code>TwoBodySystem</code> to be:</p>
+<pre><code>    let mu: f64 = two_body::calculate_mu(3.301e23, 1.989e30);
+    let rr: Array1&lt;f64&gt; = array![-69.818e9, 0., 0.];
+    let vv: Array1&lt;f64&gt; = array![0., -38.86e3, 0.];
+
+    let end_time: f64 = 7603200.;
 
 </code></pre>
-<p>Then the output file generation has to be adjusted as well. Instead of what we previously had, we'll use:</p>
-<pre><code>    let mut coordinate_file = File::create(&quot;halleys_orbit_3d.csv&quot;).unwrap();
-    write!(coordinate_file, &quot;x,y,z\n&quot;).unwrap();
-    for i in 0..=(ticks - 1) {
+<p>These are the same things that were allready used in our first 2-body simulation of Mercury.</p>
+<p>Next we'll do something different though: create a <code>TwoBodySystem</code>:</p>
+<pre><code>    let system: two_body::TwoBodySystem = two_body::create_two_body_system(0., end_time, 100, mu, rr, vv);
+</code></pre>
+<p>The inputs of the <code>create_two_body_system</code> are: starting time of the simulation, ending time of the simulation, number of simulated steps, the gravitational parameter, the initial position of the orbiting body with respect to the central body and the initial velocity of the orbiting body with respect to the central body. You can always also check the function out in the technical docs.</p>
+<p>Any simulation of a <code>System</code> will output an array of arrays (<code>Array2&lt;f64&gt;</code>) where the rows are simulation results for all the simulation steps and a the columns represent time, x,y and coordinates and v<sub>x</sub>, v<sub>y</sub> and v<sub>z</sub> going from column number 0 upwards. For a <code>TwoBodySystem</code> the cartesian coordinated are with respect to a system where the xy-plane is defined as the plane against which inclination is measured and positive x-axis points into the direction from which longitude of the ascending node is measured. To get simulation result orbit, we do:</p>
+<pre><code> let orbit: Array2&lt;f64&gt; = system.simulate();
+</code></pre>
+<p>And then write the simulation results in a file to be used for visualisations:</p>
+<pre><code>    let mut coordinate_file = File::create(&quot;mercury.csv&quot;).unwrap();
+    write!(coordinate_file, &quot;t,x,y,z,v_x,v_y,v_z\n&quot;).unwrap();
+    for i in 0..orbit.dim().1 {
         write!(
             coordinate_file,
-            &quot;{},{},{}\n&quot;,
-            cartesian_coordinates.0[i], cartesian_coordinates.1[i], cartesian_coordinates.2[i],
+            &quot;{},{},{},{},{},{},{}\n&quot;,
+            orbit[[0, i]],
+            orbit[[1, i]],
+            orbit[[2, i]],
+            orbit[[3, i]],
+            orbit[[4, i]],
+            orbit[[5, i]],
+            orbit[[6, i]]
         )
         .unwrap();
     }
 </code></pre>
-<h3 id="the-final-rust-code"><a class="header" href="#the-final-rust-code">The Final Rust Code</a></h3>
-<p>In the end, <code>Config.toml</code> should look like this:</p>
-<pre><code>[package]
-name = &quot;coordinate-transformation&quot;
-version = &quot;0.1.0&quot;
-edition = &quot;2021&quot;
-
-[dependencies]
-ndarray = &quot;0.15.6&quot;
-celmec = { git = &quot;https://github.com/juuso22/celmec.git&quot; }
-</code></pre>
-<p>and <code>main.rs</code> should look like this</p>
-<pre><code>use celmec::{orbit, orbital_elements, transformations};
-use ndarray::Array1;
+<details>
+	<summary>The complete `main.rs`</summary>
+<pre><code>use celmec::{system::System, two_body};
+use ndarray::{array, Array1, Array2};
 use std::fs::File;
 use std::io::Write;
 
 fn main() {
-    let halleys_keplerian_elements = orbital_elements::KeplerianElements {
-        e: 0.96658,
-        longitude_of_the_ascending_node: 1.03666,
-        tau: 0.,
-        a: 2.65342e12,
-        iota: 2.82674,
-        omega: 1.95564,
-    };
+    let mu: f64 = two_body::calculate_mu(3.301e23, 1.989e30);
+    let rr: Array1&lt;f64&gt; = array![-69.818e9, 0., 0.];
+    let vv: Array1&lt;f64&gt; = array![0., -38.86e3, 0.];
 
-    let ticks = 50;
-    let rotation_time: f64 = 2379801600.;
-    let mu: f64 = orbit::calculate_mu(1.989e30, 0.);
-    let f: Array1&lt;f64&gt; = orbit::calculate_f_from_keplerian_elements(
-        &amp;halleys_keplerian_elements,
-        mu,
-        halleys_keplerian_elements.tau - rotation_time / 2.,
-        halleys_keplerian_elements.tau + rotation_time / 2.,
-        ticks,
-    );
+    let end_time: f64 = 7603200.;
 
-    let radius = orbit::calculate_r_from_f(
-        f.clone(),
-        halleys_keplerian_elements.e,
-        halleys_keplerian_elements.a,
-    );
+    let system: two_body::TwoBodySystem = two_body::create_two_body_system(0., end_time, 100, mu, rr, vv);
 
-    let cartesian_coordinates: (Array1&lt;f64&gt;, Array1&lt;f64&gt;, Array1&lt;f64&gt;) =
-        transformations::cartesian_coordinates_from_f_r_and_keplerian_elements(
-            f.clone(),
-            radius.clone(),
-            halleys_keplerian_elements,
-        );
+    let orbit: Array2&lt;f64&gt; = system.simulate();
 
-    let mut coordinate_file = File::create(&quot;halleys_orbit_3d.csv&quot;).unwrap();
-    write!(coordinate_file, &quot;x,y,z\n&quot;).unwrap();
-    for i in 0..=(ticks - 1) {
+    let mut coordinate_file = File::create(&quot;mercury.csv&quot;).unwrap();
+    write!(coordinate_file, &quot;t,x,y,z,v_x,v_y,v_z\n&quot;).unwrap();
+    for i in 0..orbit.dim().1 {
         write!(
             coordinate_file,
-            &quot;{},{},{}\n&quot;,
-            cartesian_coordinates.0[i], cartesian_coordinates.1[i], cartesian_coordinates.2[i],
+            &quot;{},{},{},{},{},{},{}\n&quot;,
+            orbit[[0, i]],
+            orbit[[1, i]],
+            orbit[[2, i]],
+            orbit[[3, i]],
+            orbit[[4, i]],
+            orbit[[5, i]],
+            orbit[[6, i]]
         )
         .unwrap();
     }
 }
 </code></pre>
+</details>
 <h3 id="visualising-the-results"><a class="header" href="#visualising-the-results">Visualising the results</a></h3>
-<p>For the visualisation, the following python script can be used:</p>
+<p>In order to run the created Rust code, jump into its <code>system</code> project directory and run <code>cargo run</code>. To get some visuals out of the generated <code>mercury.csv</code> file, run the following python script with <code>python plot_system_orbit.py</code>: </p>
+<details>
+	<summary>Python script for orbit visualisation</summary>
 <pre><code>import pandas as pd
 import numpy as np
 import math
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation, PillowWriter
 
-df=pd.read_csv(&quot;halleys_orbit_3d.csv&quot;)
+df=pd.read_csv(&quot;mercury.csv&quot;)
 
-def plot_3d_orbit(i):
-    plt.plot(df.x[0:i], df.y[0:i], df.z[0:i], 'k.')
-
-def main():
+def main():    
     fig = plt.figure()
     plotn=111
-    ax = fig.add_subplot(plotn, projection='3d')
-    ax.set_xlabel(&quot;x&quot;)
-    ax.set_ylabel(&quot;y&quot;)
-    ax.set_zlabel(&quot;z&quot;)
-    ax.set_xlim([0, 1.1*np.max(df.x)])
+    ax = fig.add_subplot(plotn)
+    ax.set_xlim([1.1*np.min(df.x), 1.1*np.max(df.x)])
     ax.set_ylim([1.1*np.min(df.y), 1.1*np.max(df.y)])
-    ax.set_zlim([1.1*np.min(df.z), 0])
-    anim = FuncAnimation(fig, plot_3d_orbit, frames=50, repeat=True)
-    
-    f = r&quot;halley_3d.gif&quot;
-    writergif = PillowWriter(fps=20)
-    anim.save(f, writer=writergif)
 
+    plt.plot(df.x, df.y, 'r.')
     plt.show()
 
 if __name__ == &quot;__main__&quot;:
     main()
-
 </code></pre>
-<p>which can be run like this:</p>
-<pre><code>python plot_halleys_3d_orbit.py
-</code></pre>
-<p>This should give an image like this:</p>
-<p><img src="images/halley-3d.png" alt="Halley's 3d orbit" /></p>
-<p>and the same animated:</p>
-<details>
-  <summary>Halley's 3d orbit animated</summary>
-<p><img src="images/halley-3d.gif" alt="Halley's 3d orbit" /></p>
 </details>
+<p>This should produce a familiar-looking ellipse from the first chapter:</p>
+<p><img src="images/mercury-system.png" alt="Mercury orbit from system" /></p>
+<p>Note that the initial conditions were chosen so that the orbit lies on the xy-plane. Hence the z-coordinate is 0 throughout.</p>
+<h2 id="system-in-rust-terms"><a class="header" href="#system-in-rust-terms"><code>System</code> in Rust terms</a></h2>
+<p>In Rust terms, <code>System</code> is actually a trait. That means roughly that it defines a collection of methods that any struct <em>implementing</em> that trait (such as <code>TwoBodySystem</code>) must define (or use the default definitions of the methods in the trait if they exist). <a href="https://doc.rust-lang.org/book/ch10-02-traits.html">More on traits in the Rust book</a>. That means, that you can in fact implement your own <code>System</code> if you feel so inclined!</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="keplerian-elements-parabolic-orbit.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="keplerian-elements-a-look-inside-the-transformation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next" href="keplerian-elements-a-look-inside-the-transformation.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="impulse.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -321,11 +300,11 @@ if __name__ == &quot;__main__&quot;:
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="keplerian-elements-parabolic-orbit.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="keplerian-elements-a-look-inside-the-transformation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next" href="keplerian-elements-a-look-inside-the-transformation.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="impulse.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

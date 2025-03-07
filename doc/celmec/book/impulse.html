@@ -1,0 +1,437 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Impulse - Celmec</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-necessary-concepts.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Necessary Concepts</a></li><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.2.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-the-underlying-physics.html"><strong aria-hidden="true">3.3.</strong> Two Body Problem: The Underlying Physics</a></li><li class="chapter-item expanded "><a href="two-body-problem-a-look-inside-the-functions-used-in-the-simulation.html"><strong aria-hidden="true">3.4.</strong> Two-body Problem: A Look Inside the Functions Used in the Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.5.</strong> Two-body Problem: Hyperbolic and Parabolic Orbits</a></li></ol></li><li class="chapter-item expanded "><a href="keplerian-elements.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-a-look-inside-the-transformation.html"><strong aria-hidden="true">4.4.</strong> Keplerian Elements: A Look Inside the Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="system.html"><strong aria-hidden="true">5.</strong> System: A celmec Data Structure</a></li><li class="chapter-item expanded "><a href="impulse.html" class="active"><strong aria-hidden="true">6.</strong> Impulse</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="impulse-implementation-details.html"><strong aria-hidden="true">6.1.</strong> Impulse: Implementation Details</a></li></ol></li><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">7.</strong> Glossary of Terms</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Celmec</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="impulse"><a class="header" href="#impulse">Impulse</a></h1>
+<p>What if we gave a body orbiting another a little push? Such a pushes are called impulses and they are handy to for eg. satellites to move them from one orbit to another.</p>
+<p>In <code>celmec</code>, an impulse can be applied to a <code>System</code>. To make such a simulation, let's again create a new project <code>cargo init impulse</code>, navigate to <code>impulse/src/main.rs</code> adn add the required imports, which in this case are:</p>
+<pre><code>use celmec::{impulse, two_body};
+use ndarray::{array, Array1, Array2};
+use std::f64::consts::PI;
+use std::fs::File;
+use std::io::Write;
+</code></pre>
+<p>So, in addition to the 2-body simulation module <code>two_body</code>, we now also import a module called <code>impulse</code>.</p>
+<p>The let's start crafting a <code>main</code> function. We'll simulate a 500 kg satellite orbiting Earth, so let's first calculate the <code>mu</code> if that system:</p>
+<pre><code>    let mu: f64 = two_body::calculate_mu(5.972e24, 5.0e3);
+</code></pre>
+<p>Then, let's have the satellite on a circular orbit at an altitude of 800 km. On a circular orbit, the semi-major axis <code>a</code> is equal to the radius of the orbit, which in turn is is the sum of the altitude and Earth's radius. We'll store the <code>a</code> on a variable for convenience further down the line:</p>
+<pre><code>    let a: f64 = 8.0e5 + 6.378e6;
+</code></pre>
+<p>Next, also for later convenience, let's store the <em>period</em> of the circular orbit ie. how long it takes for the satellite to complete one rotation around the Earth. To that end, we can use the <code>calculate_period</code> method from the <code>two_body</code> module:</p>
+<pre><code>    let period: f64 = two_body::calculate_period(mu, a);
+</code></pre>
+<p>Then it's time to crate a <code>System</code> from an initial position and velocity:</p>
+<pre><code>    let rr0: Array1&lt;f64&gt; = array![a, 0., 0.];
+    let vv0: Array1&lt;f64&gt; = array![0., 2. * a * PI / period, 0.];
+    let system =
+        two_body::create_two_body_system(0., 3. * period, 99, mu, rr0.clone(), vv0.clone());
+</code></pre>
+<p>The magnitude of the y-component of <code>vv0</code> is determined as follows: on a circular orbit, the speed of the satellite is constant (and I simply chose to have it in the positive y-direction at time 0) and that constant speed is the length of the orbit devided by the period. The length of the orbit is the circumference of the a spehere of radius <code>a</code>, so hence the <code>2. * a * PI</code> in the denominator.</p>
+<p>Next, we'll define the impulse to be applied. Currently, an impulse in <code>celmec</code> is an array of changes in velocity at a given time points. That information is put in an <code>Array2&lt;f64&gt;</code> where the first row are the time points and the subsequent rows are the velocity changes's x, y, and z components, respectively. For our simple simulation, let's have a simplu velocity change (or delta-v or Δv) after one period:</p>
+<pre><code>    let impulse: Array2&lt;f64&gt; = array![[period], [0.], [1.2e3], [0.]];
+</code></pre>
+<p>The impulse is in the direction of travel (ie. positive y-direction, check <code>vv0</code> which is the same as velocity after a full rotation) and I chose its magnitude (in m/s) by the scientific process of trying out a bunch of values and picking one that seemed to give a nice-looking result (the reader is encouraged to try their own values, more on that at the end of the chapter).</p>
+<p>Then it's time to simulate: we'll now use the <code>impulse</code> module and its wrap-it-all function <code>calculate_impulse_effect</code>:</p>
+<pre><code>    let orbit: Array2&lt;f64&gt; = impulse::calculate_impulse_effect(&amp;system.clone(), impulse);
+</code></pre>
+<p>The outputted <code>orbit</code> has the same format as the output of <code>simulate</code> on a <code>System</code> would have ie. the rows being time, x, y, z, v<sub>x</sub>, v<sub>y</sub> and v<sub>z</sub>, respectively, and columns representing those quantities for each time point of the simulation.</p>
+<p>Finally, we'll write the orbit to a <code>.csv</code> file for some visualisations:</p>
+<pre><code>    let mut coordinate_file = File::create(&quot;satellite.csv&quot;).unwrap();
+    write!(coordinate_file, &quot;t,x,y,z,v_x,v_y,v_z\n&quot;).unwrap();
+    for i in 0..orbit.dim().1 {
+        write!(
+            coordinate_file,
+            &quot;{},{},{},{},{},{},{}\n&quot;,
+            orbit[[0, i]],
+            orbit[[1, i]],
+            orbit[[2, i]],
+            orbit[[3, i]],
+            orbit[[4, i]],
+            orbit[[5, i]],
+            orbit[[6, i]]
+        )
+        .unwrap();
+    }
+</code></pre>
+<details>
+  <summary>The complete `main.rs`</summary>
+<pre><code>use celmec::{impulse, two_body};
+use ndarray::{array, Array1, Array2};
+use std::f64::consts::PI;
+use std::fs::File;
+use std::io::Write;
+
+fn main() {
+    let mu: f64 = two_body::calculate_mu(5.972e24, 5.0e2);
+    let a: f64 = 8.0e5 + 6.378e6;
+    let period: f64 = two_body::calculate_period(mu, a);
+    let rr0: Array1&lt;f64&gt; = array![a, 0., 0.];
+    let vv0: Array1&lt;f64&gt; = array![0., 2. * a * PI / period, 0.];
+    let system =
+        two_body::create_two_body_system(0., 3. * period, 99, mu, rr0.clone(), vv0.clone());
+    let impulse: Array2&lt;f64&gt; = array![[period], [0.], [1.2e3], [0.]];
+
+    let orbit: Array2&lt;f64&gt; = impulse::calculate_impulse_effect(&amp;system.clone(), impulse);
+
+    let mut coordinate_file = File::create(&quot;satellite.csv&quot;).unwrap();
+    write!(coordinate_file, &quot;t,x,y,z,v_x,v_y,v_z\n&quot;).unwrap();
+    for i in 0..orbit.dim().1 {
+        write!(
+            coordinate_file,
+            &quot;{},{},{},{},{},{},{}\n&quot;,
+            orbit[[0, i]],
+            orbit[[1, i]],
+            orbit[[2, i]],
+            orbit[[3, i]],
+            orbit[[4, i]],
+            orbit[[5, i]],
+            orbit[[6, i]]
+        )
+        .unwrap();
+    }
+}
+</code></pre>
+</details>
+<h2 id="visualising-the-results"><a class="header" href="#visualising-the-results">Visualising the results</a></h2>
+<p>As before, run <code>cargo run</code> to obtain a file called <code>satellite.csv</code> with the simulated orbit in it. To visualise the results, a python script called <code>plot_impulsed_orbit.py</code> is created:</p>
+<details>
+  <summary>`plot_impulsed_orbit.py` </summary>
+<pre><code>import pandas as pd
+import numpy as np
+import math
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation, PillowWriter
+
+df=pd.read_csv(&quot;satellite.csv&quot;)
+
+def plot_orbit(i):
+    if i &lt; 33:
+        plt.plot(df.x[0:i], df.y[0:i], 'r')
+    else:
+        plt.plot(df.x[0:34], df.y[0:34], 'r')
+        plt.plot(df.x[33:i], df.y[33:i], 'b')
+
+def main():
+    fig = plt.figure()
+    plotn=111
+    ax = fig.add_subplot(plotn)
+    ax.set_xlabel(&quot;x&quot;)
+    ax.set_ylabel(&quot;y&quot;)
+    ax.set_xlim([1.1*np.min(df.x), 1.1*np.max(df.x)])
+    ax.set_ylim([1.1*np.min(df.y), 1.1*np.max(df.y)])
+    anim = FuncAnimation(fig, plot_orbit, frames=101, repeat=False)
+
+    f = r&quot;satellite.gif&quot;
+    writergif = PillowWriter(fps=20)
+    anim.save(f, writer=writergif)
+
+    plt.show()
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre>
+</details>
+<p>and run with <code>python plot_impulsed_orbit.py</code>. It should produce a graph like this one:</p>
+<p><img src="images/impulse.png" alt="Satellite orbit before and after impulse" /></p>
+<p>For clarity, the orbit before the impulse is colored red and the orbit after applying the impulse is colored blue. The impulse has transformed the previously circular orbit into an ellipsis whose periapsis has remained at the point where the impulse was applied. Because the orbit was initially on the xy-plane and and impulse along that plane kept it there, visualisation is only done on that plane. However, the Rust code writes the coordinates in all dimensions down, so if you feel like editing the impulse of the Rust code into something different, you'll have the necessary output from the code to do 3d-visualisations by editing the Python script.</p>
+<p>There is also an animation <code>satellite.gif</code> which should look more or less like this:</p>
+<details>
+  <summary>Satellite impulse animated</summary>
+<p><img src="images/satellite.gif" alt="Satellite impulse animated" /></p>
+</details>
+<h2 id="two-alternative-impulses"><a class="header" href="#two-alternative-impulses">Two alternative impulses</a></h2>
+<p>For the sake of a bit of fun let's try two edits to the <code>impulse</code> in the Rust code.</p>
+<p>Firstly, let's keep the impulse's direction but triple its magnitude:</p>
+<pre><code>    let impulse: Array2&lt;f64&gt; = array![[period], [0.], [3. * 1.2e3], [0.]];
+
+</code></pre>
+<p>Then <code>cargo run</code> and <code>python plot_impulsed_orbit.py</code> should produce this visualisation:</p>
+<p><img src="images/hyperbolic_impulse.png" alt="Impulse craeting a hyperbolic trajactory" /></p>
+<p>So this new impulse was big enough to throw the sateliite out of Earth's orbit into a hyperbolic trajectory.</p>
+<p>Secondly, let's dip the the orbit into the z-direction:</p>
+<pre><code>    let impulse: Array2&lt;f64&gt; = array![[period], [0.], [0.], [0.1 * 2. * a * PI / period]];
+</code></pre>
+<p>Now we can generate a 3d graph with a modified Python script:</p>
+<details>
+	<summary>The modified Python script for 3d graph</summary>
+<pre><code>import pandas as pd
+import numpy as np
+import math
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation, PillowWriter
+
+df=pd.read_csv(&quot;satellite.csv&quot;)
+
+def plot_orbit(i):
+    if i &lt; 33:
+        plt.plot(df.x[0:i], df.y[0:i], df.z[0:i], 'r')
+    else:
+        plt.plot(df.x[0:34], df.y[0:34], df.z[0:34], 'r')
+        plt.plot(df.x[33:i], df.y[33:i], df.z[33:i], 'b')
+
+def main():
+    fig = plt.figure()
+    plotn=111
+    ax = fig.add_subplot(plotn, projection='3d')
+    ax.set_xlabel(&quot;x&quot;)
+    ax.set_ylabel(&quot;y&quot;)
+    ax.set_ylabel(&quot;z&quot;)
+    ax.set_xlim([1.1*np.min(df.x), 1.1*np.max(df.x)])
+    ax.set_ylim([1.1*np.min(df.y), 1.1*np.max(df.y)])
+    ax.set_zlim([1.1*np.min(df.z), 1.1*np.max(df.z)])
+    anim = FuncAnimation(fig, plot_orbit, frames=101, repeat=False)
+
+    f = r&quot;satellite.gif&quot;
+    writergif = PillowWriter(fps=20)
+    anim.save(f, writer=writergif)
+
+    plt.show()
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre>
+</details>
+<p>Now a <code>cargo run</code> and <code>python plot_impulsed_orbit.py</code> should generate an image like:</p>
+<p><img src="images/3d_impulse.png" alt="Impulse in z-direction" /></p>
+<p>Looking at the point of the impulse in more detail, we see that the first orbit does not quite close, even though the impulse happens when the first period completes. This is because, the impulse point does not match any simulation point and thus there is a &quot;discontinuous&quot; jump between the last simulation point of the un-impulsed orbit and the first simulation point of the impulsed points. 
+<img src="images/3d_impulse_detail.png" alt="3d impulse detail" /></p>
+<p>The next subchapter deals with the implementation details of the impulse and explains how to match the simulation and impulse points. But before that, here is the animated version of the 3d orbit toconclude this section:</p>
+<details>
+	<summary>Impulse in the z-direction animated</summary>
+<p><img src="images/3d_impulse.gif" alt="Impulse in z-direction animated" /></p>
+</details>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="system.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="impulse-implementation-details.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="system.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="impulse-implementation-details.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

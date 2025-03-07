@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Two Body Problem: Necessary Concepts - Celmec</title>
+        <title>Impulse: Implementation Details - Celmec</title>
 
 
         <!-- Custom HTML head -->
@@ -85,7 +85,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-necessary-concepts.html" class="active"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Necessary Concepts</a></li><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.2.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-the-underlying-physics.html"><strong aria-hidden="true">3.3.</strong> Two Body Problem: The Underlying Physics</a></li><li class="chapter-item expanded "><a href="two-body-problem-a-look-inside-the-functions-used-in-the-simulation.html"><strong aria-hidden="true">3.4.</strong> Two-body Problem: A Look Inside the Functions Used in the Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.5.</strong> Two-body Problem: Hyperbolic and Parabolic Orbits</a></li></ol></li><li class="chapter-item expanded "><a href="keplerian-elements.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-a-look-inside-the-transformation.html"><strong aria-hidden="true">4.4.</strong> Keplerian Elements: A Look Inside the Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="system.html"><strong aria-hidden="true">5.</strong> System: A celmec Data Structure</a></li><li class="chapter-item expanded "><a href="impulse.html"><strong aria-hidden="true">6.</strong> Impulse</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="impulse-implementation-details.html"><strong aria-hidden="true">6.1.</strong> Impulse: Implementation Details</a></li></ol></li><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">7.</strong> Glossary of Terms</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-necessary-concepts.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Necessary Concepts</a></li><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.2.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-the-underlying-physics.html"><strong aria-hidden="true">3.3.</strong> Two Body Problem: The Underlying Physics</a></li><li class="chapter-item expanded "><a href="two-body-problem-a-look-inside-the-functions-used-in-the-simulation.html"><strong aria-hidden="true">3.4.</strong> Two-body Problem: A Look Inside the Functions Used in the Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.5.</strong> Two-body Problem: Hyperbolic and Parabolic Orbits</a></li></ol></li><li class="chapter-item expanded "><a href="keplerian-elements.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-a-look-inside-the-transformation.html"><strong aria-hidden="true">4.4.</strong> Keplerian Elements: A Look Inside the Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="system.html"><strong aria-hidden="true">5.</strong> System: A celmec Data Structure</a></li><li class="chapter-item expanded "><a href="impulse.html"><strong aria-hidden="true">6.</strong> Impulse</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="impulse-implementation-details.html" class="active"><strong aria-hidden="true">6.1.</strong> Impulse: Implementation Details</a></li></ol></li><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">7.</strong> Glossary of Terms</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -168,36 +168,47 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="two-body-problem-necessary-concepts"><a class="header" href="#two-body-problem-necessary-concepts">Two Body Problem: Necessary concepts</a></h1>
-<p>Before using <code>celmec</code> for simulations, a bare minimum of celestial mechanics concepts are needed. Those familiar with the topic can jump to <a href="two-body-problem-simulation.html">the next sub-chapter</a> which deals with writing a first simulation.</p>
-<p><code>celmec</code> solves the two-body problem using Newtonian gravitation: a mathematical model to describe the motion of planets around the sun (and all other bodies gravitationally acting with each other for that matter). The following uses results and properties from that model which match the observed reality fairly well for the contents of this chapter. It is good to bear in mind that the Newtonian model for gravity does not hold in all situations and that for the examples to come, simplifications about reality have been done.</p>
-<p>Due to the force of gravity the planets around the sun on trajectories that are ellipses, with the sun in on of the foci of the ellipse. The foci are 2 such points inside the ellipse that the sum of the radii from each of them to a point on the ellipse is a constant. In the picture the balck dots are the foci, a and b the radii and a+b is constant:</p>
+                        <h1 id="impulse-implementation-details"><a class="header" href="#impulse-implementation-details">Impulse: Implementation Details</a></h1>
+<p><code>Celmec</code> simulations are done from a starting time to an ending time for a given number of equidistanced steps. We can start from eg. time 0, end at time 3 and have 4 steps. A step represents a time point for which we simulate so the starting and ending times are the first and the last steps, respectively. Therefore, for the 4-step simulation time of the example, the steps are 0, 1, 2 and 3.</p>
 <p align="center">
-  <img src="images/foci.png" />
-  <figcaption>Foci of an ellipse: the black dots are the foci, a+b is constant</figcaption>
+  <img src="images/steps.png" />
 </p>
-<p>If the focii are close to one another, the ellipse becomes a circle. As they become further apart, the ellipse becomes more &quot;elongated&quot;. A measure of this elongation is called eccentricity which ranges from 0 for a circle and gets closer and closer to 1 as the focii become infinetly far apart. The picture below shows some ellipses for different values of eccentricity, 0, 0.7 and 0.99, respectively:</p>
+<p>An impulse can happen at any time between start and end time (including the endpoints themselves) and these times may or may not coincide with the steps.</p>
+<p>Let's consider what happens when impulse point coincide with step. In this case, a simulation is done up to step before the impulse happens. Then, a transient simulation (in the sense that no results from this simulation are returned) is done from the latest simulated step to the impulse point, after which the impulse is applied. As the impulse point coincides with a step, we can then proceed with the simulation starting from that step but with a velocity modified by the impulse.</p>
+<p>Say, that the impulse happens at time 2 in our 4-step example. In that case, a simulation would first run through steps 0 and 1. After that, a transient simulation is done for step 2 using simulation resuslt from step 1 as initial conditions. Then, the impulse is applied to the simulation results at step 2 from the transient simulation. Then the simulation results from step 2 with the impulse applied are used as initial conditions to simulate steps 2 and 3.</p>
 <p align="center">
-  <img src="images/ellipse-eccentricities.png" />
-  <figcaption>Ellipses of eccentricities 0 (circle), 0.7 and 0.99</figcaption>
+  <img src="images/impulse_at_step.png" />
 </p>
-<p>The shape, size and motion of a planet along the elliptic orbit can be determined from 3 things:</p>
-<ol>
-<li>The gravitational parameter \( \mu \) which is the sum of the masses of the sun and the planet multiplied by an observational constant called the gravitational constant \( G \). The equation for \( \mu \) is then: \( \mu = G(m_{planet} + m_{sun}) \)</li>
-<li>One observed position of the planet with respect to the sun</li>
-<li>The observed speed of the planet with respect to the sun when it is at he position from the previous point</li>
-</ol>
-<p>With this knowledge in mind, we can throw ourselves into our first simulation.</p>
+<p>In case the impulse falls between two steps, the process is as follows. First, simulation is done up until the last step before the impulse. Then a transient simulation is done from the lest simulation point to the impulse point. The impulse is applied on the result of the transient simulation at the impulse point. Another transient simulation is carried out starting from the impulse point with the results of the previous transient simulation and the impulse application as the initial conditions. With these initial conditions, the next step is transiently simulated and the results are then used as initial conditions for a simulation from that step onward (including the step itself).</p>
+<p>To use the previous 4-step example again, say the impulse happens at time 1.5. In this case a simulation is first done for steps 0 and 1. Then the first transient simulation is done from 1 to 1.5 and the impulse is then applied at the latter point. Using the result of the transient simulation and the application of the impulse as the initial conditions at 1.5, another transient simulation is carried for step 2. The results of this simulation are then set as initial conditions using which steps2 and 3 are simulated.</p>
+<p align="center">
+  <img src="images/impulse_between_steps.png" />
+</p>
+<h2 id="giving-a-continuous-impulse"><a class="header" href="#giving-a-continuous-impulse">Giving a &quot;Continuous&quot; Impulse</a></h2>
+<p>With the information above, we can adjust the example at the end of the previous chapter to match the impulse to a simulation point. In the example, we were simulating for a total of three times the period of the original orbit with 99 points. To match the impulse at the time corresponding one orbit period, let's change the number of simulated points to 100.</p>
+<p>Here is why this works: say we simulated for only one period instead of three and had 34 simulation points. Then we would start at the position at the starting time, have 32 steps on the orbit and then our last 34th (starting step + the 32 intermediary steps + 1) step on the starting position again (because after one period, the position is same as at the starting time). So we have 33 distinct positions on the orbit and on hte 34th step we hit the initial position again. Now switch to a total simulation time of 3 periods with 100: for each period we would have 33 distinct positions and then on the 34th step since the start of the period we would hit the initial positions again (ie. on 34th and 67th step counting from the very beginning). Spaving our steps in such a manner, we are guarantted to match step 34 to the period. However, at step 99 we would be a have our 33 distinct positions hit 3 times, but we would need to add an extra step that returns to the initial position at time 3 times the period. And hence we have a grand total of 100 steps.</p>
+<p>By modifying the version of the Rust code of the previous section with an impulse in the z-direction by adding a simulation point:</p>
+<pre><code>    let system = two_body::create_two_body_system(0., period, 100, mu, rr0.clone(), vv0.clone());
+</code></pre>
+<p>We get the following graph</p>
+<p><img src="images/3d_impulse_cont.png" alt="Smoother z-directional impulse" /></p>
+<p>For some reason the impulse point does not still not look as smooth as expected, but I'd argue it's already smoother than previously:</p>
+<p><img src="images/3d_impulse_cont_detail.png" alt="Detail of smoother z-directional impulse" /></p>
+<p>Again, a nice animated version to end with:</p>
+<details>
+	<summary>Continuous z-directional impulse animated</summary>
+<p><img src="images/3d_impulse_cont.gif" alt="Smoother z-directional impulse animated" /></p>
+</details>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="two-body-problem.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="impulse.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next" href="two-body-problem-simulation.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="glossary_of_terms.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -207,11 +218,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="two-body-problem.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="impulse.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next" href="two-body-problem-simulation.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="glossary_of_terms.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

@@ -86,7 +86,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-necessary-concepts.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Necessary Concepts</a></li><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.2.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-the-underlying-physics.html"><strong aria-hidden="true">3.3.</strong> Two Body Problem: The Underlying Physics</a></li><li class="chapter-item expanded "><a href="two-body-problem-a-look-inside-the-functions-used-in-the-simulation.html"><strong aria-hidden="true">3.4.</strong> Two-body Problem: A Look Inside the Functions Used in the Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.5.</strong> Two-body Problem: Hyperbolic and Parabolic Orbits</a></li></ol></li><li class="chapter-item expanded "><a href="keplerian-elements.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-a-look-inside-the-transformation.html"><strong aria-hidden="true">4.4.</strong> Keplerian Elements: A Look Inside the Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">5.</strong> Glossary of Terms</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-necessary-concepts.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Necessary Concepts</a></li><li class="chapter-item expanded "><a href="two-body-problem-simulation.html"><strong aria-hidden="true">3.2.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-the-underlying-physics.html"><strong aria-hidden="true">3.3.</strong> Two Body Problem: The Underlying Physics</a></li><li class="chapter-item expanded "><a href="two-body-problem-a-look-inside-the-functions-used-in-the-simulation.html"><strong aria-hidden="true">3.4.</strong> Two-body Problem: A Look Inside the Functions Used in the Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.5.</strong> Two-body Problem: Hyperbolic and Parabolic Orbits</a></li></ol></li><li class="chapter-item expanded "><a href="keplerian-elements.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-a-look-inside-the-transformation.html"><strong aria-hidden="true">4.4.</strong> Keplerian Elements: A Look Inside the Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="system.html"><strong aria-hidden="true">5.</strong> System: A celmec Data Structure</a></li><li class="chapter-item expanded "><a href="impulse.html"><strong aria-hidden="true">6.</strong> Impulse</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="impulse-implementation-details.html"><strong aria-hidden="true">6.1.</strong> Impulse: Implementation Details</a></li></ol></li><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">7.</strong> Glossary of Terms</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -219,16 +219,16 @@ celmec = { git = &quot;https://github.com/juuso22/celmec.git&quot; }
 <pre><code>use ndarray::{Array, Array1}
 </code></pre>
 <p>Then import the following from celmec:</p>
-<pre><code>use celmec::orbit;
+<pre><code>use celmec::{orbit, orbital_elements};
 </code></pre>
-<p>The <code>orbit</code> module contains functions functions for the simulation.</p>
+<p>The <code>orbit</code> module contains functions functions for the simulation and the <code>orbital_elements</code> module has functions to calculate certain properties of the orbit without simulating its time-evolution.</p>
 <p>Next, we need the masses of Mercury and the sun and some initial conditions for the position and velocity of the planet with respect to the sun. Sun's mass is (the googlable) 1.989 * 10<sup>30</sup>kg and the mass of Mercury (along other info about the planet that will be used), namely 3.3010 * 10<sup>23</sup> kg, can be found from <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/mercuryfact.html">Nasa's fact sheet</a>. To have some simple initial conditions, let's have Mercury furthest away from the sun it reaches (ie. Mercury's aphelion) and let's fix our coordinates so that this point is to the direction of the negative x-axis. The distance of Mercury from the sun in the aphelion is 69.818 * 10<sup>9</sup> m. According to Kepler's third law, Mercury's orbital velocity is the slowest at aphelion. That slowest speed is 38.86 * 10<sup>3</sup> m/s and that is in the direction of the negative y-axis. Let's decide, for convenience, that is the to the direction of the negativee y-axis. As a small spoiler, choosing to start with negative values will align our xy-plane nicely with the choice of polar coordinates that will be done later. Now we write all this into the <code>main</code> function of our project:</p>
 <pre><code>    let mu: f64 = orbit::calculate_mu(3.301e23, 1.989e30);
     let rr: Array1&lt;f64&gt; = array![-69.818e9, 0., 0.];
     let vv: Array1&lt;f64&gt; = array![0., -38.86e3, 0.];
 </code></pre>
 <p>Before using these values for the simulation, let's first check a key quantity of the system from them: the eccentricity <code>e</code>:</p>
-<pre><code>    let e: f64 = orbit::calculate_e(rr.clone(), vv.clone(), mu);
+<pre><code>    let e: f64 = orbital_elements::calculate_e(rr.clone(), vv.clone(), mu);
     println!(&quot;Eccentricity: {}&quot;, e);
 </code></pre>
 <p>Then we need some info about how long and how finely we want to simulate:</p>
@@ -282,7 +282,7 @@ ndarray = &quot;0.15.6&quot;
 celmec = { git = &quot;https://github.com/juuso22/celmec.git&quot; }
 </code></pre>
 <p><code>main.rs</code>:</p>
-<pre><code>use celmec::orbit;
+<pre><code>use celmec::{orbit, orbital_elements};
 use ndarray::{array, Array1};
 use std::fs::File;
 use std::io::Write;
@@ -292,7 +292,7 @@ fn main() {
     let rr: Array1&lt;f64&gt; = array![-69.818e9, 0., 0.];
     let vv: Array1&lt;f64&gt; = array![0., -38.86e3, 0.];
 
-    let e: f64 = orbit::calculate_e(rr.clone(), vv.clone(), mu);
+    let e: f64 = orbital_elements::calculate_e(rr.clone(), vv.clone(), mu);
     println!(&quot;Eccentricity: {}&quot;, e);
 
     let steps: usize = 100;
@@ -920,6 +920,349 @@ if __name__ == &quot;__main__&quot;:
 }
 </code></pre>
 <p>Here are separate functions for both spherical angle coordinates <code>theta</code> and <code>phi</code>. Both functions to obtain these cooedinates, <code>theta_from_keplerian_elements</code> and <code>phi_from_keplerian_elements</code>, are public for you to use as you please if using <code>celmec</code>. The technical Rust documentation will in turn provide details about the formulae used to calculate the angles: go check it out if you want to tear open the black box of maths used by <code>celmec</code>!</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="system-a-celmec-data-structure"><a class="header" href="#system-a-celmec-data-structure">System: A <code>celmec</code> Data Structure</a></h1>
+<p>Before moving forward with the physics, I'll introduce the concept of a <code>System</code>. In <code>celmec</code>, a <code>System</code> is a celestial mechanics entity whose time-evolution can be simulated. As an example, the two bodies with one orbiting around the other as we have seen in this books so far is a system. In fact, such a <code>TwoBodySystem</code>  is currently the only available <code>System</code> in <code>celmec</code>. The concept of a <code>System</code> will, however, enable creation of further systems such as ones having more than two bodies or using a gravitational potential other than that of a sphere.</p>
+<h2 id="making-a-simulation-using-a-twobodysystem"><a class="header" href="#making-a-simulation-using-a-twobodysystem">Making a Simulation using a <code>TwoBodySystem</code></a></h2>
+<p>To simulate a <code>TwoBodySystem</code>, let's first create a new project with: <code>cargo init system</code>. Then we'll start crafting <code>systrem/src/main.rs</code>.</p>
+<p>First we need some imports:</p>
+<pre><code>use celmec::{system::System, two_body};
+use ndarray::{array, Array1, Array2};
+use std::fs::File;
+use std::io::Write;
+</code></pre>
+<p>The first line imports the already familiar methods to manipulate a 2-body system and, with <code>system::System</code> the methods that any <code>System</code> has available.</p>
+<p>Then, inside the <code>main</code> function, we shall wipe out the default &quot;Hello, world&quot; stuff and start by adding some information that will make up our <code>TwoBodySystem</code> to be:</p>
+<pre><code>    let mu: f64 = two_body::calculate_mu(3.301e23, 1.989e30);
+    let rr: Array1&lt;f64&gt; = array![-69.818e9, 0., 0.];
+    let vv: Array1&lt;f64&gt; = array![0., -38.86e3, 0.];
+
+    let end_time: f64 = 7603200.;
+
+</code></pre>
+<p>These are the same things that were allready used in our first 2-body simulation of Mercury.</p>
+<p>Next we'll do something different though: create a <code>TwoBodySystem</code>:</p>
+<pre><code>    let system: two_body::TwoBodySystem = two_body::create_two_body_system(0., end_time, 100, mu, rr, vv);
+</code></pre>
+<p>The inputs of the <code>create_two_body_system</code> are: starting time of the simulation, ending time of the simulation, number of simulated steps, the gravitational parameter, the initial position of the orbiting body with respect to the central body and the initial velocity of the orbiting body with respect to the central body. You can always also check the function out in the technical docs.</p>
+<p>Any simulation of a <code>System</code> will output an array of arrays (<code>Array2&lt;f64&gt;</code>) where the rows are simulation results for all the simulation steps and a the columns represent time, x,y and coordinates and v<sub>x</sub>, v<sub>y</sub> and v<sub>z</sub> going from column number 0 upwards. For a <code>TwoBodySystem</code> the cartesian coordinated are with respect to a system where the xy-plane is defined as the plane against which inclination is measured and positive x-axis points into the direction from which longitude of the ascending node is measured. To get simulation result orbit, we do:</p>
+<pre><code> let orbit: Array2&lt;f64&gt; = system.simulate();
+</code></pre>
+<p>And then write the simulation results in a file to be used for visualisations:</p>
+<pre><code>    let mut coordinate_file = File::create(&quot;mercury.csv&quot;).unwrap();
+    write!(coordinate_file, &quot;t,x,y,z,v_x,v_y,v_z\n&quot;).unwrap();
+    for i in 0..orbit.dim().1 {
+        write!(
+            coordinate_file,
+            &quot;{},{},{},{},{},{},{}\n&quot;,
+            orbit[[0, i]],
+            orbit[[1, i]],
+            orbit[[2, i]],
+            orbit[[3, i]],
+            orbit[[4, i]],
+            orbit[[5, i]],
+            orbit[[6, i]]
+        )
+        .unwrap();
+    }
+</code></pre>
+<details>
+	<summary>The complete `main.rs`</summary>
+<pre><code>use celmec::{system::System, two_body};
+use ndarray::{array, Array1, Array2};
+use std::fs::File;
+use std::io::Write;
+
+fn main() {
+    let mu: f64 = two_body::calculate_mu(3.301e23, 1.989e30);
+    let rr: Array1&lt;f64&gt; = array![-69.818e9, 0., 0.];
+    let vv: Array1&lt;f64&gt; = array![0., -38.86e3, 0.];
+
+    let end_time: f64 = 7603200.;
+
+    let system: two_body::TwoBodySystem = two_body::create_two_body_system(0., end_time, 100, mu, rr, vv);
+
+    let orbit: Array2&lt;f64&gt; = system.simulate();
+
+    let mut coordinate_file = File::create(&quot;mercury.csv&quot;).unwrap();
+    write!(coordinate_file, &quot;t,x,y,z,v_x,v_y,v_z\n&quot;).unwrap();
+    for i in 0..orbit.dim().1 {
+        write!(
+            coordinate_file,
+            &quot;{},{},{},{},{},{},{}\n&quot;,
+            orbit[[0, i]],
+            orbit[[1, i]],
+            orbit[[2, i]],
+            orbit[[3, i]],
+            orbit[[4, i]],
+            orbit[[5, i]],
+            orbit[[6, i]]
+        )
+        .unwrap();
+    }
+}
+</code></pre>
+</details>
+<h3 id="visualising-the-results-3"><a class="header" href="#visualising-the-results-3">Visualising the results</a></h3>
+<p>In order to run the created Rust code, jump into its <code>system</code> project directory and run <code>cargo run</code>. To get some visuals out of the generated <code>mercury.csv</code> file, run the following python script with <code>python plot_system_orbit.py</code>: </p>
+<details>
+	<summary>Python script for orbit visualisation</summary>
+<pre><code>import pandas as pd
+import numpy as np
+import math
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation, PillowWriter
+
+df=pd.read_csv(&quot;mercury.csv&quot;)
+
+def main():    
+    fig = plt.figure()
+    plotn=111
+    ax = fig.add_subplot(plotn)
+    ax.set_xlim([1.1*np.min(df.x), 1.1*np.max(df.x)])
+    ax.set_ylim([1.1*np.min(df.y), 1.1*np.max(df.y)])
+
+    plt.plot(df.x, df.y, 'r.')
+    plt.show()
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre>
+</details>
+<p>This should produce a familiar-looking ellipse from the first chapter:</p>
+<p><img src="images/mercury-system.png" alt="Mercury orbit from system" /></p>
+<p>Note that the initial conditions were chosen so that the orbit lies on the xy-plane. Hence the z-coordinate is 0 throughout.</p>
+<h2 id="system-in-rust-terms"><a class="header" href="#system-in-rust-terms"><code>System</code> in Rust terms</a></h2>
+<p>In Rust terms, <code>System</code> is actually a trait. That means roughly that it defines a collection of methods that any struct <em>implementing</em> that trait (such as <code>TwoBodySystem</code>) must define (or use the default definitions of the methods in the trait if they exist). <a href="https://doc.rust-lang.org/book/ch10-02-traits.html">More on traits in the Rust book</a>. That means, that you can in fact implement your own <code>System</code> if you feel so inclined!</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="impulse"><a class="header" href="#impulse">Impulse</a></h1>
+<p>What if we gave a body orbiting another a little push? Such a pushes are called impulses and they are handy to for eg. satellites to move them from one orbit to another.</p>
+<p>In <code>celmec</code>, an impulse can be applied to a <code>System</code>. To make such a simulation, let's again create a new project <code>cargo init impulse</code>, navigate to <code>impulse/src/main.rs</code> adn add the required imports, which in this case are:</p>
+<pre><code>use celmec::{impulse, two_body};
+use ndarray::{array, Array1, Array2};
+use std::f64::consts::PI;
+use std::fs::File;
+use std::io::Write;
+</code></pre>
+<p>So, in addition to the 2-body simulation module <code>two_body</code>, we now also import a module called <code>impulse</code>.</p>
+<p>The let's start crafting a <code>main</code> function. We'll simulate a 500 kg satellite orbiting Earth, so let's first calculate the <code>mu</code> if that system:</p>
+<pre><code>    let mu: f64 = two_body::calculate_mu(5.972e24, 5.0e3);
+</code></pre>
+<p>Then, let's have the satellite on a circular orbit at an altitude of 800 km. On a circular orbit, the semi-major axis <code>a</code> is equal to the radius of the orbit, which in turn is is the sum of the altitude and Earth's radius. We'll store the <code>a</code> on a variable for convenience further down the line:</p>
+<pre><code>    let a: f64 = 8.0e5 + 6.378e6;
+</code></pre>
+<p>Next, also for later convenience, let's store the <em>period</em> of the circular orbit ie. how long it takes for the satellite to complete one rotation around the Earth. To that end, we can use the <code>calculate_period</code> method from the <code>two_body</code> module:</p>
+<pre><code>    let period: f64 = two_body::calculate_period(mu, a);
+</code></pre>
+<p>Then it's time to crate a <code>System</code> from an initial position and velocity:</p>
+<pre><code>    let rr0: Array1&lt;f64&gt; = array![a, 0., 0.];
+    let vv0: Array1&lt;f64&gt; = array![0., 2. * a * PI / period, 0.];
+    let system =
+        two_body::create_two_body_system(0., 3. * period, 99, mu, rr0.clone(), vv0.clone());
+</code></pre>
+<p>The magnitude of the y-component of <code>vv0</code> is determined as follows: on a circular orbit, the speed of the satellite is constant (and I simply chose to have it in the positive y-direction at time 0) and that constant speed is the length of the orbit devided by the period. The length of the orbit is the circumference of the a spehere of radius <code>a</code>, so hence the <code>2. * a * PI</code> in the denominator.</p>
+<p>Next, we'll define the impulse to be applied. Currently, an impulse in <code>celmec</code> is an array of changes in velocity at a given time points. That information is put in an <code>Array2&lt;f64&gt;</code> where the first row are the time points and the subsequent rows are the velocity changes's x, y, and z components, respectively. For our simple simulation, let's have a simplu velocity change (or delta-v or Δv) after one period:</p>
+<pre><code>    let impulse: Array2&lt;f64&gt; = array![[period], [0.], [1.2e3], [0.]];
+</code></pre>
+<p>The impulse is in the direction of travel (ie. positive y-direction, check <code>vv0</code> which is the same as velocity after a full rotation) and I chose its magnitude (in m/s) by the scientific process of trying out a bunch of values and picking one that seemed to give a nice-looking result (the reader is encouraged to try their own values, more on that at the end of the chapter).</p>
+<p>Then it's time to simulate: we'll now use the <code>impulse</code> module and its wrap-it-all function <code>calculate_impulse_effect</code>:</p>
+<pre><code>    let orbit: Array2&lt;f64&gt; = impulse::calculate_impulse_effect(&amp;system.clone(), impulse);
+</code></pre>
+<p>The outputted <code>orbit</code> has the same format as the output of <code>simulate</code> on a <code>System</code> would have ie. the rows being time, x, y, z, v<sub>x</sub>, v<sub>y</sub> and v<sub>z</sub>, respectively, and columns representing those quantities for each time point of the simulation.</p>
+<p>Finally, we'll write the orbit to a <code>.csv</code> file for some visualisations:</p>
+<pre><code>    let mut coordinate_file = File::create(&quot;satellite.csv&quot;).unwrap();
+    write!(coordinate_file, &quot;t,x,y,z,v_x,v_y,v_z\n&quot;).unwrap();
+    for i in 0..orbit.dim().1 {
+        write!(
+            coordinate_file,
+            &quot;{},{},{},{},{},{},{}\n&quot;,
+            orbit[[0, i]],
+            orbit[[1, i]],
+            orbit[[2, i]],
+            orbit[[3, i]],
+            orbit[[4, i]],
+            orbit[[5, i]],
+            orbit[[6, i]]
+        )
+        .unwrap();
+    }
+</code></pre>
+<details>
+  <summary>The complete `main.rs`</summary>
+<pre><code>use celmec::{impulse, two_body};
+use ndarray::{array, Array1, Array2};
+use std::f64::consts::PI;
+use std::fs::File;
+use std::io::Write;
+
+fn main() {
+    let mu: f64 = two_body::calculate_mu(5.972e24, 5.0e2);
+    let a: f64 = 8.0e5 + 6.378e6;
+    let period: f64 = two_body::calculate_period(mu, a);
+    let rr0: Array1&lt;f64&gt; = array![a, 0., 0.];
+    let vv0: Array1&lt;f64&gt; = array![0., 2. * a * PI / period, 0.];
+    let system =
+        two_body::create_two_body_system(0., 3. * period, 99, mu, rr0.clone(), vv0.clone());
+    let impulse: Array2&lt;f64&gt; = array![[period], [0.], [1.2e3], [0.]];
+
+    let orbit: Array2&lt;f64&gt; = impulse::calculate_impulse_effect(&amp;system.clone(), impulse);
+
+    let mut coordinate_file = File::create(&quot;satellite.csv&quot;).unwrap();
+    write!(coordinate_file, &quot;t,x,y,z,v_x,v_y,v_z\n&quot;).unwrap();
+    for i in 0..orbit.dim().1 {
+        write!(
+            coordinate_file,
+            &quot;{},{},{},{},{},{},{}\n&quot;,
+            orbit[[0, i]],
+            orbit[[1, i]],
+            orbit[[2, i]],
+            orbit[[3, i]],
+            orbit[[4, i]],
+            orbit[[5, i]],
+            orbit[[6, i]]
+        )
+        .unwrap();
+    }
+}
+</code></pre>
+</details>
+<h2 id="visualising-the-results-4"><a class="header" href="#visualising-the-results-4">Visualising the results</a></h2>
+<p>As before, run <code>cargo run</code> to obtain a file called <code>satellite.csv</code> with the simulated orbit in it. To visualise the results, a python script called <code>plot_impulsed_orbit.py</code> is created:</p>
+<details>
+  <summary>`plot_impulsed_orbit.py` </summary>
+<pre><code>import pandas as pd
+import numpy as np
+import math
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation, PillowWriter
+
+df=pd.read_csv(&quot;satellite.csv&quot;)
+
+def plot_orbit(i):
+    if i &lt; 33:
+        plt.plot(df.x[0:i], df.y[0:i], 'r')
+    else:
+        plt.plot(df.x[0:34], df.y[0:34], 'r')
+        plt.plot(df.x[33:i], df.y[33:i], 'b')
+
+def main():
+    fig = plt.figure()
+    plotn=111
+    ax = fig.add_subplot(plotn)
+    ax.set_xlabel(&quot;x&quot;)
+    ax.set_ylabel(&quot;y&quot;)
+    ax.set_xlim([1.1*np.min(df.x), 1.1*np.max(df.x)])
+    ax.set_ylim([1.1*np.min(df.y), 1.1*np.max(df.y)])
+    anim = FuncAnimation(fig, plot_orbit, frames=101, repeat=False)
+
+    f = r&quot;satellite.gif&quot;
+    writergif = PillowWriter(fps=20)
+    anim.save(f, writer=writergif)
+
+    plt.show()
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre>
+</details>
+<p>and run with <code>python plot_impulsed_orbit.py</code>. It should produce a graph like this one:</p>
+<p><img src="images/impulse.png" alt="Satellite orbit before and after impulse" /></p>
+<p>For clarity, the orbit before the impulse is colored red and the orbit after applying the impulse is colored blue. The impulse has transformed the previously circular orbit into an ellipsis whose periapsis has remained at the point where the impulse was applied. Because the orbit was initially on the xy-plane and and impulse along that plane kept it there, visualisation is only done on that plane. However, the Rust code writes the coordinates in all dimensions down, so if you feel like editing the impulse of the Rust code into something different, you'll have the necessary output from the code to do 3d-visualisations by editing the Python script.</p>
+<p>There is also an animation <code>satellite.gif</code> which should look more or less like this:</p>
+<details>
+  <summary>Satellite impulse animated</summary>
+<p><img src="images/satellite.gif" alt="Satellite impulse animated" /></p>
+</details>
+<h2 id="two-alternative-impulses"><a class="header" href="#two-alternative-impulses">Two alternative impulses</a></h2>
+<p>For the sake of a bit of fun let's try two edits to the <code>impulse</code> in the Rust code.</p>
+<p>Firstly, let's keep the impulse's direction but triple its magnitude:</p>
+<pre><code>    let impulse: Array2&lt;f64&gt; = array![[period], [0.], [3. * 1.2e3], [0.]];
+
+</code></pre>
+<p>Then <code>cargo run</code> and <code>python plot_impulsed_orbit.py</code> should produce this visualisation:</p>
+<p><img src="images/hyperbolic_impulse.png" alt="Impulse craeting a hyperbolic trajactory" /></p>
+<p>So this new impulse was big enough to throw the sateliite out of Earth's orbit into a hyperbolic trajectory.</p>
+<p>Secondly, let's dip the the orbit into the z-direction:</p>
+<pre><code>    let impulse: Array2&lt;f64&gt; = array![[period], [0.], [0.], [0.1 * 2. * a * PI / period]];
+</code></pre>
+<p>Now we can generate a 3d graph with a modified Python script:</p>
+<details>
+	<summary>The modified Python script for 3d graph</summary>
+<pre><code>import pandas as pd
+import numpy as np
+import math
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation, PillowWriter
+
+df=pd.read_csv(&quot;satellite.csv&quot;)
+
+def plot_orbit(i):
+    if i &lt; 33:
+        plt.plot(df.x[0:i], df.y[0:i], df.z[0:i], 'r')
+    else:
+        plt.plot(df.x[0:34], df.y[0:34], df.z[0:34], 'r')
+        plt.plot(df.x[33:i], df.y[33:i], df.z[33:i], 'b')
+
+def main():
+    fig = plt.figure()
+    plotn=111
+    ax = fig.add_subplot(plotn, projection='3d')
+    ax.set_xlabel(&quot;x&quot;)
+    ax.set_ylabel(&quot;y&quot;)
+    ax.set_ylabel(&quot;z&quot;)
+    ax.set_xlim([1.1*np.min(df.x), 1.1*np.max(df.x)])
+    ax.set_ylim([1.1*np.min(df.y), 1.1*np.max(df.y)])
+    ax.set_zlim([1.1*np.min(df.z), 1.1*np.max(df.z)])
+    anim = FuncAnimation(fig, plot_orbit, frames=101, repeat=False)
+
+    f = r&quot;satellite.gif&quot;
+    writergif = PillowWriter(fps=20)
+    anim.save(f, writer=writergif)
+
+    plt.show()
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre>
+</details>
+<p>Now a <code>cargo run</code> and <code>python plot_impulsed_orbit.py</code> should generate an image like:</p>
+<p><img src="images/3d_impulse.png" alt="Impulse in z-direction" /></p>
+<p>Looking at the point of the impulse in more detail, we see that the first orbit does not quite close, even though the impulse happens when the first period completes. This is because, the impulse point does not match any simulation point and thus there is a &quot;discontinuous&quot; jump between the last simulation point of the un-impulsed orbit and the first simulation point of the impulsed points. 
+<img src="images/3d_impulse_detail.png" alt="3d impulse detail" /></p>
+<p>The next subchapter deals with the implementation details of the impulse and explains how to match the simulation and impulse points. But before that, here is the animated version of the 3d orbit toconclude this section:</p>
+<details>
+	<summary>Impulse in the z-direction animated</summary>
+<p><img src="images/3d_impulse.gif" alt="Impulse in z-direction animated" /></p>
+</details>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="impulse-implementation-details"><a class="header" href="#impulse-implementation-details">Impulse: Implementation Details</a></h1>
+<p><code>Celmec</code> simulations are done from a starting time to an ending time for a given number of equidistanced steps. We can start from eg. time 0, end at time 3 and have 4 steps. A step represents a time point for which we simulate so the starting and ending times are the first and the last steps, respectively. Therefore, for the 4-step simulation time of the example, the steps are 0, 1, 2 and 3.</p>
+<p align="center">
+  <img src="images/steps.png" />
+</p>
+<p>An impulse can happen at any time between start and end time (including the endpoints themselves) and these times may or may not coincide with the steps.</p>
+<p>Let's consider what happens when impulse point coincide with step. In this case, a simulation is done up to step before the impulse happens. Then, a transient simulation (in the sense that no results from this simulation are returned) is done from the latest simulated step to the impulse point, after which the impulse is applied. As the impulse point coincides with a step, we can then proceed with the simulation starting from that step but with a velocity modified by the impulse.</p>
+<p>Say, that the impulse happens at time 2 in our 4-step example. In that case, a simulation would first run through steps 0 and 1. After that, a transient simulation is done for step 2 using simulation resuslt from step 1 as initial conditions. Then, the impulse is applied to the simulation results at step 2 from the transient simulation. Then the simulation results from step 2 with the impulse applied are used as initial conditions to simulate steps 2 and 3.</p>
+<p align="center">
+  <img src="images/impulse_at_step.png" />
+</p>
+<p>In case the impulse falls between two steps, the process is as follows. First, simulation is done up until the last step before the impulse. Then a transient simulation is done from the lest simulation point to the impulse point. The impulse is applied on the result of the transient simulation at the impulse point. Another transient simulation is carried out starting from the impulse point with the results of the previous transient simulation and the impulse application as the initial conditions. With these initial conditions, the next step is transiently simulated and the results are then used as initial conditions for a simulation from that step onward (including the step itself).</p>
+<p>To use the previous 4-step example again, say the impulse happens at time 1.5. In this case a simulation is first done for steps 0 and 1. Then the first transient simulation is done from 1 to 1.5 and the impulse is then applied at the latter point. Using the result of the transient simulation and the application of the impulse as the initial conditions at 1.5, another transient simulation is carried for step 2. The results of this simulation are then set as initial conditions using which steps2 and 3 are simulated.</p>
+<p align="center">
+  <img src="images/impulse_between_steps.png" />
+</p>
+<h2 id="giving-a-continuous-impulse"><a class="header" href="#giving-a-continuous-impulse">Giving a &quot;Continuous&quot; Impulse</a></h2>
+<p>With the information above, we can adjust the example at the end of the previous chapter to match the impulse to a simulation point. In the example, we were simulating for a total of three times the period of the original orbit with 99 points. To match the impulse at the time corresponding one orbit period, let's change the number of simulated points to 100.</p>
+<p>Here is why this works: say we simulated for only one period instead of three and had 34 simulation points. Then we would start at the position at the starting time, have 32 steps on the orbit and then our last 34th (starting step + the 32 intermediary steps + 1) step on the starting position again (because after one period, the position is same as at the starting time). So we have 33 distinct positions on the orbit and on hte 34th step we hit the initial position again. Now switch to a total simulation time of 3 periods with 100: for each period we would have 33 distinct positions and then on the 34th step since the start of the period we would hit the initial positions again (ie. on 34th and 67th step counting from the very beginning). Spaving our steps in such a manner, we are guarantted to match step 34 to the period. However, at step 99 we would be a have our 33 distinct positions hit 3 times, but we would need to add an extra step that returns to the initial position at time 3 times the period. And hence we have a grand total of 100 steps.</p>
+<p>By modifying the version of the Rust code of the previous section with an impulse in the z-direction by adding a simulation point:</p>
+<pre><code>    let system = two_body::create_two_body_system(0., period, 100, mu, rr0.clone(), vv0.clone());
+</code></pre>
+<p>We get the following graph</p>
+<p><img src="images/3d_impulse_cont.png" alt="Smoother z-directional impulse" /></p>
+<p>For some reason the impulse point does not still not look as smooth as expected, but I'd argue it's already smoother than previously:</p>
+<p><img src="images/3d_impulse_cont_detail.png" alt="Detail of smoother z-directional impulse" /></p>
+<p>Again, a nice animated version to end with:</p>
+<details>
+	<summary>Continuous z-directional impulse animated</summary>
+<p><img src="images/3d_impulse_cont.gif" alt="Smoother z-directional impulse animated" /></p>
+</details>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="glossary-of-terms"><a class="header" href="#glossary-of-terms">Glossary of Terms</a></h1>
 <p>This a list of abbreviations that celmec aims to use:</p>
 <pre><code>a - semi-major axis

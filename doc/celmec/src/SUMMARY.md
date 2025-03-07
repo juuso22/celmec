@@ -13,4 +13,7 @@
   - [Keplerian Elements: Parabolic Orbit](./keplerian-elements-parabolic-orbit.md)
   - [Keplerian Elements: Coordinate Transformation](./keplerian-elements-coordinate-transformation.md)
   - [Keplerian Elements: A Look Inside the Transformation](./keplerian-elements-a-look-inside-the-transformation.md)
+- [System: A `celmec` Data Structure](./system.md)
+- [Impulse](./impulse.md)
+  - [Impulse: Implementation Details](./impulse-implementation-details.md)
 - [Glossary of Terms](./glossary_of_terms.md)

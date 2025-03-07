@@ -85,7 +85,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-necessary-concepts.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Necessary Concepts</a></li><li class="chapter-item expanded "><a href="two-body-problem-simulation.html" class="active"><strong aria-hidden="true">3.2.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-the-underlying-physics.html"><strong aria-hidden="true">3.3.</strong> Two Body Problem: The Underlying Physics</a></li><li class="chapter-item expanded "><a href="two-body-problem-a-look-inside-the-functions-used-in-the-simulation.html"><strong aria-hidden="true">3.4.</strong> Two-body Problem: A Look Inside the Functions Used in the Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.5.</strong> Two-body Problem: Hyperbolic and Parabolic Orbits</a></li></ol></li><li class="chapter-item expanded "><a href="keplerian-elements.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-a-look-inside-the-transformation.html"><strong aria-hidden="true">4.4.</strong> Keplerian Elements: A Look Inside the Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">5.</strong> Glossary of Terms</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="the-celmec-book.html"><strong aria-hidden="true">1.</strong> The Celmec Book</a></li><li class="chapter-item expanded "><a href="getting-the-celmec-library.html"><strong aria-hidden="true">2.</strong> Getting the Celmec Library</a></li><li class="chapter-item expanded "><a href="two-body-problem.html"><strong aria-hidden="true">3.</strong> Two Body Problem</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="two-body-problem-necessary-concepts.html"><strong aria-hidden="true">3.1.</strong> Two Body Problem: Necessary Concepts</a></li><li class="chapter-item expanded "><a href="two-body-problem-simulation.html" class="active"><strong aria-hidden="true">3.2.</strong> Two Body Problem: Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-the-underlying-physics.html"><strong aria-hidden="true">3.3.</strong> Two Body Problem: The Underlying Physics</a></li><li class="chapter-item expanded "><a href="two-body-problem-a-look-inside-the-functions-used-in-the-simulation.html"><strong aria-hidden="true">3.4.</strong> Two-body Problem: A Look Inside the Functions Used in the Simulation</a></li><li class="chapter-item expanded "><a href="two-body-problem-hyperbolic-and-parabolic-orbits.html"><strong aria-hidden="true">3.5.</strong> Two-body Problem: Hyperbolic and Parabolic Orbits</a></li></ol></li><li class="chapter-item expanded "><a href="keplerian-elements.html"><strong aria-hidden="true">4.</strong> Keplerian Elements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="keplerian-elements-simulation.html"><strong aria-hidden="true">4.1.</strong> Keplerian Elements: Simulation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-parabolic-orbit.html"><strong aria-hidden="true">4.2.</strong> Keplerian Elements: Parabolic Orbit</a></li><li class="chapter-item expanded "><a href="keplerian-elements-coordinate-transformation.html"><strong aria-hidden="true">4.3.</strong> Keplerian Elements: Coordinate Transformation</a></li><li class="chapter-item expanded "><a href="keplerian-elements-a-look-inside-the-transformation.html"><strong aria-hidden="true">4.4.</strong> Keplerian Elements: A Look Inside the Transformation</a></li></ol></li><li class="chapter-item expanded "><a href="system.html"><strong aria-hidden="true">5.</strong> System: A celmec Data Structure</a></li><li class="chapter-item expanded "><a href="impulse.html"><strong aria-hidden="true">6.</strong> Impulse</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="impulse-implementation-details.html"><strong aria-hidden="true">6.1.</strong> Impulse: Implementation Details</a></li></ol></li><li class="chapter-item expanded "><a href="glossary_of_terms.html"><strong aria-hidden="true">7.</strong> Glossary of Terms</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -182,16 +182,16 @@ celmec = { git = &quot;https://github.com/juuso22/celmec.git&quot; }
 <pre><code>use ndarray::{Array, Array1}
 </code></pre>
 <p>Then import the following from celmec:</p>
-<pre><code>use celmec::orbit;
+<pre><code>use celmec::{orbit, orbital_elements};
 </code></pre>
-<p>The <code>orbit</code> module contains functions functions for the simulation.</p>
+<p>The <code>orbit</code> module contains functions functions for the simulation and the <code>orbital_elements</code> module has functions to calculate certain properties of the orbit without simulating its time-evolution.</p>
 <p>Next, we need the masses of Mercury and the sun and some initial conditions for the position and velocity of the planet with respect to the sun. Sun's mass is (the googlable) 1.989 * 10<sup>30</sup>kg and the mass of Mercury (along other info about the planet that will be used), namely 3.3010 * 10<sup>23</sup> kg, can be found from <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/mercuryfact.html">Nasa's fact sheet</a>. To have some simple initial conditions, let's have Mercury furthest away from the sun it reaches (ie. Mercury's aphelion) and let's fix our coordinates so that this point is to the direction of the negative x-axis. The distance of Mercury from the sun in the aphelion is 69.818 * 10<sup>9</sup> m. According to Kepler's third law, Mercury's orbital velocity is the slowest at aphelion. That slowest speed is 38.86 * 10<sup>3</sup> m/s and that is in the direction of the negative y-axis. Let's decide, for convenience, that is the to the direction of the negativee y-axis. As a small spoiler, choosing to start with negative values will align our xy-plane nicely with the choice of polar coordinates that will be done later. Now we write all this into the <code>main</code> function of our project:</p>
 <pre><code>    let mu: f64 = orbit::calculate_mu(3.301e23, 1.989e30);
     let rr: Array1&lt;f64&gt; = array![-69.818e9, 0., 0.];
     let vv: Array1&lt;f64&gt; = array![0., -38.86e3, 0.];
 </code></pre>
 <p>Before using these values for the simulation, let's first check a key quantity of the system from them: the eccentricity <code>e</code>:</p>
-<pre><code>    let e: f64 = orbit::calculate_e(rr.clone(), vv.clone(), mu);
+<pre><code>    let e: f64 = orbital_elements::calculate_e(rr.clone(), vv.clone(), mu);
     println!(&quot;Eccentricity: {}&quot;, e);
 </code></pre>
 <p>Then we need some info about how long and how finely we want to simulate:</p>
@@ -245,7 +245,7 @@ ndarray = &quot;0.15.6&quot;
 celmec = { git = &quot;https://github.com/juuso22/celmec.git&quot; }
 </code></pre>
 <p><code>main.rs</code>:</p>
-<pre><code>use celmec::orbit;
+<pre><code>use celmec::{orbit, orbital_elements};
 use ndarray::{array, Array1};
 use std::fs::File;
 use std::io::Write;
@@ -255,7 +255,7 @@ fn main() {
     let rr: Array1&lt;f64&gt; = array![-69.818e9, 0., 0.];
     let vv: Array1&lt;f64&gt; = array![0., -38.86e3, 0.];
 
-    let e: f64 = orbit::calculate_e(rr.clone(), vv.clone(), mu);
+    let e: f64 = orbital_elements::calculate_e(rr.clone(), vv.clone(), mu);
     println!(&quot;Eccentricity: {}&quot;, e);
 
     let steps: usize = 100;
