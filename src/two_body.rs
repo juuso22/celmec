@@ -156,10 +156,10 @@ impl System for TwoBodySystem {
     /// **Output**: A system with new time parameters.
     fn set_simulation_time(&mut self, start_time: f64, end_time: f64, steps: usize) -> Self {
         let mut system: TwoBodySystem = self.clone();
-        system.set_start_time(start_time);
-        system.set_end_time(end_time);
-        system.set_steps(steps);
-        system.set_step_size();
+        system = system.set_start_time(start_time);
+        system = system.set_end_time(end_time);
+        system = system.set_steps(steps);
+        system = system.set_step_size();
         system
     }
 
