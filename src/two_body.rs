@@ -509,9 +509,14 @@ pub fn calculate_initial_f_from_initial_conditions(
     e: f64,
 ) -> f64 {
     let r: f64 = euclidean_norm(rr.clone());
-    let initial_f_cos: f64 = (rr.clone() * ee.clone()).sum() / r / e;
+    //The next three lines are a funny way to calculate cosine using dot product.
+    //The rr and ee to be dot-multiplied are first scaled to the length of one.
+    //This is to avoid numerical errors if, say, rr is way larger in length than ee.
+    let rr_scaled: Array1<f64> = rr.clone() / r;
+    let ee_scaled: Array1<f64> = ee.clone() / e;
+    let initial_f_cos: f64 = (rr_scaled.clone() * ee_scaled.clone()).sum();
     // The following check implies sin of the true anomaly is negative, hence the angle is in the range (-PI, 0)
-    if euclidean_norm(cross_product(rr, ee)) < 0. {
+    if euclidean_norm(cross_product(rr_scaled, ee_scaled)) < 0. {
         return -initial_f_cos.acos();
     }
     initial_f_cos.acos()
