@@ -386,6 +386,45 @@ pub fn calculate_n(mu: f64, a: f64) -> f64 {
     mu.sqrt() * a.powf(-3. / 2.)
 }
 
+///Calculates period of an orbit.
+///
+///Can be calculated for any 2-body system, but really makes only sense for elliptic orbit with e < 1.
+///
+/// **Inputs**
+///
+/// mu: see [μ](`calculate_mu`)
+///
+/// a: semi-major axis [a](`crate::orbital_elements::calculate_a()`) or [focal parameter p](`calculate_focal_parameter_for_parabola_from_orbital_position`) (in case of a parabolic orbit)
+///
+/// **Output**: Period of an orbit
+pub fn calculate_period(mu: f64, a: f64) -> f64 {
+    let n: f64 = calculate_n(mu, a);
+    2. * PI / n
+}
+
+///Calculates period of an orbit from mu and initial conditions.
+///
+///Can be calculated for any 2-body system, but really makes only sense for elliptic orbit with e < 1.
+///
+/// **Inputs**
+///
+/// mu: see [μ](`calculate_mu`)
+///
+/// rr0: initial position
+///
+/// vv0: initial velocity
+///
+/// **Output**: Period of an orbit
+pub fn calculate_period_from_mu_and_initial_rr_and_vv(
+    mu: f64,
+    rr0: Array1<f64>,
+    vv0: Array1<f64>,
+) -> f64 {
+    let a: f64 = calculate_a_from_initial_rr_and_vv(rr0, vv0, mu);
+    let n: f64 = calculate_n(mu, a);
+    2. * PI / n
+}
+
 /// Calculates the mean anomaly M in a 2-body system
 ///
 /// M = n * (t - τ)
